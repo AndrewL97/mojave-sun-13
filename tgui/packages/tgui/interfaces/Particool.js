@@ -2,7 +2,7 @@ import { map } from 'common/collections';
 import { toFixed } from 'common/math';
 import { numberOfDecimalDigits } from '../../common/math';
 import { useBackend, useLocalState } from '../backend';
-import { Box, Button, Collapsible, ColorBox, Dropdown, Input, LabeledList, NoticeBox, NumberInput, Section } from '../components';
+import { Box, Button, Collapsible, ColorBox, Dropdown, Flex, Input, LabeledList, NoticeBox, NumberInput, Section } from '../components';
 import { Window } from '../layouts';
 import { logger } from '../logging';
 
@@ -24,6 +24,39 @@ const ParticleIntegerEntry = (props, context) => {
           type: 'integer',
         },
       })} />
+  );
+};
+
+const ParticleMatrixEntry = (props, context) => {
+  let { value, name } = props;
+  const { act } = useBackend(context);
+
+
+  // Actual matrix, or matrix of 0
+  value = value || [0, 0, 0, 0, 0, 0];
+  logger.log(JSON.stringify(value));
+  return (
+    <Flex>
+      <Flex.Item>
+        {value.map((val, i) => (
+          <NumberInput
+            value={val}
+            key={i}
+            onDrag={(e, v) =>
+            {
+              value[i] = v;
+
+              act('modify_particle_value', {
+                new_data: {
+                  name: name,
+                  value: [value],
+                  type: 'matrix',
+                },
+              }); }}
+          />))}
+      </Flex.Item>
+    </Flex>
+
   );
 };
 
@@ -88,34 +121,42 @@ const ParticleGeneratorEntry = (props, context) => {
   });
 
   return (
-    <>
-      <Dropdown
-        displayText="Gen Type"
-        nochevron
-        options={generatorTypes}
-        selected={workingValue.genType}
-        onSelected={(e, val) => { workingValue.genType = val; }} />
-      <Box inline ml={2} mr={1}> A: </Box>
-      <Input
+    <Flex>
+      <Flex.Item grow={0}>
+        <Dropdown
+          displayText="Type"
+          nochevron
+          options={generatorTypes}
+          selected={workingValue.genType}
+          onSelected={(e, val) => { workingValue.genType = val; }} />
+      </Flex.Item>
+      <Flex.Item m={1}> A: </Flex.Item>
+      <Flex.Item><Input
         value={workingValue.a}
-        width="40px"
         onInput={(e, val) => { workingValue.a = val; }} />
-      <Box inline ml={2} mr={1}> B: </Box>
-      <Input
+      </Flex.Item>
+      <Flex.Item m={1}> B: </Flex.Item>
+      <Flex.Item><Input
         value={workingValue.b}
-        width="40px"
         onInput={(e, val) => { workingValue.b = val; }} />
-      <Box inline ml={2} mr={1}> Rand: </Box>
-      <Dropdown
-        displayText="Rand Type"
-        nochevron
-        options={randTypes}
-        selected={workingValue.rand}
-        onSelected={(e, val) => { workingValue.rand = val; }} />
-      <Button
-        content="Set"
-        onClick={() => doAct} />
-    </>
+      </Flex.Item>
+      <Flex.Item m={1}> Rand: </Flex.Item>
+      <Flex.Item>
+        <Flex.Item />
+        <Dropdown grow={0}
+          displayText="Rand Type"
+          nochevron
+          options={randTypes}
+          selected={workingValue.rand}
+          onSelected={(e, val) => { workingValue.rand = val; }} />
+      </Flex.Item>
+      <Flex.Item m={1}>
+        <Button
+          content="Set"
+          onClick={() => doAct} />
+      </Flex.Item>
+
+    </Flex>
   );
 };
 
@@ -217,6 +258,7 @@ const ParticleDataEntry = (props, context) => {
     color: <ParticleColorEntry {...props} />,
     icon: <ParticleIconEntry {...props} />,
     generator: <ParticleGeneratorEntry {...props} />,
+    matrix: <ParticleMatrixEntry {...props} />,
   };
 
   return (

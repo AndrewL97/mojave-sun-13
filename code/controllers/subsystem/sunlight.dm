@@ -70,7 +70,8 @@ SUBSYSTEM_DEF(sunlight)
 /datum/controller/subsystem/sunlight/proc/fullPlonk()
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
-			if (T.dynamic_lighting && T.loc:dynamic_lighting)
+			var/area/TArea = T.loc
+			if (TArea.static_lighting == FALSE)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
 /datum/controller/subsystem/sunlight/Initialize(timeofday)
@@ -88,7 +89,8 @@ SUBSYSTEM_DEF(sunlight)
 /datum/controller/subsystem/sunlight/proc/InitializeTurfs(list/targets)
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
-			if (T.dynamic_lighting && T.loc:dynamic_lighting)
+			var/area/TArea = T.loc
+			if (TArea.static_lighting == FALSE)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
 

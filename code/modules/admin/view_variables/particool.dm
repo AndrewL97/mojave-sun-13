@@ -65,15 +65,16 @@
 /datum/particle_editor/ui_data()
 	var/list/data = list()
 	data["target_name"] = target.name
-	data["target_particle"] = build_particle_json(target.particles)
+	data["target_particle"] = target.particles ? target.particles.vars : null
 	return data
-
-/datum/particle_editor/proc/build_particle_json(particles/P)
-	. = new /list()
 
 
 /datum/particle_editor/proc/digest_particle_json(list/L)
-	. = new /particles
+	var/particles/P = new /particles
+	for(var/elem in L)
+		P.vars[L[elem]["name"]] = translate_value(elem)
+	return P
+
 
 //expects an assoc list of name, type, value - type must be in this list
 /datum/particle_editor/proc/translate_value(list/L)
@@ -84,21 +85,19 @@
 		if("float") return L["value"]
 		if("int") return L["value"]
 		if("color") return L["value"]
-		if("matrix") return stringToMatrix(L["value"])
-		if("list") return stringToList(L["value"])
-		// if("generator") return generateGenerator(L["value"]) // This value should be a new list, if it isn't then we will explode
+		if("list") return L["value"]
+		if("matrix") return ListToMatrix(L["value"])
+		if("generator") return generateGenerator(L["value"]) // This value should be a new list, if it isn't then we will explode
 
-/datum/particle_editor/proc/stringToMatrix(Str)
+/datum/particle_editor/proc/generateGenerator(L)
+	debugOutput(L,"GenerateGenerator")
 
-	//Normal Matrixes allow 6 - Projection matrixes allow 14 and 16 (CRAZY!) /// mayb
-	var/list/L = stringToList(Str)
+/datum/particle_editor/proc/ListToMatrix(list/L)
+
+	//Normal Matrixes allow 6
 	switch(length(L))
 		if(6)
 			return matrix(L[0],L[1],L[2],L[3],L[4],L[5])
-		// if(14)
-		// 	return matrix(L[0],L[1],L[2],L[3],L[4],L[5],L[6],L[7],L[8],L[9],L[10],L[11],L[12],L[13])
-		// if(16)
-		// 	return matrix(L[0],L[1],L[2],L[3],L[4],L[5],L[6],L[7],L[8],L[9],L[10],L[11],L[12],L[13],L[14],L[15])
 
 /datum/particle_editor/proc/stringToList(Str)
 	return splittext(Str,regex(@"(?<!\\),"))
@@ -107,61 +106,65 @@
 
 // /datum/particle_editor/proc/generateGenerator(list/L)
 
+/datum/particle_editor/proc/debugOutput(L, nodeName)
+	if(istype(L,/list))
+		for(var/elem in L)
+			if(istype(L[elem],/list))
+				world.log << nodeName
+				debugOutput(L[elem], nodeName + ":" + elem)
+			else if(istype(elem,/list))
+				world.log << nodeName
+				debugOutput(elem, nodeName + ":LIST")
+			else
+				world.log << nodeName + ":" + elem + ":" + text("[]",L[elem])
+	else
+		world.log << L
 
 /datum/particle_editor/ui_act(action, list/params)
 	. = ..()
 	if(.)
 		return
 
+	debugOutput(params)
+
 	switch(action)
 		if("add_particle")
-			if(!target.particles)
-				target.particles = new /particles
+			target.add_particle()
 			. = TRUE
 		if("remove_particle")
-			target.particles = null
-			. = TRUE
-		if("transition_particle_value") //wtf is 4
-			var/valName = params["new_data"]["name"]
-			target.transition_particle(4, list("[valName]",translate_value(params["new_data"])))
+			target.remove_particle()
 			. = TRUE
 		if("modify_particle_value")
-
-			if(target.particles)
-				target.particles.vars[params["new_data"]["name"]] = translate_value(params["new_data"])
+			target.modify_particle_value(params["new_data"]["name"], translate_value(params["new_data"]))
 			. = TRUE
-
 		if("modify_color_value")
 			var/new_color = input(usr, "Pick new particle color", "Particool Colors!") as color|null
 			if(new_color)
-				target.transition_particle(params["name"], 4, list("color" = new_color))
+				target.modify_particle_value("color",new_color)
 				. = TRUE
 		if("modify_icon_value")
 			var/icon/new_icon = input("Pick icon:", "Icon") as null|icon
 			if(new_icon && target.particles)
-				target.particles.icon = params["value"]
+				target.modify_particle_value("icon", new_icon)
 				. = TRUE
-		if("mass_apply")
-			if(!check_rights_for(usr.client, R_FUN))
-				to_chat(usr, span_userdanger("Stay in your lane, jannie."))
-				return
-			var/target_path = text2path(params["path"])
-			if(!target_path)
-				return
-			var/particle_to_put_on_fucking_everything = target.particles
-			var/count = 0
-			for(var/thing in world.contents)
-				if(istype(thing, target_path))
-					var/atom/movable/thing_at = thing
-					thing_at.particles = particle_to_put_on_fucking_everything
-			message_admins("LOCAL CLOWN [usr.ckey] JUST MASS FILTER EDITED [count] WITH PATH OF [params["path"]]!")
-			log_admin("LOCAL CLOWN [usr.ckey] JUST MASS FILTER EDITED [count] WITH PATH OF [params["path"]]!")
 
 
 //movable procs n stuff
 
-/atom/movable/proc/transition_particle(name, time, list/new_params, easing, loop)
-	if(!particles)
-		return
-	animate(particles, new_params, time = time, easing = easing, loop = loop)
+/atom/movable/proc/add_particle()
+	particles = new /particles
+
+/atom/movable/proc/remove_particle()
+	particles = null
+
+/atom/movable/proc/modify_particle_value(varName, varVal)
+	if(particles)
+		particles.vars[varName] = varVal
+
+/atom/movable/proc/transition_particle(time, list/new_params, easing, loop)
+	if(particles)
+		animate(particles, new_params, time = time, easing = easing, loop = loop)
+
+
+
 
