@@ -45,13 +45,10 @@ Sunlight System
 	var/list/datum/lighting_corner/affectingCorners
 
 /atom/movable/outdoor_effect/Destroy(force)
-	if (force)
-		var/turf/badTurf = get_turf(source_turf)
-		stack_trace("A sunlighting object has been deleted [COORD(badTurf)]")
-		return ..()
-
-	else
+	if (!force)
 		return QDEL_HINT_LETMELIVE
+	return ..()
+
 
 
 /atom/movable/outdoor_effect/Initialize(mapload)
@@ -211,6 +208,7 @@ Sunlight System
 	//Add ourselves (we might not have corners initialized, and this handles it)
 	SunlightUpdates += src
 
+	//AHHHHGGGGGHHHHHHHHHHHHHHH
 	if(lighting_corner_NE)
 		if (lighting_corner_NE.master_NE)
 			SunlightUpdates |= lighting_corner_NE.master_NE

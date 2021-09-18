@@ -2,10 +2,9 @@ import { map } from 'common/collections';
 import { toFixed } from 'common/math';
 import { numberOfDecimalDigits } from '../../common/math';
 import { useBackend, useLocalState } from '../backend';
-import { Box, Button, Collapsible, ColorBox, Dropdown, Flex, Input, LabeledList, NoticeBox, NumberInput, Section } from '../components';
+import { Box, Button, Collapsible, ColorBox, Dropdown, Flex, Input, LabeledList, NoticeBox, NumberInput, Section, Tooltip } from '../components';
 import { Window } from '../layouts';
 import { logger } from '../logging';
-
 
 const ParticleIntegerEntry = (props, context) => {
   const { value, name } = props;
@@ -13,15 +12,15 @@ const ParticleIntegerEntry = (props, context) => {
   return (
     <NumberInput
       value={value}
-      minValue={-500}
-      maxValue={500}
+      // minValue={-500}
+      // maxValue={500}
       stepPixelSize={5}
       width="39px"
       onDrag={(e, value) => act('modify_particle_value', {
         new_data: {
           name: name,
           value: value,
-          type: 'integer',
+          type: 'int',
         },
       })} />
   );
@@ -34,7 +33,6 @@ const ParticleMatrixEntry = (props, context) => {
 
   // Actual matrix, or matrix of 0
   value = value || [0, 0, 0, 0, 0, 0];
-  logger.log(JSON.stringify(value));
   return (
     <Flex>
       <Flex.Item>
@@ -45,11 +43,10 @@ const ParticleMatrixEntry = (props, context) => {
             onDrag={(e, v) =>
             {
               value[i] = v;
-
               act('modify_particle_value', {
                 new_data: {
                   name: name,
-                  value: [value],
+                  value: value,
                   type: 'matrix',
                 },
               }); }}
@@ -68,8 +65,8 @@ const ParticleFloatEntry = (props, context) => {
     <>
       <NumberInput
         value={value}
-        minValue={-500}
-        maxValue={500}
+        // minValue={-500}
+        // maxValue={500}
         stepPixelSize={4}
         step={step}
         format={value => toFixed(value, numberOfDecimalDigits(step))}
@@ -98,65 +95,104 @@ const ParticleFloatEntry = (props, context) => {
   );
 };
 
+// array for our working varz
+// let genWorking = [];
+
 const ParticleGeneratorEntry = (props, context) => {
   const { value, name } = props;
   const { act } = useBackend(context);
-  const [step, setStep] = useLocalState(context, 'particleFloatStep', 0.01);
   const generatorTypes = ["num", "vector", "box", "color", "circle", "sphere", "square", "cube"];
   const randTypes = ["UNIFORM_RAND", "NORMAL_RAND", "LINEAR_RAND", "SQUARE_RAND"];
 
-  let workingValue = value || { genType: "", a: "", b: "", rand: "" };
+  let tempGenType = '';
+  let tempA = '';
+  let tempB = '';
+  let tempRand = '';
 
-  const doAct = () => act('modify_particle_value', {
-    new_data: {
-      name: name,
-      value: {
-        genType: workingValue.genType,
-        a: workingValue.a,
-        b: workingValue.b,
-        rand: workingValue.rand,
+  logger.log(value);
+
+  // Value will come through a binobj of the generator, i.e
+  // "client generator(box, UNIFORM_RAND, list(-10,-10,-10), list(10,10,10))"
+  // So do this hacky garbage to convert it back into values
+  if (value) {
+    // Get contents of brackets
+    let params = value.match(/\((.*)\)/);
+    params = params ? params : ["", "", "", ""];
+    // Split into params
+    params = params[1].split(', ');
+    if (params.length === 4) {
+      tempGenType = params[0];
+      tempRand= params[1];
+
+      // Try to get contents of list(), just pass value if null
+      let aTemp = params[2].match(/\((.*)\)/);
+      tempA = aTemp ? aTemp[1] : aTemp; // fermented soy beans
+
+      let bTemp = params[3].match(/\((.*)\)/);
+      tempB = bTemp ? bTemp[1] : params[3];
+    }
+  }
+
+
+  const [genType, setGenType] = useLocalState(context, name + 'genType', tempGenType);
+  const [a, setA] = useLocalState(context, name + 'a', tempA);
+  const [b, setB] = useLocalState(context, name + 'b', tempB);
+  const [rand, setRand] = useLocalState(context, name + 'rand', tempRand);
+
+
+
+
+  const doAct = () => {
+    logger.log(genType);
+    act('modify_particle_value', {
+      new_data: {
+        name: name,
+        value: {
+          genType: genType,
+          a: a,
+          b: b,
+          rand: rand,
+        },
+        type: 'generator',
       },
-      type: 'generator',
-    },
-  });
+    }); };
 
   return (
-    <Flex>
-      <Flex.Item grow={0}>
-        <Dropdown
-          displayText="Type"
-          nochevron
-          options={generatorTypes}
-          selected={workingValue.genType}
-          onSelected={(e, val) => { workingValue.genType = val; }} />
-      </Flex.Item>
-      <Flex.Item m={1}> A: </Flex.Item>
-      <Flex.Item><Input
-        value={workingValue.a}
-        onInput={(e, val) => { workingValue.a = val; }} />
-      </Flex.Item>
-      <Flex.Item m={1}> B: </Flex.Item>
-      <Flex.Item><Input
-        value={workingValue.b}
-        onInput={(e, val) => { workingValue.b = val; }} />
-      </Flex.Item>
-      <Flex.Item m={1}> Rand: </Flex.Item>
-      <Flex.Item>
-        <Flex.Item />
-        <Dropdown grow={0}
-          displayText="Rand Type"
-          nochevron
-          options={randTypes}
-          selected={workingValue.rand}
-          onSelected={(e, val) => { workingValue.rand = val; }} />
-      </Flex.Item>
-      <Flex.Item m={1}>
+    <Collapsible
+      title="Generator Settings - Hit Set to save">
+      <Section level={2}>
+        <LabeledList>
+          <LabeledList.Item label={genType}>
+            <Tooltip position="bottom" content={`${generatorTypes.join(", ")}`}>
+              <Input
+                value={genType}
+                onInput={(e, val) => setGenType(val)} />
+            </Tooltip>
+          </LabeledList.Item>
+          <LabeledList.Item label="A"><Input
+            value={a}
+            onInput={(e, val) => setA(val)} />
+          </LabeledList.Item>
+          <LabeledList.Item label="B">
+            <Input
+              value={b}
+              onInput={(e, val) => setB(val)} />
+          </LabeledList.Item>
+          <LabeledList.Item label="Rand Type">
+            <Tooltip position="bottom" content={`${randTypes.join(", ")}`}>
+              <Input
+                value={rand}
+                onInput={(e, val) => setRand(val)} />
+            </Tooltip>
+          </LabeledList.Item>
+
+        </LabeledList>
         <Button
           content="Set"
-          onClick={() => doAct} />
-      </Flex.Item>
+          onClick={() => doAct()} />
+      </Section >
+    </Collapsible>
 
-    </Flex>
   );
 };
 
@@ -173,6 +209,26 @@ const ParticleTextEntry = (props, context) => {
           name: name,
           value: value,
           type: 'text',
+        },
+      })} />
+  );
+};
+
+const ParticleNumListEntry = (props, context) => {
+  const { value, name } = props;
+  const { act } = useBackend(context);
+
+  let valArr = value ? Object.keys(value).map((key) => value[key]) : [];
+
+  return (
+    <Input
+      value={valArr.join(',')}
+      width="250px"
+      onInput={(e, val) => act('modify_particle_value', {
+        new_data: {
+          name: name,
+          value: val,
+          type: 'numList',
         },
       })} />
   );
@@ -225,13 +281,11 @@ const particleEntryMap = {
   height: 'float',
   count: 'int',
   spawning: 'float',
-  bound1: 'string',
-  bound2: 'string',
-  gravity: 'string',
+  bound1: 'numlist',
+  bound2: 'numlist',
+  gravity: 'numlist',
   gradient: 'string',
   transform: 'matrix',
-
-
   lifespan: 'float',
   fade: 'float',
   icon: 'icon',
@@ -255,6 +309,7 @@ const ParticleDataEntry = (props, context) => {
     int: <ParticleIntegerEntry {...props} />,
     float: <ParticleFloatEntry {...props} />,
     string: <ParticleTextEntry {...props} />,
+    numlist: <ParticleNumListEntry {...props} />,
     color: <ParticleColorEntry {...props} />,
     icon: <ParticleIconEntry {...props} />,
     generator: <ParticleGeneratorEntry {...props} />,
@@ -272,24 +327,78 @@ const ParticleEntry = (props, context) => {
   const { act, data } = useBackend(context);
   const { particle } = props;
   return (
-    <Collapsible
-      title="Particle">
-      <Section level={2}>
-        <LabeledList>
-          {Object.keys(particleEntryMap).map(entryName => {
-            const value = particle[entryName];
-            return (
-              <ParticleDataEntry
-                key={entryName}
-                name={entryName}
-                value={value} />
-            );
-          })}
-        </LabeledList>
-      </Section>
-    </Collapsible>
+    <LabeledList>
+      {Object.keys(particleEntryMap).map(entryName => {
+        const value = particle[entryName];
+        return (
+          <ParticleDataEntry
+            key={entryName}
+            name={entryName}
+            value={value} />
+        );
+      })}
+    </LabeledList>
   );
 };
+
+
+const GeneratorHelp = () => {
+  return (
+    <Collapsible title="Generator Help"><Section level={2} />
+      <Section level={2}>
+        <table>
+          <tbody>
+            <tr>
+              <td>Generator type</td>
+              <td>Result type</td>
+              <td>Description</td>
+            </tr>
+            <tr>
+              <td>num</td>
+              <td>num</td>
+              <td>A random number between A and B.</td>
+            </tr>
+            <tr>
+              <td>vector</td>
+              <td>vector</td>
+              <td>A random vector on a line between A and B.</td>
+            </tr>
+            <tr>
+              <td>box</td>
+              <td>vector</td>
+              <td>A random vector within a box whose corners are at A and B.</td>
+            </tr>
+            <tr>
+              <td>color</td>
+              <td>color (string) or color matrix</td>
+              <td>Result type depends on whether A or B are matrices or not. The result is interpolated between A and B; components are not randomized separately.</td>
+            </tr>
+            <tr>
+              <td>circle</td>
+              <td>vector</td>
+              <td>A random XY-only vector in a ring between radius A and B, centered at 0,0.</td>
+            </tr>
+            <tr>
+              <td>sphere</td>
+              <td>vector</td>
+              <td>A random vector in a spherical shell between radius A and B, centered at 0,0,0.</td>
+            </tr>
+            <tr>
+              <td>square</td>
+              <td>vector</td>
+              <td>A random XY-only vector between squares of sizes A and B. (The length of the square is between A*2 and B*2, centered at 0,0.)</td>
+            </tr>
+            <tr>
+              <td>cube</td>
+              <td>vector</td>
+              <td>A random vector between cubes of sizes A and B. (The length of the cube is between A*2 and B*2, centered at 0,0,0.)</td>
+            </tr>
+          </tbody>
+        </table>
+      </Section>
+    </Collapsible>); };
+
+
 
 export const Particool = (props, context) => {
   const { act, data } = useBackend(context);
@@ -326,6 +435,7 @@ export const Particool = (props, context) => {
             icon="minus"
             content="Remove Particle"
             onClick={() => act("remove_particle")} />)} >
+          <GeneratorHelp />
           {!hasParticles ? (
             <Box>
               No particle

@@ -54,24 +54,26 @@ SUBSYSTEM_DEF(sunlight)
 	var/step_finish
 	var/current_color
 
+	var/particles/weatherParticleEffect
+	var/obj/weatherEffect
+
 	var/list/mutable_appearance/sunlight_overlays
 	var/list/atom/movable/screen/fullscreen/weather/weather_planes_need_vis = list()
 	var/sunlight_color = LIGHTING_BASE_MATRIX
 	var/list/cornerColour = list()
-	var/obj/weatherEffect
 	var/currentTime
 	var/list/datum/time_of_day/time_cycle_steps = list(new /datum/time_of_day/morning(), new /datum/time_of_day/day(), \
 														new /datum/time_of_day/evening(), new /datum/time_of_day/night())
 
 /datum/controller/subsystem/sunlight/stat_entry(msg)
-	msg = "W:[GLOB.SUNLIGHT_QUEUE_WORK.len]|C:[GLOB.SUNLIGHT_QUEUE_CORNER.len]|U:[GLOB.SUNLIGHT_QUEUE_UPDATE.len]"
+	msg = "W:[GLOB.SUNLIGHT_QUEUE_WORK.len]|U:[GLOB.SUNLIGHT_QUEUE_UPDATE.len]|C:[GLOB.SUNLIGHT_QUEUE_CORNER.len]"
 	return ..()
 
 /datum/controller/subsystem/sunlight/proc/fullPlonk()
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
 			var/area/TArea = T.loc
-			if (TArea.static_lighting == FALSE)
+			if (TArea.static_lighting)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
 /datum/controller/subsystem/sunlight/Initialize(timeofday)
@@ -90,7 +92,7 @@ SUBSYSTEM_DEF(sunlight)
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
 			var/area/TArea = T.loc
-			if (TArea.static_lighting == FALSE)
+			if (TArea.static_lighting)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
 
@@ -110,21 +112,63 @@ SUBSYSTEM_DEF(sunlight)
 	if(next_step > time_cycle_steps.len)
 		next_step = 1
 	next_step_datum = time_cycle_steps[next_step]
-/particles/rain
-	width = 1000	 // 500 x 500 image to cover a moderately sized map
-	height = 1000
-	count = 2500	// 2500 particles
-	spawning = 12	// 12 new particles per 0.1s
-	bound1 = list(-1000, -300, -1000)   // end particles at Y=-300
-	lifespan = 600  // live for 60s max
-	fade = 50	   // fade out over the last 5s if still on screen
-	// spawn within a certain x,y,z space
-	position = generator("box", list(-700, 600,0), list(700,700,100))
-	// control how the snow falls
-	gravity = list(0.3, -1, -1)
-	friction = 0.3  // shed 30% of velocity and drift every 0.1s
-	icon 			  = 'icons/effects/weather_effects.dmi'
-	icon_state 		  = "particle_drop"
+
+
+
+/particles/weather
+	var wind = 0
+	var maxCount = 0
+
+//Animate count and x val in gravity
+/particles/weather/proc/randomSeverity()
+
+	//Get new severity - % of maximums
+	var severity = rand(1,100) / 100
+
+	var newWind = wind * severity * pick(-1,1) //Wind can go left OR right!
+	var newCount = maxCount * severity
+
+
+	var/newGravity = gravity
+	if(length(newGravity))
+		newGravity[1] = newWind
+	else
+		newGravity = list(newWind)
+
+	//The higher the severity, the faster the change - elastic easing for flappy wind
+	animate(src, gravity=newGravity, count=newCount, time=1/severity * 10, easing=ELASTIC_EASING)
+
+
+//I am a developer not artiste
+/particles/weather/rain
+	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
+	height                 = 800
+	count                  = 2500 // 2500 particles
+	spawning               = 100 // 20 new particles per 0.1s
+	//Set bounds to rough screensize + some sideways movement for "wind"
+	bound1                 = list(-1000,-256,-100)
+	bound2                 = list(1000,256,100)
+	lifespan               = 100  // live for 50s max
+	fade                   = 0    // no fade
+	//General appearance
+	icon                   = 'icons/effects/weather_effects.dmi'
+	icon_state             = "particle_drop"
+	color                  = "#ccffff"
+	// There is an issue with BOX where it spawns like a vector, so update this when Lum fixes it - Otherwise spawn at the top of the screen with some overlap on each side to account for wind
+	position               = generator("vector", list(-1000,256,50), list(1000,256,50))
+	//Some slight randomness in size to make some drops bigger
+	scale                  = generator("vector", list(1,0.5), list(1.5,3))
+
+	// control how the rain falls
+	gravity                = list(2,-10)
+	drift                  = generator("vector", list(-1,-1), list(1,1)) // Some random movement for variation
+	friction               = 0.3  // shed 30% of velocity and drift every 0.1s
+
+	//Weather effects, max values
+	maxCount              = 100
+	wind                  = 4
+
+
 
 /datum/controller/subsystem/sunlight/proc/getweatherEffect()
 	if(!weatherEffect)
@@ -132,6 +176,11 @@ SUBSYSTEM_DEF(sunlight)
 		weatherEffect.particles = new /particles/rain
 		weatherEffect.filters += filter(type="alpha", render_source=WEATHER_RENDER_TARGET)
 	return weatherEffect
+
+/datum/controller/subsystem/sunlight/proc/getWeatherParticleEffect()
+	if(!weatherParticleEffect)
+		weatherParticleEffect = new /particles/rain
+	return weatherParticleEffect
 
 
 /* set sunlight colour + add weather effect to clients */
@@ -250,19 +299,19 @@ SUBSYSTEM_DEF(sunlight)
 	//Update weather vis_content
 
 //Sets (or removes) the sunlight overlay
-/datum/controller/subsystem/sunlight/proc/SetSunlightOverlay(atom/movable/outdoor_effect/SO)
+/datum/controller/subsystem/sunlight/proc/SetSunlightOverlay(atom/movable/outdoor_effect/OE)
 
 	var/mutable_appearance/MA
-	if (SO.state != SUNLIGHT_INDOOR)
+	if (OE.state != SUNLIGHT_INDOOR)
 		MA = GetOverlay(1,1,1,1) /* fully lit */
 	else //Indoor - do proper corner checks
 		/* check if we are globally affected or not */
 		var/static/datum/lighting_corner/dummy/dummy_lighting_corner = new
 
-		var/datum/lighting_corner/cr = SO.source_turf.lighting_corner_SW || dummy_lighting_corner
-		var/datum/lighting_corner/cg = SO.source_turf.lighting_corner_SE || dummy_lighting_corner
-		var/datum/lighting_corner/cb = SO.source_turf.lighting_corner_NW || dummy_lighting_corner
-		var/datum/lighting_corner/ca = SO.source_turf.lighting_corner_NE || dummy_lighting_corner
+		var/datum/lighting_corner/cr = OE.source_turf.lighting_corner_SW || dummy_lighting_corner
+		var/datum/lighting_corner/cg = OE.source_turf.lighting_corner_SE || dummy_lighting_corner
+		var/datum/lighting_corner/cb = OE.source_turf.lighting_corner_NW || dummy_lighting_corner
+		var/datum/lighting_corner/ca = OE.source_turf.lighting_corner_NE || dummy_lighting_corner
 
 		var/fr = cr.sunFalloff
 		var/fg = cg.sunFalloff
@@ -271,11 +320,10 @@ SUBSYSTEM_DEF(sunlight)
 
 		MA = GetOverlay(fr, fg, fb, fa)
 
-	SO.sunlight_overlay = MA
+	OE.sunlight_overlay = MA
 	//get weather overlay if we aren't indoors
-	SO.overlays = SO.state == SUNLIGHT_INDOOR ? list(SO.sunlight_overlay) : list(SO.sunlight_overlay, getWeatherOverlay())
-	// SO.vis_contents = SO.state == SUNLIGHT_INDOOR ? list() : list(getweatherEffect())
-	SO.luminosity = MA.luminosity
+	OE.overlays = OE.state == SUNLIGHT_INDOOR ? list(OE.sunlight_overlay) : list(OE.sunlight_overlay, getWeatherOverlay())
+	OE.luminosity = MA.luminosity
 
 //Retrieve an overlay from the list - create if necessary
 /datum/controller/subsystem/sunlight/proc/GetOverlay(fr, fg, fb, fa)
@@ -290,7 +338,7 @@ SUBSYSTEM_DEF(sunlight)
 /datum/controller/subsystem/sunlight/proc/getWeatherOverlay()
 	var/mutable_appearance/MA = new /mutable_appearance()
 	MA.blend_mode   	  = BLEND_OVERLAY
-	MA.icon 			  = 'icons/hud/screen_gen.dmi'
+	MA.icon 			  = 'icons/effects/weather_overlay.dmi'
 	MA.icon_state 		  = "flash"
 	MA.plane			  = WEATHER_PLANE /* we put this on a lower level than lighting so we dont multiply anything */
 	MA.invisibility 	  = INVISIBILITY_LIGHTING

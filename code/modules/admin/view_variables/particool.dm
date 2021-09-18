@@ -39,6 +39,25 @@
 
 */
 
+//some helpyers
+/datum/particle_editor/proc/ListToMatrix(list/L)
+
+	//Normal Matrixes allow 6
+	switch(length(L))
+		if(6)
+			return matrix(L[1],L[2],L[3],L[4],L[5],L[6])
+
+/datum/particle_editor/proc/stringToList(str, toNum = FALSE)
+	. = splittext(str,regex(@"(?<!\\),"))
+	if(toNum)
+		for(var/i = 1; i <= length(.); ++i)
+			.[i] = text2num(.[i])
+
+
+
+/datum/particle_editor/proc/stringToMatrix(str)
+	return ListToMatrix(stringToList(str))
+
 
 
 
@@ -65,15 +84,11 @@
 /datum/particle_editor/ui_data()
 	var/list/data = list()
 	data["target_name"] = target.name
-	data["target_particle"] = target.particles ? target.particles.vars : null
+	data["target_particle"] = getParticleVars()
 	return data
 
-
-/datum/particle_editor/proc/digest_particle_json(list/L)
-	var/particles/P = new /particles
-	for(var/elem in L)
-		P.vars[L[elem]["name"]] = translate_value(elem)
-	return P
+/datum/particle_editor/proc/getParticleVars()
+	. = target.particles ? target.particles.vars : null
 
 
 //expects an assoc list of name, type, value - type must be in this list
@@ -85,38 +100,52 @@
 		if("float") return L["value"]
 		if("int") return L["value"]
 		if("color") return L["value"]
-		if("list") return L["value"]
+		if("list") return stringToList(L["value"])
+		if("numList") return stringToList(L["value"],TRUE)
 		if("matrix") return ListToMatrix(L["value"])
 		if("generator") return generateGenerator(L["value"]) // This value should be a new list, if it isn't then we will explode
 
 /datum/particle_editor/proc/generateGenerator(L)
-	debugOutput(L,"GenerateGenerator")
 
-/datum/particle_editor/proc/ListToMatrix(list/L)
+	/*
+	Generator type | Result | Description
+	num            | num    | A random number between A and B.
+	vector         | vector | A random vector on a line between A and B.
+	box            | vector | A random vector within a box whose corners are at A and B.
+	color          | color  | (string) or color matrix	Result type depends on whether A or B are matrices or not. The result is interpolated between A and B; components are not randomized separately.
+	circle         | vector | A random XY-only vector in a ring between radius A and B, centered at 0,0.
+	sphere         | vector | A random vector in a spherical shell between radius A and B, centered at 0,0,0.
+	square         | vector | A random XY-only vector between squares of sizes A and B. (The length of the square is between A*2 and B*2, centered at 0,0.)
+	cube           | vector | A random vector between cubes of sizes A and B. (The length of the cube is between A*2 and B*2, centered at 0,0,0.)
+	*/
 
-	//Normal Matrixes allow 6
-	switch(length(L))
-		if(6)
-			return matrix(L[0],L[1],L[2],L[3],L[4],L[5])
+	// I write code like this because I hate myself
+	var/a = length(stringToList(L["a"],TRUE)) > 1 ? stringToList(L["a"],TRUE) : text2num(L["a"])
+	var/b = length(stringToList(L["b"],TRUE)) > 1 ? stringToList(L["b"],TRUE) : text2num(L["b"])
 
-/datum/particle_editor/proc/stringToList(Str)
-	return splittext(Str,regex(@"(?<!\\),"))
+	switch(L["genType"])
+		if("num")    return generator(L["genType"], a, b)
+		if("vector") return generator(L["genType"], a, b)
+		if("box")    return generator(L["genType"], a, b)
+		if("color") //Color can be string or matrix
+			a = length(a) > 1 ? ListToMatrix(a) : a
+			b = length(a) > 1 ? ListToMatrix(b) : b
+			return generator(L["genType"], a, b)
+		if("circle") return generator(L["genType"], a, b)
+		if("sphere") return generator(L["genType"], a, b)
+		if("square") return generator(L["genType"], a, b)
+		if("cube")   return generator(L["genType"], a, b)
+	return null
 
-
-
-// /datum/particle_editor/proc/generateGenerator(list/L)
 
 /datum/particle_editor/proc/debugOutput(L, nodeName)
 	if(istype(L,/list))
 		for(var/elem in L)
-			if(istype(L[elem],/list))
+			if(istype(elem,/list))
 				world.log << nodeName
-				debugOutput(L[elem], nodeName + ":" + elem)
-			else if(istype(elem,/list))
-				world.log << nodeName
-				debugOutput(elem, nodeName + ":LIST")
+				debugOutput(elem, nodeName + ":LIST" + elem)
 			else
-				world.log << nodeName + ":" + elem + ":" + text("[]",L[elem])
+				world.log << nodeName + ":" + elem + ":" + text("[]",elem)
 	else
 		world.log << L
 
