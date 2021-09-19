@@ -9,7 +9,6 @@
 	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
 	height                 = 800
 	count                  = 2500 // 2500 particles
-	spawning               = 100 // 20 new particles per 0.1s
 	//Set bounds to rough screensize + some sideways movement for "wind"
 	bound1                 = list(-1000,-256,-100)
 	bound2                 = list(1000,256,100)
@@ -30,5 +29,6 @@
 	friction               = 0.3  // shed 30% of velocity and drift every 0.1s
 
 	//Weather effects, max values
-	maxCount              = 100
+	maxSpawning           = 100
+	minSpawning           = 20
 	wind                  = 4

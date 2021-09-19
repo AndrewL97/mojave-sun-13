@@ -60,6 +60,9 @@
 	/// For barometers to know when the next storm will hit
 	var/next_hit_time = 0
 
+/datum/particle_weather/proc/severityMod()
+	return severity / maxSeverity
+
 /**
  * Starts the actual weather and effects from it
  *

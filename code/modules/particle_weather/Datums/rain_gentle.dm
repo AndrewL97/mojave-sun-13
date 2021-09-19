@@ -1,29 +1,21 @@
-/datum/particle_weather/snow_storm
-	name = "snow storm"
-	desc = "Harsh snowstorms roam the topside of this arctic planet, burying any area unfortunate enough to be in its path."
-	probability = 90
+/datum/particle_weather/rain_gentle
+	name = "Rain"
+	desc = "Gentle Rain, la la description."
+	particleEffectType = /particles/weather/rain
 
-	telegraph_message = "<span class='warning'>Drifting particles of snow begin to dust the surrounding area..</span>"
-	telegraph_duration = 300
-	telegraph_overlay = "light_snow"
+	// weather_duration = 1200
+	// weather_duration_lower = 1200
+	// weather_duration_upper = 1500
 
-	weather_message = "<span class='userdanger'><i>Harsh winds pick up as dense snow begins to fall from the sky! Seek shelter!</i></span>"
-	weather_overlay = "snow_storm"
-	weather_duration_lower = 600
-	weather_duration_upper = 1500
+	minSeverity = 1
+	maxSeverity = 50
+	maxSeverityChange = 10
+	severitySteps = 5
+	immunity_type = WEATHER_STORM
+	probability = 1
+	target_trait = PARTICLEWEATHER_RAIN
 
-	end_duration = 100
-	end_message = "<span class='boldannounce'>The snowfall dies down, it should be safe to go outside again.</span>"
-
-	area_type = /area
-	protect_indoors = TRUE
-	target_trait = ZTRAIT_SNOWSTORM
-
-	immunity_type = WEATHER_SNOW
-
-	barometer_predictable = TRUE
-
-
-/datum/particle_weather/snow_storm/weather_act(mob/living/L)
-	L.adjust_bodytemperature(-rand(5,15))
+//Makes you a little chilly
+/datum/particle_weather/rain_gentle/weather_act(mob/living/L)
+	L.adjust_bodytemperature(-rand(1,3))
 
