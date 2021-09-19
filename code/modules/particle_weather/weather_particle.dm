@@ -13,7 +13,7 @@
 	//Set bounds to rough screensize + some sideways movement for "wind"
 	bound1                 = list(-1000,-256,-100)
 	bound2                 = list(1000,256,100)
-	lifespan               = 100  // live for 50s max
+	lifespan               = 600  // live for 60s max
 	fade                   = 0    // no fade
 	//General appearance
 	icon                   = 'icons/effects/weather_effects.dmi'
@@ -35,4 +35,6 @@
 		newGravity = list(newWind)
 
 	//The higher the severity, the faster the change - elastic easing for flappy wind
-	animate(src, gravity=newGravity, spawning=newSpawning, time=1/severity * 10, easing=ELASTIC_EASING)
+	gravity = newGravity
+	spawning = newSpawning
+	// animate(src, gravity=newGravity, spawning=newSpawning, time=1/severity * 10, easing=ELASTIC_EASING)

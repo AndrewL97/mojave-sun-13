@@ -10,10 +10,10 @@
 	minSeverity = 1
 	maxSeverity = 100
 	maxSeverityChange = 0
-	severitySteps = 20
+	severitySteps = 50
 	immunity_type = WEATHER_STORM
 	probability = 1
-	target_trait = PARTICLEWEATHER_RAIN
+	target_trait = PARTICLEWEATHER_RADS
 
 //STOLEN
 /datum/particle_weather/radiation_storm/weather_act(mob/living/L)

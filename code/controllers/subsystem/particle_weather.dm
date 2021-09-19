@@ -9,8 +9,8 @@ SUBSYSTEM_DEF(ParticleWeather)
 	flags = SS_BACKGROUND
 	wait = 10
 	runlevels = RUNLEVEL_GAME
-	var/list/processing = list()
 	var/list/elligble_weather = list()
+	var/datum/particle_weather/runningWeather
 	// var/list/next_hit = list() //Used by barometers to know when the next storm is coming
 
 	var/particles/weather/particleEffect
@@ -18,20 +18,17 @@ SUBSYSTEM_DEF(ParticleWeather)
 
 /datum/controller/subsystem/ParticleWeather/fire()
 	// process active weather
-	for(var/V in processing)
-		var/datum/particle_weather/our_event = V
-		for(var/mob/act_on as anything in GLOB.mob_living_list)
-			if(our_event.can_weather_act(act_on))
-				our_event.weather_act(act_on)
+	if(runningWeather)
+		if(runningWeather.running)
+			for(var/mob/act_on as anything in GLOB.mob_living_list)
+				if(runningWeather.can_weather_act(act_on))
+					runningWeather.weather_act(act_on)
+		return // only 1 weather at a time
 
-	// start random weather on relevant levels
-	var/possible_weather = elligble_weather
+	// start random weather
 	var/datum/particle_weather/our_event = pickweight(elligble_weather) //possible_weather
 	if(our_event)
 		run_weather(our_event)
-		elligble_weather -= our_event
-		var/randTime = rand(3000, 6000)
-		next_hit = addtimer(CALLBACK(src, .proc/make_eligible, possible_weather), randTime + initial(our_event.weather_duration_upper), TIMER_UNIQUE|TIMER_STOPPABLE) //Around 5-10 minutes between weathers
 
 
 //This has been mangled - currently only supports 1 weather effect serverwide so I can finish this
@@ -47,7 +44,12 @@ SUBSYSTEM_DEF(ParticleWeather)
 			elligble_weather[W] = probability
 	return ..()
 
-/datum/controller/subsystem/ParticleWeather/proc/run_weather(datum/particle_weather/weather_datum_type)
+/datum/controller/subsystem/ParticleWeather/proc/run_weather(datum/particle_weather/weather_datum_type, force = 0)
+	if(runningWeather)
+		if(force)
+			runningWeather.end()
+		else
+			return
 	if (istext(weather_datum_type))
 		for (var/V in subtypesof(/datum/particle_weather))
 			var/datum/particle_weather/W = V
@@ -57,10 +59,14 @@ SUBSYSTEM_DEF(ParticleWeather)
 	if (!ispath(weather_datum_type, /datum/particle_weather))
 		CRASH("run_weather called with invalid weather_datum_type: [weather_datum_type || "null"]")
 
-	var/datum/particle_weather/W = new weather_datum_type()
-	W.start()
-	if(W.particleEffectType)
-		SetparticleEffect(new W.particleEffectType);
+	runningWeather = new weather_datum_type()
+
+	if(force)
+		runningWeather.start()
+	else
+		var/randTime = rand(0, 6000) + initial(runningWeather.weather_duration_upper)
+		addtimer(CALLBACK(runningWeather, /datum/particle_weather/proc/start), randTime, TIMER_UNIQUE|TIMER_STOPPABLE) //Around 0-10 minutes between weathers
+
 
 /datum/controller/subsystem/ParticleWeather/proc/make_eligible(possible_weather)
 	elligble_weather = possible_weather

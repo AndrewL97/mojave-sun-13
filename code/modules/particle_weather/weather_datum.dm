@@ -24,11 +24,12 @@
 	var/particles/weather/particleEffectType = /particles/weather/rain
 
 	/// In deciseconds, how long the weather lasts once it begins
-	var/weather_duration = 1200
+	var/weather_duration = 3000
 	/// See above - this is the lowest possible duration
-	var/weather_duration_lower = 1200
+	var/weather_duration_lower = 600
 	/// See above - this is the highest possible duration
-	var/weather_duration_upper = 1500
+	var/weather_duration_upper = 3000
+
 	// Keep this between 1 and 100
 	// Gentle rain shouldn't use the max rain wind speed, nor should a storm be a gentle breeze
 	var/minSeverity = 1
@@ -51,9 +52,10 @@
 	//Times we have stepped severity
 	var/severityStepsTaken = 0
 
+	var/running = FALSE
 
 	//Current severity - used for scaling effects, particle appearance, etc.
-	var/severity
+	var/severity = 0
 
 	/// Whether a barometer can predict when the weather will happen
 	var/barometer_predictable = FALSE
@@ -71,14 +73,23 @@
  *
  */
 /datum/particle_weather/proc/start()
+	if(running)
+		return //some cheeky git has started you early
+	weather_duration = rand(weather_duration_lower, weather_duration_upper)
+	running = TRUE
 	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_START(type))
 	addtimer(CALLBACK(src, .proc/wind_down), weather_duration)
 
+	if(particleEffectType)
+		SSParticleWeather.SetparticleEffect(new particleEffectType);
+
 	//Always step severity to start
-	addtimer(CALLBACK(src, .proc/ChangeSeverity), weather_duration / severitySteps)
+	ChangeSeverity()
 
 
 /datum/particle_weather/proc/ChangeSeverity()
+	if(!running)
+		return
 	severityStepsTaken++
 
 	if(maxSeverityChange == 0)
@@ -113,12 +124,14 @@
  *
  */
 /datum/particle_weather/proc/wind_down()
-
 	severity = 0
 	if(SSParticleWeather.particleEffect)
 		SSParticleWeather.particleEffect.animateSeverity(severity)
+
+		//Wait for the last particle to fade, then qdel yourself
+		addtimer(CALLBACK(src, .proc/end), SSParticleWeather.particleEffect.lifespan + SSParticleWeather.particleEffect.fade)
+
 	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_END(type))
-	STOP_PROCESSING(SSParticleWeather, src)
 
 
 /**
@@ -129,6 +142,10 @@
  *
  */
 /datum/particle_weather/proc/end()
+	running = FALSE
+	SSParticleWeather.runningWeather = null
+	qdel(src)
+
 
 /**
  * Returns TRUE if the living mob can be affected by the weather

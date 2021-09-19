@@ -8,8 +8,8 @@
 	// weather_duration_upper = 1500
 
 	minSeverity = 1
-	maxSeverity = 50
-	maxSeverityChange = 10
+	maxSeverity = 10
+	maxSeverityChange = 5
 	severitySteps = 5
 	immunity_type = WEATHER_STORM
 	probability = 1

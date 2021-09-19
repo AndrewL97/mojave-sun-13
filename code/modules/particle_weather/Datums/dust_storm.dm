@@ -10,7 +10,7 @@
 	minSeverity = 1
 	maxSeverity = 50
 	maxSeverityChange = 10
-	severitySteps = 5
+	severitySteps = 20
 	immunity_type = WEATHER_STORM
 	probability = 1
 	target_trait = PARTICLEWEATHER_DUST

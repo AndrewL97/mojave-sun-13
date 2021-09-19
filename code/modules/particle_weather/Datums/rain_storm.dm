@@ -10,7 +10,7 @@
 	minSeverity = 4
 	maxSeverity = 100
 	maxSeverityChange = 50
-	severitySteps = 10
+	severitySteps = 50
 	immunity_type = WEATHER_STORM
 	probability = 1
 	target_trait = PARTICLEWEATHER_RAIN

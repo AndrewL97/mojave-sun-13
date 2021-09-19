@@ -2,27 +2,27 @@
 /datum/time_of_day
 	var/name = ""
 	var/color = ""
-	var/duration = 50
+	var/duration = 300
 
 /datum/time_of_day/day
 	name = "Day"
 	color = "#FFFFFF"
-	duration = 50
+	duration = 9000
 
 /datum/time_of_day/morning
 	name = "Morning"
 	color = "#808599"
-	duration = 50
+	duration = 4500
 
 /datum/time_of_day/evening
 	name = "Evening"
 	color = "#FFA891"
-	duration = 50
+	duration = 4500
 
 /datum/time_of_day/night
 	name = "Night"
 	color = "#050d29"
-	duration = 50
+	duration = 9000
 
 #define STEP_MORNING 0
 #define STEP_DAY 1
@@ -96,6 +96,8 @@ SUBSYSTEM_DEF(sunlight)
 /datum/controller/subsystem/sunlight/proc/check_cycle()
 	if(world.time > step_finish)
 		set_time_of_day(current_step + 1)
+		return TRUE
+	return FALSE
 
 /datum/controller/subsystem/sunlight/proc/set_time_of_day(step)
 	if(step > time_cycle_steps.len)
@@ -200,19 +202,15 @@ SUBSYSTEM_DEF(sunlight)
 		i = 0
 
 
-	check_cycle()
-	nextBracket()
+	if(check_cycle())
+		nextBracket()
 
 
 
 /datum/controller/subsystem/sunlight/proc/nextBracket()
-	// current_color = current_step_datum.color //todo: remove this when no longer defuckulating
-	var/blend_amount = (world.time - step_started) / current_step_datum.duration
-	current_color = BlendRGB(current_step_datum.color, next_step_datum.color, blend_amount)
-
 	/* for each thing, update the colour */
 	for (var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/SP in sunlighting_planes)
-		SP.color = current_color
+		animate(SP,color=next_step_datum.color, time = current_step_datum.duration)
 
 
 
