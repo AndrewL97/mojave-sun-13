@@ -7,10 +7,10 @@
 	// weather_duration_lower = 1200
 	// weather_duration_upper = 1500
 
-	minSeverity = 1
-	maxSeverity = 50
-	maxSeverityChange = 10
-	severitySteps = 5
+	minSeverity = 4
+	maxSeverity = 100
+	maxSeverityChange = 50
+	severitySteps = 10
 	immunity_type = WEATHER_STORM
 	probability = 1
 	target_trait = PARTICLEWEATHER_RAIN

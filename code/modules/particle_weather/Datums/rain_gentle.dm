@@ -13,7 +13,7 @@
 	severitySteps = 5
 	immunity_type = WEATHER_STORM
 	probability = 1
-	target_trait = PARTICLEWEATHER_RAIN
+	target_trait = PARTICLEWEATHER_RADS
 
 //Makes you a little chilly
 /datum/particle_weather/rain_gentle/weather_act(mob/living/L)

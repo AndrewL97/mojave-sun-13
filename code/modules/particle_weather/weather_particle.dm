@@ -7,6 +7,17 @@
 
 
 	spawning = 0
+	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
+	height                 = 800
+	count                  = 2500 // 2500 particles
+	//Set bounds to rough screensize + some sideways movement for "wind"
+	bound1                 = list(-1000,-256,-100)
+	bound2                 = list(1000,256,100)
+	lifespan               = 100  // live for 50s max
+	fade                   = 0    // no fade
+	//General appearance
+	icon                   = 'icons/effects/weather_effects.dmi'
+	icon_state             = "particle_drop"
 
 //Animate particle effect to a severity - a value between 0 and 100
 /particles/weather/proc/animateSeverity(severity = 50, maxSeverity = 0, minSeverity = 100)
