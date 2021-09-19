@@ -94,8 +94,8 @@
 			if(tempSound)
 				SEND_SOUND(player, sound(tempSound))
 
-	if(SSWeather.weatherParticleEffect)
-		SSWeather.weatherParticleEffect.animateSeverity(severity)
+	if(SSParticleWeather.particleEffect)
+		SSParticleWeather.particleEffect.animateSeverity(severity)
 
 	//Tick on
 	if(severityStepsTaken < severitySteps)
@@ -112,10 +112,10 @@
 /datum/weather/proc/wind_down()
 
 	severity = 0
-	if(SSWeather.weatherParticleEffect)
-		SSWeather.weatherParticleEffect.animateSeverity(severity)
+	if(SSParticleWeather.particleEffect)
+		SSParticleWeather.particleEffect.animateSeverity(severity)
 	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_END(type))
-	STOP_PROCESSING(SSweather, src)
+	STOP_PROCESSING(SSParticleWeather, src)
 
 
 /**

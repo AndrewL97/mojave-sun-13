@@ -118,11 +118,11 @@ SUBSYSTEM_DEF(sunlight)
 	if(!init_tick_checks)
 		MC_SPLIT_TICK
 	var/i = 0
-	if(SSweather.initialized)
+	if(SSParticleWeather.initialized)
 		for (i in 1 to weather_planes_need_vis.len)
 			var/atom/movable/screen/fullscreen/weather/W = weather_planes_need_vis[i]
 			if(W)
-				W.vis_contents = list(SSweather.getweatherEffect())
+				W.vis_contents = list(SSParticleWeather.getweatherEffect())
 			if(init_tick_checks)
 				CHECK_TICK
 			else if (MC_TICK_CHECK)
