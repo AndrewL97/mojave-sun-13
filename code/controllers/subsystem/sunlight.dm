@@ -54,9 +54,6 @@ SUBSYSTEM_DEF(sunlight)
 	var/step_finish
 	var/current_color
 
-	var/particles/weatherParticleEffect
-	var/obj/weatherEffect
-
 	var/list/mutable_appearance/sunlight_overlays
 	var/list/atom/movable/screen/fullscreen/weather/weather_planes_need_vis = list()
 	var/sunlight_color = LIGHTING_BASE_MATRIX
@@ -113,17 +110,6 @@ SUBSYSTEM_DEF(sunlight)
 		next_step = 1
 	next_step_datum = time_cycle_steps[next_step]
 
-/datum/controller/subsystem/sunlight/proc/getweatherEffect()
-	if(!weatherEffect)
-		weatherEffect = new /obj()
-		weatherEffect.particles = new /particles/weather/rain
-		weatherEffect.filters += filter(type="alpha", render_source=WEATHER_RENDER_TARGET)
-	return weatherEffect
-
-/datum/controller/subsystem/sunlight/proc/getWeatherParticleEffect()
-	if(!weatherParticleEffect)
-		weatherParticleEffect = new /particles/weather/rain
-	return weatherParticleEffect
 
 
 /* set sunlight colour + add weather effect to clients */
@@ -132,20 +118,18 @@ SUBSYSTEM_DEF(sunlight)
 	if(!init_tick_checks)
 		MC_SPLIT_TICK
 	var/i = 0
-
-	for (i in 1 to weather_planes_need_vis.len)
-		var/atom/movable/screen/fullscreen/weather/W = weather_planes_need_vis[i]
-		if(W)
-			if(!W.weatherEffect)
-				W.weatherEffect = getweatherEffect()
-				W.vis_contents = list(W.weatherEffect)
-		if(init_tick_checks)
-			CHECK_TICK
-		else if (MC_TICK_CHECK)
-			break
-	if (i)
-		weather_planes_need_vis.Cut(1, i+1)
-		i = 0
+	if(SSweather.initialized)
+		for (i in 1 to weather_planes_need_vis.len)
+			var/atom/movable/screen/fullscreen/weather/W = weather_planes_need_vis[i]
+			if(W)
+				W.vis_contents = list(SSweather.getweatherEffect())
+			if(init_tick_checks)
+				CHECK_TICK
+			else if (MC_TICK_CHECK)
+				break
+		if (i)
+			weather_planes_need_vis.Cut(1, i+1)
+			i = 0
 
 	for (i in 1 to GLOB.SUNLIGHT_QUEUE_WORK.len)
 		var/turf/T = GLOB.SUNLIGHT_QUEUE_WORK[i]
@@ -235,14 +219,6 @@ SUBSYSTEM_DEF(sunlight)
 
 // Updates overlays and vis_contents for outdoor effects
 /datum/controller/subsystem/sunlight/proc/UpdateAppearance(atom/movable/outdoor_effect/OE)
-
-	//Update sunlight overlay
-	SetSunlightOverlay(OE)
-
-	//Update weather vis_content
-
-//Sets (or removes) the sunlight overlay
-/datum/controller/subsystem/sunlight/proc/SetSunlightOverlay(atom/movable/outdoor_effect/OE)
 
 	var/mutable_appearance/MA
 	if (OE.state != SUNLIGHT_INDOOR)

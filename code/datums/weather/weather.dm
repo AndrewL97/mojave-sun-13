@@ -17,11 +17,8 @@
 	/// description of weather
 	var/desc = "Heavy gusts of wind blanket the area, periodically knocking down anyone caught in the open."
 
-	/// In deciseconds, how long from the beginning of the telegraph until the weather begins
-	var/telegraph_duration = 300
-
 	// Sounds to play at different severities - order from lowest to highest
-	var/weather_sounds = list()
+	var/list/weather_sounds = list()
 
 	//Our particle effect to display - min/max severity effects its wind and count
 	var/particles/weather/particleEffectType = /particles/weather/rain
@@ -34,46 +31,34 @@
 	var/weather_duration_upper = 1500
 	// Keep this between 1 and 100
 	// Gentle rain shouldn't use the max rain wind speed, nor should a storm be a gentle breeze
-	var minSeverity = 1
-	var maxSeverity = 100
+	var/minSeverity = 1
+	var/maxSeverity = 100
 	//We will increase or decrease our severity by a random amount up to this value
 	//If 0, we will pick a random value between min and max
-	var maxSeverityChange = 20
+	var/maxSeverityChange = 20
 	//The number of times we will change our severity over the duration
-	var severitySteps = 5
+	var/severitySteps = 5
 	/// Used by mobs to prevent them from being affected by the weather
 	var/immunity_type = WEATHER_STORM
 	/// Weight amongst other eligible weather. If zero, will never happen randomly.
 	var/probability = 0
 
+	/// The map weather type to target
+	var/target_trait = PARTICLEWEATHER_RAIN
 
 	// ==== Dont modify these ====
 
-
-	//Our current particle effect
-	var/particles/weather/particleEffect
-	/// The list of z-levels that this weather is actively affecting
-	var/impacted_z_levels
 	//Times we have stepped severity
-	var severityStepsTaken = 0
+	var/severityStepsTaken = 0
 
 
 	//Current severity - used for scaling effects, particle appearance, etc.
 	var/severity
 
-
-	/// The z-level trait to affect when run randomly or when not overridden.
-	var/target_trait = ZTRAIT_STATION
-
 	/// Whether a barometer can predict when the weather will happen
 	var/barometer_predictable = FALSE
 	/// For barometers to know when the next storm will hit
 	var/next_hit_time = 0
-
-
-/datum/weather/New(z_levels)
-	..()
-	impacted_z_levels = z_levels
 
 /**
  * Starts the actual weather and effects from it
@@ -83,20 +68,7 @@
  *
  */
 /datum/weather/proc/start()
-	if(stage >= MAIN_STAGE)
-		return
 	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_START(type))
-	update_areas()
-	for(var/z_level in impacted_z_levels)
-		for(var/mob/player as anything in SSmobs.clients_by_zlevel[z_level])
-			var/turf/mob_turf = get_turf(player)
-			if(!mob_turf)
-				continue
-			if(weather_message)
-				to_chat(player, weather_message)
-			if(weather_sound)
-				SEND_SOUND(player, sound(weather_sound))
-
 	addtimer(CALLBACK(src, .proc/wind_down), weather_duration)
 
 	//Always step severity to start
@@ -113,8 +85,17 @@
 		newSeverity = min(max(newSeverity,minSeverity), maxSeverity)
 		severity = newSeverity
 
-	if(particleEffect)
-		particleEffect.animateSeverity(severity)
+	for (var/z_level in SSmapping.levels_by_trait(ZTRAIT_STATION))
+		for(var/mob/player as anything in SSmobs.clients_by_zlevel[z_level])
+			var/turf/mob_turf = get_turf(player)
+			if(!mob_turf)
+				continue
+			var/tempSound = scale_range_pick(100,severity,weather_sounds)
+			if(tempSound)
+				SEND_SOUND(player, sound(tempSound))
+
+	if(SSWeather.weatherParticleEffect)
+		SSWeather.weatherParticleEffect.animateSeverity(severity)
 
 	//Tick on
 	if(severityStepsTaken < severitySteps)
@@ -129,24 +110,12 @@
  *
  */
 /datum/weather/proc/wind_down()
-	if(stage >= WIND_DOWN_STAGE)
-		return
 
-	severity = minSeverity
-
-	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_WINDDOWN(type))
-	stage = WIND_DOWN_STAGE
-	update_areas()
-	for(var/z_level in impacted_z_levels)
-		for(var/mob/player as anything in SSmobs.clients_by_zlevel[z_level])
-			var/turf/mob_turf = get_turf(player)
-			if(!mob_turf)
-				continue
-			if(end_message)
-				to_chat(player, end_message)
-			if(end_sound)
-				SEND_SOUND(player, sound(end_sound))
-	addtimer(CALLBACK(src, .proc/end), end_duration)
+	severity = 0
+	if(SSWeather.weatherParticleEffect)
+		SSWeather.weatherParticleEffect.animateSeverity(severity)
+	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_END(type))
+	STOP_PROCESSING(SSweather, src)
 
 
 /**
@@ -157,10 +126,6 @@
  *
  */
 /datum/weather/proc/end()
-	if(particleEffect)
-		particleEffect.animateSeverity(0)
-	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_END(type))
-	STOP_PROCESSING(SSweather, src)
 
 /**
  * Returns TRUE if the living mob can be affected by the weather
@@ -172,7 +137,7 @@
 	if(!mob_turf)
 		return
 
-	if(!(mob_turf.z in impacted_z_levels))
+	if(!(mob_turf.z in SSmapping.levels_by_trait(ZTRAIT_STATION)))
 		return
 
 	if(istype(mob_to_check.loc, /obj/structure/closet))
@@ -184,7 +149,7 @@
 	if((immunity_type in mob_to_check.weather_immunities) || (WEATHER_ALL in mob_to_check.weather_immunities))
 		return
 
-	if(!(get_area(mob_to_check) in impacted_areas))
+	if(mob_turf.outdoor_effect || mob_turf.outdoor_effect.state == SUNLIGHT_INDOOR)
 		return
 
 	return TRUE

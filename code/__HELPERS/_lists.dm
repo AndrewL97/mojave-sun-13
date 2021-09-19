@@ -578,7 +578,7 @@
 //i.e in a list with length 4, a 25 in the 1-100 range will give you the 2nd item
 //This assumes your ranges start with 1, I am not good at math and can't do linear scaling
 /proc/scale_range_pick(max,value,list/L)
-	index = (value + 1) / (max / length(L))
+	var/index = (value + 1) / (max / length(L))
 	return L[index]
 
 
