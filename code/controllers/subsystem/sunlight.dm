@@ -113,73 +113,16 @@ SUBSYSTEM_DEF(sunlight)
 		next_step = 1
 	next_step_datum = time_cycle_steps[next_step]
 
-
-
-/particles/weather
-	var wind = 0
-	var maxCount = 0
-
-//Animate count and x val in gravity
-/particles/weather/proc/randomSeverity()
-
-	//Get new severity - % of maximums
-	var severity = rand(1,100) / 100
-
-	var newWind = wind * severity * pick(-1,1) //Wind can go left OR right!
-	var newCount = maxCount * severity
-
-
-	var/newGravity = gravity
-	if(length(newGravity))
-		newGravity[1] = newWind
-	else
-		newGravity = list(newWind)
-
-	//The higher the severity, the faster the change - elastic easing for flappy wind
-	animate(src, gravity=newGravity, count=newCount, time=1/severity * 10, easing=ELASTIC_EASING)
-
-
-//I am a developer not artiste
-/particles/weather/rain
-	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
-	height                 = 800
-	count                  = 2500 // 2500 particles
-	spawning               = 100 // 20 new particles per 0.1s
-	//Set bounds to rough screensize + some sideways movement for "wind"
-	bound1                 = list(-1000,-256,-100)
-	bound2                 = list(1000,256,100)
-	lifespan               = 100  // live for 50s max
-	fade                   = 0    // no fade
-	//General appearance
-	icon                   = 'icons/effects/weather_effects.dmi'
-	icon_state             = "particle_drop"
-	color                  = "#ccffff"
-	// There is an issue with BOX where it spawns like a vector, so update this when Lum fixes it - Otherwise spawn at the top of the screen with some overlap on each side to account for wind
-	position               = generator("vector", list(-1000,256,50), list(1000,256,50))
-	//Some slight randomness in size to make some drops bigger
-	scale                  = generator("vector", list(1,0.5), list(1.5,3))
-
-	// control how the rain falls
-	gravity                = list(2,-10)
-	drift                  = generator("vector", list(-1,-1), list(1,1)) // Some random movement for variation
-	friction               = 0.3  // shed 30% of velocity and drift every 0.1s
-
-	//Weather effects, max values
-	maxCount              = 100
-	wind                  = 4
-
-
-
 /datum/controller/subsystem/sunlight/proc/getweatherEffect()
 	if(!weatherEffect)
 		weatherEffect = new /obj()
-		weatherEffect.particles = new /particles/rain
+		weatherEffect.particles = new /particles/weather/rain
 		weatherEffect.filters += filter(type="alpha", render_source=WEATHER_RENDER_TARGET)
 	return weatherEffect
 
 /datum/controller/subsystem/sunlight/proc/getWeatherParticleEffect()
 	if(!weatherParticleEffect)
-		weatherParticleEffect = new /particles/rain
+		weatherParticleEffect = new /particles/weather/rain
 	return weatherParticleEffect
 
 
@@ -339,7 +282,9 @@ SUBSYSTEM_DEF(sunlight)
 	var/mutable_appearance/MA = new /mutable_appearance()
 	MA.blend_mode   	  = BLEND_OVERLAY
 	MA.icon 			  = 'icons/effects/weather_overlay.dmi'
-	MA.icon_state 		  = "flash"
+	MA.icon_state 		  = "weather_overlay"
+	MA.pixel_x            = -16 //Weather_overlay is 64x64 to overlap walls, etc. so center it
+	MA.pixel_y            = -16
 	MA.plane			  = WEATHER_PLANE /* we put this on a lower level than lighting so we dont multiply anything */
 	MA.invisibility 	  = INVISIBILITY_LIGHTING
 	return MA

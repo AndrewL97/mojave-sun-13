@@ -12,6 +12,7 @@ SUBSYSTEM_DEF(weather)
 	var/list/processing = list()
 	var/list/eligible_zlevels = list()
 	var/list/next_hit_by_zlevel = list() //Used by barometers to know when the next storm is coming
+	var/datum/weather/ActiveWeather // Our current weather
 
 /datum/controller/subsystem/weather/fire()
 	// process active weather

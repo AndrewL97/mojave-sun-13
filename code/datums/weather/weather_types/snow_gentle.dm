@@ -1,9 +1,9 @@
 /datum/weather/snow_storm
 	name = "snow storm"
-	desc = "This area enjoys the occasional gentle snowfall."
+	desc = "This area is frequently blanketed in freezing blizzards."
 	probability = 90
 
-	telegraph_message = "<span class='warning'>It is snowing! How delightful.</span>"
+	telegraph_message = "<span class='warning'>A white haze is in the distance, a blizzard is approaching</span>"
 	telegraph_duration = 300
 	telegraph_overlay = "light_snow"
 

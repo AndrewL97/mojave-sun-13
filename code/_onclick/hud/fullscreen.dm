@@ -219,7 +219,7 @@
 /atom/movable/screen/fullscreen/weather
 	screen_loc = "CENTER"
 	transform = null
-	plane = WEATHER_PLANE+1
+	plane = WEATHER_PLANE+1 // I don't remember why this works on the sunlight object, but I no longer care
 	show_when_dead = TRUE
 	var/weatherEffect
 
