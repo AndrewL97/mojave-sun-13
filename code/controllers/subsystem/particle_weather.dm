@@ -19,14 +19,14 @@ SUBSYSTEM_DEF(particleWeather)
 /datum/controller/subsystem/particle_weather/fire()
 	// process active weather
 	for(var/V in processing)
-		var/datum/weather/our_event = V
+		var/datum/particle_weather/our_event = V
 		for(var/mob/act_on as anything in GLOB.mob_living_list)
 			if(our_event.can_weather_act(act_on))
 				our_event.weather_act(act_on)
 
 	// start random weather on relevant levels
 	// var/possible_weather = elligble_weather
-	var/datum/weather/our_event = pickweight(elligble_weather) //possible_weather
+	var/datum/particle_weather/our_event = pickweight(elligble_weather) //possible_weather
 	run_weather(our_event)
 	// elligble_weather -= our_event
 	// var/randTime = rand(3000, 6000)
@@ -35,8 +35,8 @@ SUBSYSTEM_DEF(particleWeather)
 
 //This has been mangled - currently only supports 1 weather effect serverwide so I can finish this
 /datum/controller/subsystem/particle_weather/Initialize(start_timeofday)
-	for(var/V in subtypesof(/datum/weather))
-		var/datum/weather/W = V
+	for(var/V in subtypesof(/datum/particle_weather))
+		var/datum/particle_weather/W = V
 		var/probability = initial(W.probability)
 
 		// any weather with a probability set may occur at random
@@ -45,17 +45,17 @@ SUBSYSTEM_DEF(particleWeather)
 			elligble_weather[W] = probability
 	return ..()
 
-/datum/controller/subsystem/particle_weather/proc/run_weather(datum/weather/weather_datum_type)
+/datum/controller/subsystem/particle_weather/proc/run_weather(datum/particle_weather/weather_datum_type)
 	if (istext(weather_datum_type))
-		for (var/V in subtypesof(/datum/weather))
-			var/datum/weather/W = V
+		for (var/V in subtypesof(/datum/particle_weather))
+			var/datum/particle_weather/W = V
 			if (initial(W.name) == weather_datum_type)
 				weather_datum_type = V
 				break
-	if (!ispath(weather_datum_type, /datum/weather))
+	if (!ispath(weather_datum_type, /datum/particle_weather))
 		CRASH("run_weather called with invalid weather_datum_type: [weather_datum_type || "null"]")
 
-	var/datum/weather/W = new weather_datum_type()
+	var/datum/particle_weather/W = new weather_datum_type()
 	W.start()
 	if(W.particleEffectType)
 		SetparticleEffect(new W.particleEffectType);

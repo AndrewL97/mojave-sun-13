@@ -1,5 +1,5 @@
 //Ash storms happen frequently on lavaland. They heavily obscure vision, and cause high fire damage to anyone caught outside.
-/datum/weather/ash_storm
+/datum/particle_weather/ash_storm
 	name = "ash storm"
 	desc = "An intense atmospheric storm lifts ash off of the planet's surface and billows it down across the area, dealing intense fire damage to the unprotected."
 
@@ -28,7 +28,7 @@
 	var/list/weak_sounds = list()
 	var/list/strong_sounds = list()
 
-/datum/weather/ash_storm/telegraph()
+/datum/particle_weather/ash_storm/telegraph()
 	var/list/eligible_areas = list()
 	for (var/z in impacted_z_levels)
 		eligible_areas += SSmapping.areas_in_z["[z]"]
@@ -47,21 +47,21 @@
 	GLOB.ash_storm_sounds += weak_sounds
 	return ..()
 
-/datum/weather/ash_storm/start()
+/datum/particle_weather/ash_storm/start()
 	GLOB.ash_storm_sounds -= weak_sounds
 	GLOB.ash_storm_sounds += strong_sounds
 	return ..()
 
-/datum/weather/ash_storm/wind_down()
+/datum/particle_weather/ash_storm/wind_down()
 	GLOB.ash_storm_sounds -= strong_sounds
 	GLOB.ash_storm_sounds += weak_sounds
 	return ..()
 
-/datum/weather/ash_storm/end()
+/datum/particle_weather/ash_storm/end()
 	GLOB.ash_storm_sounds -= weak_sounds
 	return ..()
 
-/datum/weather/ash_storm/proc/is_ash_immune(atom/L)
+/datum/particle_weather/ash_storm/proc/is_ash_immune(atom/L)
 	while (L && !isturf(L))
 		if(ismecha(L)) //Mechs are immune
 			return TRUE
@@ -82,14 +82,14 @@
 		L = L.loc //Check parent items immunities (recurses up to the turf)
 	return FALSE //RIP you
 
-/datum/weather/ash_storm/weather_act(mob/living/L)
+/datum/particle_weather/ash_storm/weather_act(mob/living/L)
 	if(is_ash_immune(L))
 		return
 	L.adjustFireLoss(4)
 
 
 //Emberfalls are the result of an ash storm passing by close to the playable area of lavaland. They have a 10% chance to trigger in place of an ash storm.
-/datum/weather/ash_storm/emberfall
+/datum/particle_weather/ash_storm/emberfall
 	name = "emberfall"
 	desc = "A passing ash storm blankets the area in harmless embers."
 

@@ -8,7 +8,7 @@
  */
 
 
-/datum/weather
+/datum/particle_weather
 
 	// ==== Modify these ====
 
@@ -67,7 +67,7 @@
  * Begins dealing effects from weather to mobs in the area
  *
  */
-/datum/weather/proc/start()
+/datum/particle_weather/proc/start()
 	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_START(type))
 	addtimer(CALLBACK(src, .proc/wind_down), weather_duration)
 
@@ -75,7 +75,7 @@
 	addtimer(CALLBACK(src, .proc/ChangeSeverity), weather_duration / severitySteps)
 
 
-/datum/weather/proc/ChangeSeverity()
+/datum/particle_weather/proc/ChangeSeverity()
 	severityStepsTaken++
 
 	if(maxSeverityChange == 0)
@@ -109,7 +109,7 @@
  * Sends sounds and messages to mobs to notify them
  *
  */
-/datum/weather/proc/wind_down()
+/datum/particle_weather/proc/wind_down()
 
 	severity = 0
 	if(SSParticleWeather.particleEffect)
@@ -125,13 +125,13 @@
  * Removes weather from processing completely
  *
  */
-/datum/weather/proc/end()
+/datum/particle_weather/proc/end()
 
 /**
  * Returns TRUE if the living mob can be affected by the weather
  *
  */
-/datum/weather/proc/can_weather_act(mob/living/mob_to_check)
+/datum/particle_weather/proc/can_weather_act(mob/living/mob_to_check)
 	var/turf/mob_turf = get_turf(mob_to_check)
 
 	if(!mob_turf)
@@ -158,5 +158,5 @@
  * Affects the mob with whatever the weather does
  *
  */
-/datum/weather/proc/weather_act(mob/living/L)
+/datum/particle_weather/proc/weather_act(mob/living/L)
 	return

@@ -1,4 +1,4 @@
-/datum/weather/snow_storm
+/datum/particle_weather/snow_storm
 	name = "snow storm"
 	desc = "This area enjoys the occasional gentle snowfall."
 	probability = 90
@@ -24,6 +24,6 @@
 	barometer_predictable = TRUE
 
 
-/datum/weather/snow_storm/weather_act(mob/living/L)
+/datum/particle_weather/snow_storm/weather_act(mob/living/L)
 	L.adjust_bodytemperature(-rand(5,15))
 

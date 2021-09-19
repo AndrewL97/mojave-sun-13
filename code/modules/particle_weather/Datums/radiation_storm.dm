@@ -1,5 +1,5 @@
 //Radiation storms occur when the station passes through an irradiated area, and irradiate anyone not standing in protected areas (maintenance, emergency storage, etc.)
-/datum/weather/rad_storm
+/datum/particle_weather/rad_storm
 	name = "radiation storm"
 	desc = "A cloud of intense radiation passes through the area dealing rad damage to those who are unprotected."
 
@@ -23,12 +23,12 @@
 
 	immunity_type = WEATHER_RAD
 
-/datum/weather/rad_storm/telegraph()
+/datum/particle_weather/rad_storm/telegraph()
 	..()
 	status_alarm(TRUE)
 
 
-/datum/weather/rad_storm/weather_act(mob/living/L)
+/datum/particle_weather/rad_storm/weather_act(mob/living/L)
 	var/resist = L.getarmor(null, RAD)
 	if(prob(40))
 		if(ishuman(L))
@@ -45,13 +45,13 @@
 						H.domutcheck()
 		L.rad_act(20)
 
-/datum/weather/rad_storm/end()
+/datum/particle_weather/rad_storm/end()
 	if(..())
 		return
 	priority_announce("The radiation threat has passed. Please return to your workplaces.", "Anomaly Alert")
 	status_alarm(FALSE)
 
-/datum/weather/rad_storm/proc/status_alarm(active) //Makes the status displays show the radiation warning for those who missed the announcement.
+/datum/particle_weather/rad_storm/proc/status_alarm(active) //Makes the status displays show the radiation warning for those who missed the announcement.
 	var/datum/radio_frequency/frequency = SSradio.return_frequency(FREQ_STATUS_DISPLAYS)
 	if(!frequency)
 		return
