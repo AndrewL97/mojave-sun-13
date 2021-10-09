@@ -1,4 +1,5 @@
 /**
+ * Shitty particle weather by Gomble
  * Causes weather to occur on a z level in certain area types
  *
  * The effects of weather occur across an entire z-level. For instance, lavaland has periodic ash storms that scorch most unprotected creatures.
@@ -17,18 +18,23 @@
 	/// description of weather
 	var/desc = "Heavy gusts of wind blanket the area, periodically knocking down anyone caught in the open."
 
+	//messages to send at different severities
+	var/list/weather_messages = list()
+
 	// Sounds to play at different severities - order from lowest to highest
 	var/list/weather_sounds = list()
+
+	//Scale volume with severity - good for if you only have 1 sound
+	var/scale_vol_with_severity = FALSE
 
 	//Our particle effect to display - min/max severity effects its wind and count
 	var/particles/weather/particleEffectType = /particles/weather/rain
 
-	/// In deciseconds, how long the weather lasts once it begins
-	var/weather_duration = 3000
+
 	/// See above - this is the lowest possible duration
-	var/weather_duration_lower = 600
+	var/weather_duration_lower = 1 MINUTES
 	/// See above - this is the highest possible duration
-	var/weather_duration_upper = 3000
+	var/weather_duration_upper = 3 MINUTES
 
 	// Keep this between 1 and 100
 	// Gentle rain shouldn't use the max rain wind speed, nor should a storm be a gentle breeze
@@ -62,8 +68,20 @@
 	/// For barometers to know when the next storm will hit
 	var/next_hit_time = 0
 
+	/// In deciseconds, how long the weather lasts once it begins
+	var/weather_duration = 0
+
+	//assoc list of mob=looping_sound
+	var/list/currentSounds = list()
+
 /datum/particle_weather/proc/severityMod()
 	return severity / maxSeverity
+/*
+* arbitrary effects to run every time the particle_weather SS ticks
+* for storms this might be a random chance for lightning, etc.
+*/
+/datum/particle_weather/proc/tick()
+	return
 
 /**
  * Starts the actual weather and effects from it
@@ -99,17 +117,9 @@
 		newSeverity = min(max(newSeverity,minSeverity), maxSeverity)
 		severity = newSeverity
 
-	for (var/z_level in SSmapping.levels_by_trait(ZTRAIT_STATION))
-		for(var/mob/player as anything in SSmobs.clients_by_zlevel[z_level])
-			var/turf/mob_turf = get_turf(player)
-			if(!mob_turf)
-				continue
-			var/tempSound = scale_range_pick(100,severity,weather_sounds)
-			if(tempSound)
-				SEND_SOUND(player, sound(tempSound))
 
 	if(SSParticleWeather.particleEffect)
-		SSParticleWeather.particleEffect.animateSeverity(severity)
+		SSParticleWeather.particleEffect.animateSeverity(severity, minSeverity, maxSeverity)
 
 	//Tick on
 	if(severityStepsTaken < severitySteps)
@@ -126,7 +136,7 @@
 /datum/particle_weather/proc/wind_down()
 	severity = 0
 	if(SSParticleWeather.particleEffect)
-		SSParticleWeather.particleEffect.animateSeverity(severity)
+		SSParticleWeather.particleEffect.animateSeverity(severity, minSeverity, maxSeverity)
 
 		//Wait for the last particle to fade, then qdel yourself
 		addtimer(CALLBACK(src, .proc/end), SSParticleWeather.particleEffect.lifespan + SSParticleWeather.particleEffect.fade)
@@ -143,15 +153,19 @@
  */
 /datum/particle_weather/proc/end()
 	running = FALSE
-	SSParticleWeather.runningWeather = null
+	//No more sounds, hush bb
+	for(var/mob/act_on as anything in GLOB.mob_living_list)
+		act_on.stop_sound_channel(CHANNEL_WEATHER)
+	for(var/datum/looping_sound/S in currentSounds)
+		qdel(S)
+	qdel(SSParticleWeather.particleEffect)
 	qdel(src)
 
 
 /**
  * Returns TRUE if the living mob can be affected by the weather
- *
  */
-/datum/particle_weather/proc/can_weather_act(mob/living/mob_to_check)
+/datum/particle_weather/proc/can_weather(mob/living/mob_to_check)
 	var/turf/mob_turf = get_turf(mob_to_check)
 
 	if(!mob_turf)
@@ -160,6 +174,13 @@
 	if(!(mob_turf.z in SSmapping.levels_by_trait(ZTRAIT_STATION)))
 		return
 
+	if(mob_turf.outdoor_effect || mob_turf.outdoor_effect.state == SKY_BLOCKED)
+		return
+
+/**
+ * Returns TRUE if the living mob can be affected by the weather
+ */
+/datum/particle_weather/proc/can_weather_effect(mob/living/mob_to_check)
 	if(istype(mob_to_check.loc, /obj/structure/closet))
 		var/obj/structure/closet/current_locker = mob_to_check.loc
 		if(current_locker.weather_protection)
@@ -169,14 +190,52 @@
 	if((immunity_type in mob_to_check.weather_immunities) || (WEATHER_ALL in mob_to_check.weather_immunities))
 		return
 
-	if(mob_turf.outdoor_effect || mob_turf.outdoor_effect.state == SUNLIGHT_INDOOR)
-		return
 
 	return TRUE
 
 /**
- * Affects the mob with whatever the weather does
- *
+ * Try to do weather effects - if we can hear sound, play it
+ * If we are affected by weather (i.e damage), do effect and send severity message
  */
+/datum/particle_weather/proc/try_weather_act(mob/living/L)
+	if(can_weather(L))
+		weather_sound_effect(L)
+		if(can_weather_effect(L))
+			weather_act(L)
+			weather_message(L)
+	else
+		stop_weather_sound_effect(L)
+
+//Overload with weather effects
 /datum/particle_weather/proc/weather_act(mob/living/L)
 	return
+
+//Not using looping_sounds properly. somebody smart should fix this
+/datum/particle_weather/proc/weather_sound_effect(mob/living/L)
+	var/datum/looping_sound/currentSound = currentSounds[L]
+	if(currentSound)
+		//SET VOLUME
+		if(scale_vol_with_severity)
+			currentSound.volume = initial(currentSound.volume) * (severity/100)
+		if(!currentSound.loop_started) //don't restart already playing sounds
+			currentSound.start()
+		return
+	var/tempSound = scale_range_pick(100,severity,weather_sounds)
+	if(tempSound)
+		currentSound = new tempSound(L, FALSE, TRUE)
+		currentSounds[L] = currentSound
+		//SET VOLUME
+		if(scale_vol_with_severity)
+			currentSound.volume = initial(currentSound.volume) * (severity/100)
+		currentSound.start()
+
+/datum/particle_weather/proc/stop_weather_sound_effect(mob/living/L)
+	var/datum/looping_sound/currentSound = currentSounds[L]
+	if(currentSound)
+		currentSound.stop()
+
+
+/datum/particle_weather/proc/weather_message(mob/living/L)
+	var/tempMessage = scale_range_pick(100,severity,weather_messages)
+	if(tempMessage)
+		to_chat(L, tempMessage)

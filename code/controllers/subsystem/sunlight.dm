@@ -2,32 +2,43 @@
 /datum/time_of_day
 	var/name = ""
 	var/color = ""
-	var/duration = 300
+	var/start = 216000 // 6:00 am
 
-/datum/time_of_day/day
-	name = "Day"
-	color = "#FFFFFF"
-	duration = 9000
 
-/datum/time_of_day/morning
-	name = "Morning"
-	color = "#808599"
-	duration = 4500
+// /datum/time_of_day/Midnight_am
+//  name = "Midnight AM"
+//  color = "#050d29"
+//  start = "0" //12:00:00 AM
 
-/datum/time_of_day/evening
-	name = "Evening"
-	color = "#FFA891"
-	duration = 4500
+/datum/time_of_day/Dawn
+ name = "Dawn"
+ color = "#31211b"
+ start = 4 HOURS //4:00:00 AM
 
-/datum/time_of_day/night
-	name = "Night"
-	color = "#050d29"
-	duration = 9000
+/datum/time_of_day/Sunrise
+ name = "Sunrise"
+ color = "#F598AB"
+ start = 5 HOURS  //5:00:00 AM
 
-#define STEP_MORNING 0
-#define STEP_DAY 1
-#define STEP_EVENING 2
-#define STEP_NIGHT 3
+/datum/time_of_day/Daytime
+ name = "Daytime"
+ color = "#FFFFFF"
+ start = 5.5 HOURS //5:30:00 AM
+
+/datum/time_of_day/Sunset
+ name = "Sunset"
+ color = "#ff8a63"
+ start = 19 HOURS //7:00:00 PM
+
+/datum/time_of_day/Dusk
+ name = "Dusk"
+ color = "#221f33"
+ start = 19.5 HOURS //7:30:00 PM
+
+/datum/time_of_day/Midnight
+ name = "Midnight"
+ color = "#000032"
+ start = 20 HOURS //8:00:00 PM
 
 
 GLOBAL_VAR_INIT(GLOBAL_LIGHT_RANGE, 5)
@@ -42,25 +53,27 @@ SUBSYSTEM_DEF(sunlight)
 	flags = SS_TICKER
 	init_order = INIT_ORDER_SUNLIGHT
 
+	var/timeUntilNextTick = 0
 
 	var/list/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/sunlighting_planes = list()
 
 	/* thanks ruskis */
 	var/datum/time_of_day/current_step_datum
 	var/datum/time_of_day/next_step_datum
-	var/current_step
-	var/next_step
-	var/step_started
-	var/step_finish
-	var/current_color
 
 	var/list/mutable_appearance/sunlight_overlays
 	var/list/atom/movable/screen/fullscreen/weather/weather_planes_need_vis = list()
-	var/sunlight_color = LIGHTING_BASE_MATRIX
 	var/list/cornerColour = list()
 	var/currentTime
-	var/list/datum/time_of_day/time_cycle_steps = list(new /datum/time_of_day/morning(), new /datum/time_of_day/day(), \
-														new /datum/time_of_day/evening(), new /datum/time_of_day/night())
+	//Ensure midnight is the liast step
+	var/list/datum/time_of_day/time_cycle_steps = list(new /datum/time_of_day/Dawn(),
+	                                                   new /datum/time_of_day/Sunrise(),
+	                                                   new /datum/time_of_day/Daytime(),
+	                                                   new /datum/time_of_day/Sunset(),
+	                                                   new /datum/time_of_day/Dusk(),
+	                                                   new /datum/time_of_day/Midnight())
+
+
 
 /datum/controller/subsystem/sunlight/stat_entry(msg)
 	msg = "W:[GLOB.SUNLIGHT_QUEUE_WORK.len]|U:[GLOB.SUNLIGHT_QUEUE_UPDATE.len]|C:[GLOB.SUNLIGHT_QUEUE_CORNER.len]"
@@ -75,7 +88,7 @@ SUBSYSTEM_DEF(sunlight)
 
 /datum/controller/subsystem/sunlight/Initialize(timeofday)
 	if(!initialized)
-		set_time_of_day(STEP_DAY)
+		get_time_of_day()
 		InitializeTurfs()
 		initialized = TRUE
 	fire(FALSE, TRUE)
@@ -94,25 +107,29 @@ SUBSYSTEM_DEF(sunlight)
 
 
 /datum/controller/subsystem/sunlight/proc/check_cycle()
-	if(world.time > step_finish)
-		set_time_of_day(current_step + 1)
+	if(station_time() > next_step_datum.start)
+		get_time_of_day()
 		return TRUE
 	return FALSE
 
-/datum/controller/subsystem/sunlight/proc/set_time_of_day(step)
-	if(step > time_cycle_steps.len)
-		step = STEP_DAY
-	step_started = world.time
-	current_step = step
-	current_step_datum = time_cycle_steps[current_step]
-	step_finish = current_step_datum.duration + world.time
+/datum/controller/subsystem/sunlight/proc/get_time_of_day()
 
-	next_step = current_step + 1
-	if(next_step > time_cycle_steps.len)
-		next_step = 1
-	next_step_datum = time_cycle_steps[next_step]
+	//Get the next time step (first time where NOW > START_TIME)
+	//If we don't find one - grab the LAST time step (which should be midnight)
+	var/time = station_time()
+	var/datum/time_of_day/new_step = null
 
+	for(var/i in 1 to length(time_cycle_steps))
+		if(time >= time_cycle_steps[i].start)
+			new_step = time_cycle_steps[i]
+			next_step_datum = i == length(time_cycle_steps) ? time_cycle_steps[1] : time_cycle_steps[i + 1]
 
+	//New time is the last time step in list (midnight) - next time will be the first step
+	if(!new_step)
+		new_step = time_cycle_steps[length(time_cycle_steps)]
+		next_step_datum = time_cycle_steps[1]
+
+	current_step_datum = new_step
 
 /* set sunlight colour + add weather effect to clients */
 /datum/controller/subsystem/sunlight/fire(resumed, init_tick_checks)
@@ -136,7 +153,7 @@ SUBSYSTEM_DEF(sunlight)
 	for (i in 1 to GLOB.SUNLIGHT_QUEUE_WORK.len)
 		var/turf/T = GLOB.SUNLIGHT_QUEUE_WORK[i]
 		if(T)
-			T.GetSunlightState() //TODO: Rename to "GetOutdoorState"
+			T.GetSkyAndWeatherStates() //TODO: Rename to "GetOutdoorState"
 			if(T.outdoor_effect)
 				GLOB.SUNLIGHT_QUEUE_UPDATE += T.outdoor_effect
 
@@ -156,7 +173,7 @@ SUBSYSTEM_DEF(sunlight)
 		var/atom/movable/outdoor_effect/U = GLOB.SUNLIGHT_QUEUE_UPDATE[i]
 		if(U)
 			U.ProcessState()
-			if(U.state != SUNLIGHT_INDOOR)
+			if(U.state != SKY_BLOCKED)
 				UpdateAppearance(U)
 
 		if(init_tick_checks)
@@ -178,14 +195,14 @@ SUBSYSTEM_DEF(sunlight)
 		/* if we haven't initialized but we are affected, create new and check state */
 		if(!U)
 			T.outdoor_effect = new /atom/movable/outdoor_effect(T)
-			T.GetSunlightState()
+			T.GetSkyAndWeatherStates()
 			U = T.outdoor_effect
 
 			/* in case we aren't indoor somehow, wack us into the proc queue, we will be skipped on next indoor check */
-			if(U.state != SUNLIGHT_INDOOR)
+			if(U.state != SKY_BLOCKED)
 				GLOB.SUNLIGHT_QUEUE_UPDATE += T.outdoor_effect
 
-		if(U.state != SUNLIGHT_INDOOR)
+		if(U.state != SKY_BLOCKED)
 			continue
 
 		//This might need to be run more liberally
@@ -201,25 +218,23 @@ SUBSYSTEM_DEF(sunlight)
 		GLOB.SUNLIGHT_QUEUE_CORNER.Cut(1, i+1)
 		i = 0
 
-
 	if(check_cycle())
 		nextBracket()
 
 
 
 /datum/controller/subsystem/sunlight/proc/nextBracket()
-	/* for each thing, update the colour */
+	/* transistion in an hour or time diff, whichever is smaller */
+	var timeDiff = min((1 HOURS / SSticker.station_time_rate_multiplier ),daytimeDiff(current_step_datum.start, next_step_datum.start))
+	timeUntilNextTick = "[timeDiff] - [current_step_datum.start] - [next_step_datum.start]"
 	for (var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/SP in sunlighting_planes)
-		animate(SP,color=next_step_datum.color, time = current_step_datum.duration)
-
-
-
+		animate(SP,color=current_step_datum.color, time = timeDiff)
 
 // Updates overlays and vis_contents for outdoor effects
 /datum/controller/subsystem/sunlight/proc/UpdateAppearance(atom/movable/outdoor_effect/OE)
 
 	var/mutable_appearance/MA
-	if (OE.state != SUNLIGHT_INDOOR)
+	if (OE.state != SKY_BLOCKED)
 		MA = GetOverlay(1,1,1,1) /* fully lit */
 	else //Indoor - do proper corner checks
 		/* check if we are globally affected or not */
@@ -238,8 +253,8 @@ SUBSYSTEM_DEF(sunlight)
 		MA = GetOverlay(fr, fg, fb, fa)
 
 	OE.sunlight_overlay = MA
-	//get weather overlay if we aren't indoors
-	OE.overlays = OE.state == SUNLIGHT_INDOOR ? list(OE.sunlight_overlay) : list(OE.sunlight_overlay, getWeatherOverlay())
+	//Get weather overlay if not weatherproof
+	OE.overlays = OE.weatherproof ? list(OE.sunlight_overlay, getWeatherOverlay()) : list(OE.sunlight_overlay)
 	OE.luminosity = MA.luminosity
 
 //Retrieve an overlay from the list - create if necessary

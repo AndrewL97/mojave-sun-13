@@ -46,7 +46,7 @@
 		totalSunFalloff += L.sunFalloff
 
 	/* if we are outside, full sunlight */
-	if(outdoor_effect && outdoor_effect.state) /* SUNLIGHT_INDOOR is 0 */
+	if(outdoor_effect && outdoor_effect.state) /* SKY_BLOCKED is 0 */
 		totalSunFalloff = 4
 	/* sunlight / 4 corners */
 	totallums += totalSunFalloff / 4

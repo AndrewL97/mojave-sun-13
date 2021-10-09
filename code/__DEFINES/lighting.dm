@@ -94,9 +94,9 @@ GLOBAL_LIST_INIT(em_block_color, EM_BLOCK_COLOR)
 GLOBAL_LIST_INIT(em_mask_matrix, EM_MASK_MATRIX)
 
 //Sunlight states
-#define SUNLIGHT_INDOOR   0
-#define SUNLIGHT_OUTDOOR  1
-#define SUNLIGHT_BORDER   2
+#define SKY_BLOCKED   0
+#define SKY_VISIBLE  1
+#define SKY_VISIBLE_BORDER   2
 
 /// Returns the red part of a #RRGGBB hex sequence as number
 #define GETREDPART(hexa) hex2num(copytext(hexa, 2, 4))

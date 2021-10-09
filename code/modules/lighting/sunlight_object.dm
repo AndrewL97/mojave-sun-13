@@ -9,25 +9,14 @@ Sunlight System
 		Sunlight Objects (this file)
 			- Grayscale version of lighting_object
 			- Has 3 states
-				- SUNLIGHT_INDOOR  (0)
-					- Turfs that are indoors. Has no light themselves but is affected by SUNLIGHT_BORDER
-				- SUNLIGHT_OUTDOOR (1)
-					- Turfs that are outdoors, with no neighbouring SUNLIGHT_INDOOR tiles
+				- SKY_BLOCKED  (0)
+					- Turfs that have an opaque turf above them. Has no light themselves but is affected by SKY_VISIBLE_BORDER
+				- SKY_VISIBLE (1)
+					- Turfs that with no opaque turfs above it (no roof, glass roof, etc), with no neighbouring SKY_BLOCKED tiles
 					  Emits no light, but is fully white to display the overlay colour
-				- SUNLIGHT_BORDER  (2)
-					-Turfs that are outdoors, which neighbour at least one SUNLIGHT_INDOOR tile.
-				     Emits light to indoor tiles, and fully white to display the overlay colour
-
-		Sunlight Overlay
-			- per client screen overlay. This handles the actual sunlight colour.
-
-		Sunlight Subsystem
-			- Handles the sunlight object update queue, and the sunlight overlay colours
-
-
-	todo:
-	Investigate having SUNLIGHT_INDOOR also place themselves on a different layer of the sunlight plane,
-	so that we can have a weather effect overlay without displaying indoors
+				- SKY_VISIBLE_BORDER  (2)
+					- Turfs that with no opaque turfs above it (no roof, glass roof, etc), which neighbour at least one SKY_BLOCKED tile.
+				     Emits light to SKY_BLOCKED tiles, and fully white to display the overlay colour
 
 */
 
@@ -39,8 +28,8 @@ Sunlight System
 	/* misc vars */
 	var/sunlightLuminosity       = 0				//
 	var/mutable_appearance/sunlight_overlay
-	var/state 					 = SUNLIGHT_OUTDOOR	// If we are roofed, unroofed, or an unroofed turf with a roofed neighbur
-	var/turf/roofTurf
+	var/state 					 = SKY_VISIBLE	// If we can see the see the sky, are blocked, or we have a blocked neighbour (SKY_BLOCKED/VISIBLE/VISIBLE_BORDER)
+	var/weatherproof			 = FALSE        // If we have a weather overlay
 	var/turf/source_turf
 	var/list/datum/lighting_corner/affectingCorners
 
@@ -77,9 +66,9 @@ Sunlight System
 
 /atom/movable/outdoor_effect/proc/ProcessState()
 	switch(state)
-		if(SUNLIGHT_INDOOR)
+		if(SKY_BLOCKED)
 			DisableSunlight() /* Do our indoor processing */
-		if(SUNLIGHT_BORDER)
+		if(SKY_VISIBLE_BORDER)
 			CalcSunlightSpread()
 
 #define hardSun 0.5 /* our hyperboloidy modifyer funky times -  */
@@ -157,40 +146,68 @@ Sunlight System
 /turf/var/tmp/atom/movable/outdoor_effect/outdoor_effect /* a turf's sunlight overlay */
 /turf/var/turf/roofType /* our roof turf - may be a path for top z level, or a ref to the turf above*/
 
-/* check ourselves and neighbours to see what sunlight overlay we need */
-/turf/proc/GetSunlightState()
+/* check ourselves and neighbours to see what outdoor effects we need */
+/* turf won't initialize an outdoor_effect if sky_blocked*/
+/turf/proc/GetSkyAndWeatherStates()
 	var/TempState
-	if(!(IS_OPAQUE_TURF(src) || HasRoof() ))
-		TempState = SUNLIGHT_OUTDOOR
+
+	var/roofStat = getCeilingStat()
+	var/tempRoofStat
+	if(roofStat["SKYVISIBLE"])
+		TempState = SKY_VISIBLE
 		for(var/turf/CT in RANGE_TURFS(1, src))
-			if(IS_OPAQUE_TURF(CT)  || CT.HasRoof()) /* if we have a single roofed/indoor neighbour, we are a border */
-				TempState = SUNLIGHT_BORDER
+			tempRoofStat = CT.getCeilingStat()
+			if(!tempRoofStat["SKYVISIBLE"]) /* if we have a single roofed/indoor neighbour, we are a border */
+				TempState = SKY_VISIBLE_BORDER
 				break
 	else /* roofed, so turn off the lights */
-		TempState = SUNLIGHT_INDOOR
+		TempState = SKY_BLOCKED
 
 	/* if border or indoor, initialize. Set sunlight state if valid */
-	if(!outdoor_effect && TempState <> SUNLIGHT_INDOOR)
+	if(!outdoor_effect && TempState <> SKY_BLOCKED || !roofStat["WEATHERPROOF"])
 		outdoor_effect = new /atom/movable/outdoor_effect(src)
 	if(outdoor_effect)
 		outdoor_effect.state = TempState
-	return TempState
+		outdoor_effect.weatherproof = roofStat["WEATHERPROOF"]
 
-/turf/proc/HasRoof()
-	/* if we are a wall or have a ceiling, we are under a roof and considered indoors */
-	if(istype(src, /turf/closed) ||  GetCeilingTurf())
-		return TRUE
-	return FALSE
+/* runs up the Z stack for this turf, returns a assoc (SKYVISIBLE, WEATHERPROOF)*/
+/* pass recursionStarted=TRUE when we are checking our ceiling's stats */
+/turf/proc/getCeilingStat(recursionStarted = FALSE)
+	. = list()
 
-/* run up the Z column until we hit a non openspace turf, or the top of the map */
-/turf/proc/GetCeilingTurf()
-	if (roofType)
-		roofType = roofType /* already calculated */
+
+	//Check yourself (before you wreck yourself)
+	if(isclosedturf(src)) //Closed, but we might be transparent
+		.["SKYVISIBLE"]   =  istransparentturf(src) // a column of glass should still let the sun in
+		.["WEATHERPROOF"] =  TRUE
 	else
+		if(recursionStarted)
+			// This src is acting as a ceiling - so if we are a floor we weatherproof + block the sunlight of our down-Z turf
+			.["SKYVISIBLE"]   = istransparentturf(src) //If we are glass floor, we don't block
+			.["WEATHERPROOF"] = isnotweatherproofceiling(src) //If we are air or space, we aren't weatherproof (maybe catwalks eventually?)
+		else //We are open, so assume open to the elements
+			.["SKYVISIBLE"]   = TRUE
+			.["WEATHERPROOF"] = FALSE
+
+
+	// Early leave if we can't see the sky - if we are an opaque turf, we already know the results
+	// I can't think of a case where we would have a turf that would block light but let weather effects through - Maybe a vent?
+	// fix this if that is the case
+	if(!.["SKYVISIBLE"])
+		return .
+
+	//Ceiling Check
+	if (roofType) // Psuedo-roof, for the top of the map (no actual turf exists up here) -- We assume these are solid, if you add glass rooftypes then fix this
+		.["SKYVISIBLE"]   =  FALSE
+		.["WEATHERPROOF"] =  TRUE
+	else
+		// EVERY turf must be transparent for sunlight - so &=
+		// ANY turf must be closed for weatherproof - so |=
 		var/turf/ceiling = get_step_multiz(src, UP)
 		if(ceiling)
-			roofType = !istransparentturf(ceiling) ? ceiling : ceiling.GetCeilingTurf()
-	return roofType
+			var/list/ceilingStat = ceiling.getCeilingStat(TRUE) //Pass TRUE because we are now acting as a ceiling
+			.["SKYVISIBLE"]   &= ceilingStat["SKYVISIBLE"]
+			.["WEATHERPROOF"] |= ceilingStat["WEATHERPROOF"]
 
 
 /* moved this out of reconsider lights so we can call it in multiz refresh  */

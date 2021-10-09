@@ -20,9 +20,10 @@ SUBSYSTEM_DEF(ParticleWeather)
 	// process active weather
 	if(runningWeather)
 		if(runningWeather.running)
+			runningWeather.tick()
 			for(var/mob/act_on as anything in GLOB.mob_living_list)
-				if(runningWeather.can_weather_act(act_on))
-					runningWeather.weather_act(act_on)
+				runningWeather.try_weather_act(act_on)
+
 		return // only 1 weather at a time
 
 	// start random weather
