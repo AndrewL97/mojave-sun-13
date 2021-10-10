@@ -209,13 +209,11 @@
 /atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/Initialize()
 	. = ..()
 	filters += filter(type="layer", render_source=SUNLIGHTING_RENDER_TARGET)
-	SSsunlight.sunlighting_planes |= src
+	SSoutdoor_effects.sunlight_planes_need_vis |= src
 
 /atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/Destroy()
 	. = ..()
-	SSsunlight.sunlighting_planes -= src
-
-
+	SSoutdoor_effects.sunlight_planes_need_vis -= src
 /atom/movable/screen/fullscreen/weather
 	screen_loc = "CENTER"
 	transform = null
@@ -225,8 +223,8 @@
 /atom/movable/screen/fullscreen/weather/Initialize()
 	. = ..()
 	filters += filter(type="alpha", render_source=WEATHER_RENDER_TARGET)
-	SSsunlight.weather_planes_need_vis |= src
+	SSoutdoor_effects.weather_planes_need_vis |= src
 
 /atom/movable/screen/fullscreen/weather/Destroy()
 	. = ..()
-	SSsunlight.weather_planes_need_vis -= src
+	SSoutdoor_effects.weather_planes_need_vis -= src

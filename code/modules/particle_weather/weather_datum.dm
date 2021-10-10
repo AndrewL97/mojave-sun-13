@@ -74,6 +74,9 @@
 	//assoc list of mob=looping_sound
 	var/list/currentSounds = list()
 
+	//Time to send the next weather message
+	var/nextMessage = 0
+
 /datum/particle_weather/proc/severityMod()
 	return severity / maxSeverity
 /*
@@ -82,6 +85,11 @@
 */
 /datum/particle_weather/proc/tick()
 	return
+
+/datum/particle_weather/Destroy()
+	for(var/datum/looping_sound/S in currentSounds)
+		qdel(S)
+	return ..()
 
 /**
  * Starts the actual weather and effects from it
@@ -119,7 +127,10 @@
 
 
 	if(SSParticleWeather.particleEffect)
-		SSParticleWeather.particleEffect.animateSeverity(severity, minSeverity, maxSeverity)
+		SSParticleWeather.particleEffect.animateSeverity(severityMod())
+
+	//Send new severity message
+	nextMessage = 0
 
 	//Tick on
 	if(severityStepsTaken < severitySteps)
@@ -136,7 +147,7 @@
 /datum/particle_weather/proc/wind_down()
 	severity = 0
 	if(SSParticleWeather.particleEffect)
-		SSParticleWeather.particleEffect.animateSeverity(severity, minSeverity, maxSeverity)
+		SSParticleWeather.particleEffect.animateSeverity(severityMod())
 
 		//Wait for the last particle to fade, then qdel yourself
 		addtimer(CALLBACK(src, .proc/end), SSParticleWeather.particleEffect.lifespan + SSParticleWeather.particleEffect.fade)
@@ -153,13 +164,7 @@
  */
 /datum/particle_weather/proc/end()
 	running = FALSE
-	//No more sounds, hush bb
-	for(var/mob/act_on as anything in GLOB.mob_living_list)
-		act_on.stop_sound_channel(CHANNEL_WEATHER)
-	for(var/datum/looping_sound/S in currentSounds)
-		qdel(S)
-	qdel(SSParticleWeather.particleEffect)
-	qdel(src)
+	SSParticleWeather.stopWeather()
 
 
 /**
@@ -171,11 +176,10 @@
 	if(!mob_turf)
 		return
 
-	if(!(mob_turf.z in SSmapping.levels_by_trait(ZTRAIT_STATION)))
+	if(mob_turf.outdoor_effect && mob_turf.outdoor_effect.state == SKY_BLOCKED)
 		return
 
-	if(mob_turf.outdoor_effect || mob_turf.outdoor_effect.state == SKY_BLOCKED)
-		return
+	return TRUE
 
 /**
  * Returns TRUE if the living mob can be affected by the weather
@@ -202,7 +206,8 @@
 		weather_sound_effect(L)
 		if(can_weather_effect(L))
 			weather_act(L)
-			weather_message(L)
+			if(world.time > nextMessage)
+				weather_message(L) //Try not to spam
 	else
 		stop_weather_sound_effect(L)
 
@@ -216,17 +221,17 @@
 	if(currentSound)
 		//SET VOLUME
 		if(scale_vol_with_severity)
-			currentSound.volume = initial(currentSound.volume) * (severity/100)
+			currentSound.volume = initial(currentSound.volume) * severityMod()
 		if(!currentSound.loop_started) //don't restart already playing sounds
 			currentSound.start()
 		return
-	var/tempSound = scale_range_pick(100,severity,weather_sounds)
+	var/tempSound = scale_range_pick(minSeverity, maxSeverity, severity, weather_sounds)
 	if(tempSound)
 		currentSound = new tempSound(L, FALSE, TRUE)
 		currentSounds[L] = currentSound
 		//SET VOLUME
 		if(scale_vol_with_severity)
-			currentSound.volume = initial(currentSound.volume) * (severity/100)
+			currentSound.volume = initial(currentSound.volume) * severityMod()
 		currentSound.start()
 
 /datum/particle_weather/proc/stop_weather_sound_effect(mob/living/L)
@@ -236,6 +241,7 @@
 
 
 /datum/particle_weather/proc/weather_message(mob/living/L)
-	var/tempMessage = scale_range_pick(100,severity,weather_messages)
+	nextMessage = world.time + 10 SECONDS
+	var/tempMessage = scale_range_pick(minSeverity, maxSeverity, severity, weather_messages)
 	if(tempMessage)
 		to_chat(L, tempMessage)

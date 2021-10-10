@@ -83,3 +83,9 @@ SUBSYSTEM_DEF(ParticleWeather)
 /datum/controller/subsystem/ParticleWeather/proc/SetparticleEffect(particles/P)
 	particleEffect = P
 	weatherEffect.particles = particleEffect
+
+/datum/controller/subsystem/ParticleWeather/proc/stopWeather()
+	qdel(runningWeather)
+	qdel(particleEffect)
+	runningWeather = null
+	particleEffect = null

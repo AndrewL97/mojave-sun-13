@@ -16,19 +16,16 @@
 	lifespan               = 600  // live for 60s max
 	fade                   = 0    // no fade
 
-//Animate particle effect to a severity - a value between 0 and 100
-/particles/weather/proc/animateSeverity(severity = 50, minSeverity = 0, maxSeverity = 100)
+//Animate particle effect to a severity
+/particles/weather/proc/animateSeverity(severityMod)
 
 	//If we have no severity, just stop spawning
-	if(!severity)
+	if(!severityMod)
 		spawning = 0
 		return
 
-	//restrict to 0-100 - get as percentage
-	severity = max(min(severity,maxSeverity),minSeverity) / 100
-
-	var newWind = wind * severity * pick(-1,1) //Wind can go left OR right!
-	var newSpawning = minSpawning + ((maxSeverity-minSeverity) * severity)
+	var newWind = wind * severityMod * pick(-1,1) //Wind can go left OR right!
+	var newSpawning = max(minSpawning, maxSpawning * severityMod)
 
 	//gravity might be x, xy, or xyz
 	var/newGravity = gravity

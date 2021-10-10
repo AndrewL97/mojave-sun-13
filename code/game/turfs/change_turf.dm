@@ -142,7 +142,7 @@ GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 	if(SSlighting.initialized)
 		lighting_object = old_lighting_object
 
-		if(SSsunlight.initialized)
+		if(SSoutdoor_effects.initialized)
 			outdoor_effect = old_outdoor_effect
 
 		directional_opacity = old_directional_opacity

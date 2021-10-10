@@ -47,24 +47,22 @@ GLOBAL_LIST_EMPTY(SUNLIGHT_QUEUE_UPDATE) /* turfs to have their colours updated 
 GLOBAL_LIST_EMPTY(SUNLIGHT_QUEUE_CORNER) /* turfs to have their colour/lights/etc updated */
 GLOBAL_LIST_EMPTY(outdoor_effects)
 
-SUBSYSTEM_DEF(sunlight)
+SUBSYSTEM_DEF(outdoor_effects)
 	name = "Sunlight"
 	wait = LIGHTING_INTERVAL
 	flags = SS_TICKER
 	init_order = INIT_ORDER_SUNLIGHT
 
-	var/timeUntilNextTick = 0
-
-	var/list/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/sunlighting_planes = list()
-
 	/* thanks ruskis */
 	var/datum/time_of_day/current_step_datum
 	var/datum/time_of_day/next_step_datum
 
+	var/obj/sunlightEffect
+
 	var/list/mutable_appearance/sunlight_overlays
 	var/list/atom/movable/screen/fullscreen/weather/weather_planes_need_vis = list()
-	var/list/cornerColour = list()
-	var/currentTime
+	var/list/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/sunlight_planes_need_vis = list()
+
 	//Ensure midnight is the liast step
 	var/list/datum/time_of_day/time_cycle_steps = list(new /datum/time_of_day/Dawn(),
 	                                                   new /datum/time_of_day/Sunrise(),
@@ -75,18 +73,18 @@ SUBSYSTEM_DEF(sunlight)
 
 
 
-/datum/controller/subsystem/sunlight/stat_entry(msg)
+/datum/controller/subsystem/outdoor_effects/stat_entry(msg)
 	msg = "W:[GLOB.SUNLIGHT_QUEUE_WORK.len]|U:[GLOB.SUNLIGHT_QUEUE_UPDATE.len]|C:[GLOB.SUNLIGHT_QUEUE_CORNER.len]"
 	return ..()
 
-/datum/controller/subsystem/sunlight/proc/fullPlonk()
+/datum/controller/subsystem/outdoor_effects/proc/fullPlonk()
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
 			var/area/TArea = T.loc
 			if (TArea.static_lighting)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
-/datum/controller/subsystem/sunlight/Initialize(timeofday)
+/datum/controller/subsystem/outdoor_effects/Initialize(timeofday)
 	if(!initialized)
 		get_time_of_day()
 		InitializeTurfs()
@@ -98,7 +96,7 @@ SUBSYSTEM_DEF(sunlight)
 /* This is the proc that starts the crash loop. Maybe log what passes through it?
 	-Thooloo
 	*/
-/datum/controller/subsystem/sunlight/proc/InitializeTurfs(list/targets)
+/datum/controller/subsystem/outdoor_effects/proc/InitializeTurfs(list/targets)
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
 			var/area/TArea = T.loc
@@ -106,13 +104,13 @@ SUBSYSTEM_DEF(sunlight)
 				GLOB.SUNLIGHT_QUEUE_WORK += T
 
 
-/datum/controller/subsystem/sunlight/proc/check_cycle()
+/datum/controller/subsystem/outdoor_effects/proc/check_cycle()
 	if(station_time() > next_step_datum.start)
 		get_time_of_day()
 		return TRUE
 	return FALSE
 
-/datum/controller/subsystem/sunlight/proc/get_time_of_day()
+/datum/controller/subsystem/outdoor_effects/proc/get_time_of_day()
 
 	//Get the next time step (first time where NOW > START_TIME)
 	//If we don't find one - grab the LAST time step (which should be midnight)
@@ -132,11 +130,13 @@ SUBSYSTEM_DEF(sunlight)
 	current_step_datum = new_step
 
 /* set sunlight colour + add weather effect to clients */
-/datum/controller/subsystem/sunlight/fire(resumed, init_tick_checks)
+/datum/controller/subsystem/outdoor_effects/fire(resumed, init_tick_checks)
 	MC_SPLIT_TICK_INIT(3)
 	if(!init_tick_checks)
 		MC_SPLIT_TICK
 	var/i = 0
+
+	//Add our weather particle obj to any new weather screens
 	if(SSParticleWeather.initialized)
 		for (i in 1 to weather_planes_need_vis.len)
 			var/atom/movable/screen/fullscreen/weather/W = weather_planes_need_vis[i]
@@ -149,6 +149,19 @@ SUBSYSTEM_DEF(sunlight)
 		if (i)
 			weather_planes_need_vis.Cut(1, i+1)
 			i = 0
+
+	//Add our sunlight obj to any new sunlight screens
+	for (i in 1 to sunlight_planes_need_vis.len)
+		var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/S = sunlight_planes_need_vis[i]
+		if(S)
+			S.vis_contents = list(getSunlightEffect())
+		if(init_tick_checks)
+			CHECK_TICK
+		else if (MC_TICK_CHECK)
+			break
+	if (i)
+		sunlight_planes_need_vis.Cut(1, i+1)
+		i = 0
 
 	for (i in 1 to GLOB.SUNLIGHT_QUEUE_WORK.len)
 		var/turf/T = GLOB.SUNLIGHT_QUEUE_WORK[i]
@@ -221,17 +234,21 @@ SUBSYSTEM_DEF(sunlight)
 	if(check_cycle())
 		nextBracket()
 
+/datum/controller/subsystem/outdoor_effects/proc/getSunlightEffect()
+	if(!sunlightEffect)
+		sunlightEffect = new /obj()
+		sunlightEffect.icon = 'icons/hud/screen_gen.dmi'
+		sunlightEffect.screen_loc = "WEST,SOUTH to EAST,NORTH"
+		sunlightEffect.icon_state = "flash"
+	return sunlightEffect
 
-
-/datum/controller/subsystem/sunlight/proc/nextBracket()
+/datum/controller/subsystem/outdoor_effects/proc/nextBracket()
 	/* transistion in an hour or time diff, whichever is smaller */
 	var timeDiff = min((1 HOURS / SSticker.station_time_rate_multiplier ),daytimeDiff(current_step_datum.start, next_step_datum.start))
-	timeUntilNextTick = "[timeDiff] - [current_step_datum.start] - [next_step_datum.start]"
-	for (var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/SP in sunlighting_planes)
-		animate(SP,color=current_step_datum.color, time = timeDiff)
+	animate(getSunlightEffect(),color=current_step_datum.color, time = timeDiff)
 
 // Updates overlays and vis_contents for outdoor effects
-/datum/controller/subsystem/sunlight/proc/UpdateAppearance(atom/movable/outdoor_effect/OE)
+/datum/controller/subsystem/outdoor_effects/proc/UpdateAppearance(atom/movable/outdoor_effect/OE)
 
 	var/mutable_appearance/MA
 	if (OE.state != SKY_BLOCKED)
@@ -258,7 +275,7 @@ SUBSYSTEM_DEF(sunlight)
 	OE.luminosity = MA.luminosity
 
 //Retrieve an overlay from the list - create if necessary
-/datum/controller/subsystem/sunlight/proc/GetOverlay(fr, fg, fb, fa)
+/datum/controller/subsystem/outdoor_effects/proc/GetOverlay(fr, fg, fb, fa)
 
 	var/index = "[fr]|[fg]|[fb]|[fa]"
 	LAZYINITLIST(sunlight_overlays)
@@ -267,7 +284,7 @@ SUBSYSTEM_DEF(sunlight)
 	return sunlight_overlays[index]
 
 //TODO Rather than having sunlight and weather - just have two planes, one for indoor and one for outdoor
-/datum/controller/subsystem/sunlight/proc/getWeatherOverlay()
+/datum/controller/subsystem/outdoor_effects/proc/getWeatherOverlay()
 	var/mutable_appearance/MA = new /mutable_appearance()
 	MA.blend_mode   	  = BLEND_OVERLAY
 	MA.icon 			  = 'icons/effects/weather_overlay.dmi'
@@ -279,7 +296,7 @@ SUBSYSTEM_DEF(sunlight)
 	return MA
 
 //Create an overlay appearance from corner values
-/datum/controller/subsystem/sunlight/proc/CreateOverlay(fr, fg, fb, fa)
+/datum/controller/subsystem/outdoor_effects/proc/CreateOverlay(fr, fg, fb, fa)
 
 	var/mutable_appearance/MA = new /mutable_appearance()
 
