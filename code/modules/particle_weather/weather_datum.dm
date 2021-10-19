@@ -74,8 +74,8 @@
 	//assoc list of mob=looping_sound
 	var/list/currentSounds = list()
 
-	//Time to send the next weather message
-	var/nextMessage = 0
+	//assoc list of mob=timestamp -> Next time we can send a message
+	var/list/messagedMobs = list()
 
 /datum/particle_weather/proc/severityMod()
 	return severity / maxSeverity
@@ -87,8 +87,10 @@
 	return
 
 /datum/particle_weather/Destroy()
-	for(var/datum/looping_sound/S in currentSounds)
-		qdel(S)
+	for(var/S in currentSounds)
+		var/datum/looping_sound/looping_sound = currentSounds[S]
+		looping_sound.stop()
+		qdel(looping_sound)
 	return ..()
 
 /**
@@ -103,7 +105,6 @@
 		return //some cheeky git has started you early
 	weather_duration = rand(weather_duration_lower, weather_duration_upper)
 	running = TRUE
-	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_START(type))
 	addtimer(CALLBACK(src, .proc/wind_down), weather_duration)
 
 	if(particleEffectType)
@@ -130,7 +131,7 @@
 		SSParticleWeather.particleEffect.animateSeverity(severityMod())
 
 	//Send new severity message
-	nextMessage = 0
+	messagedMobs = list()
 
 	//Tick on
 	if(severityStepsTaken < severitySteps)
@@ -152,7 +153,6 @@
 		//Wait for the last particle to fade, then qdel yourself
 		addtimer(CALLBACK(src, .proc/end), SSParticleWeather.particleEffect.lifespan + SSParticleWeather.particleEffect.fade)
 
-	SEND_GLOBAL_SIGNAL(COMSIG_WEATHER_END(type))
 
 
 /**
@@ -206,10 +206,11 @@
 		weather_sound_effect(L)
 		if(can_weather_effect(L))
 			weather_act(L)
-			if(world.time > nextMessage)
+			if(!messagedMobs[L] || world.time > messagedMobs[L])
 				weather_message(L) //Try not to spam
 	else
 		stop_weather_sound_effect(L)
+		messagedMobs[L] = 0 //resend a message next time they go outside
 
 //Overload with weather effects
 /datum/particle_weather/proc/weather_act(mob/living/L)
@@ -241,7 +242,7 @@
 
 
 /datum/particle_weather/proc/weather_message(mob/living/L)
-	nextMessage = world.time + 10 SECONDS
+	messagedMobs[L] = world.time + 30 SECONDS //Chunky delay - this spams otherwise - Severity changes and going indoors resets this timer
 	var/tempMessage = scale_range_pick(minSeverity, maxSeverity, severity, weather_messages)
 	if(tempMessage)
 		to_chat(L, tempMessage)

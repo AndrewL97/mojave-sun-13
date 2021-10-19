@@ -9,12 +9,18 @@
 	spawning = 0
 	width                  = 800  // I think this is supposed to be in pixels, but it doesn't match bounds, so idk - 800x800 seems to prevent particle-less edges
 	height                 = 800
-	count                  = 2500 // 2500 particles
-	//Set bounds to rough screensize + some sideways movement for "wind"
-	bound1                 = list(-1000,-256,0)
-	bound2                 = list(1000,256,100)
-	lifespan               = 600  // live for 60s max
+	count                  = 3000 // 3000 particles
+	//Set bounds to rough screensize + some extra on the side and top movement for "wind"
+	bound1                 = list(-500,-256,-100)
+	bound2                 = list(500,500,100)
+	lifespan               = 300  // live for 30s max
 	fade                   = 0    // no fade
+
+	//Obnoxiously 3D -- INCREASE Z level to make them further away
+	transform			   = list( 1, 0, 0,  0  ,
+								   0, 1, 0,  0  ,
+								   0, 0, 1, -1/10, //Get twice as LARGE every 10 Z
+								   0, 0, 0,  1  )
 
 //Animate particle effect to a severity
 /particles/weather/proc/animateSeverity(severityMod)

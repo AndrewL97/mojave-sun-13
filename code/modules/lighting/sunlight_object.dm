@@ -312,6 +312,10 @@ Sunlight System
 
 	GLOB.SUNLIGHT_QUEUE_WORK += SunlightUpdates
 
+	var/turf/T = SSmapping.get_turf_below(src)
+	if(T)
+		T.reconsider_sunlight()
+
 /* corner fuckery */
 /datum/lighting_corner/var/list/globAffect = list() /* list of sunlight objects affecting this corner */
 /datum/lighting_corner/var/sunFalloff = 0 /* smallest distance to sunlight turf, for sunlight falloff */
@@ -337,10 +341,7 @@ Sunlight System
 	roofType = /turf/closed/indestructible/rock
 	icon_state = "roof_rock"
 
-// /obj/effect/mapping_helpers/sunlight/roofSetter/wood
-// 	roofType = /turf/open/floor/wood/ms13
-// 	icon_state = "roof_wood"
-
+// /obj/effect/mapping_helpers/sunligx
 
 /obj/effect/mapping_helpers/sunlight/roofSetter/Initialize(mapload)
 	. = ..()

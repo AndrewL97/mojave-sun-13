@@ -53,16 +53,12 @@ SUBSYSTEM_DEF(outdoor_effects)
 	flags = SS_TICKER
 	init_order = INIT_ORDER_SUNLIGHT
 
-	/* thanks ruskis */
+	var/list/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/sunlighting_planes = list()
 	var/datum/time_of_day/current_step_datum
 	var/datum/time_of_day/next_step_datum
-
-	var/obj/sunlightEffect
-
 	var/list/mutable_appearance/sunlight_overlays
 	var/list/atom/movable/screen/fullscreen/weather/weather_planes_need_vis = list()
-	var/list/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/sunlight_planes_need_vis = list()
-
+	var/last_color = null
 	//Ensure midnight is the liast step
 	var/list/datum/time_of_day/time_cycle_steps = list(new /datum/time_of_day/Dawn(),
 	                                                   new /datum/time_of_day/Sunrise(),
@@ -92,10 +88,6 @@ SUBSYSTEM_DEF(outdoor_effects)
 	fire(FALSE, TRUE)
 	..()
 
-// It's safe to pass a list of non-turfs to this list - it'll only check turfs.
-/* This is the proc that starts the crash loop. Maybe log what passes through it?
-	-Thooloo
-	*/
 /datum/controller/subsystem/outdoor_effects/proc/InitializeTurfs(list/targets)
 	for (var/z in SSmapping.levels_by_trait(ZTRAIT_STATION))
 		for (var/turf/T in block(locate(1,1,z), locate(world.maxx,world.maxy,z)))
@@ -111,6 +103,10 @@ SUBSYSTEM_DEF(outdoor_effects)
 	return FALSE
 
 /datum/controller/subsystem/outdoor_effects/proc/get_time_of_day()
+
+	//Set our current colour as last_color so newly initialized sunlight screens have a colour
+	if(current_step_datum)
+		last_color = current_step_datum.color
 
 	//Get the next time step (first time where NOW > START_TIME)
 	//If we don't find one - grab the LAST time step (which should be midnight)
@@ -128,6 +124,10 @@ SUBSYSTEM_DEF(outdoor_effects)
 		next_step_datum = time_cycle_steps[1]
 
 	current_step_datum = new_step
+
+	//If it is round-start, we wouldn't have had a current_step_datum, so set our last_color to the current one
+	if(!last_color)
+		last_color = current_step_datum.color
 
 /* set sunlight colour + add weather effect to clients */
 /datum/controller/subsystem/outdoor_effects/fire(resumed, init_tick_checks)
@@ -150,23 +150,10 @@ SUBSYSTEM_DEF(outdoor_effects)
 			weather_planes_need_vis.Cut(1, i+1)
 			i = 0
 
-	//Add our sunlight obj to any new sunlight screens
-	for (i in 1 to sunlight_planes_need_vis.len)
-		var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/S = sunlight_planes_need_vis[i]
-		if(S)
-			S.vis_contents = list(getSunlightEffect())
-		if(init_tick_checks)
-			CHECK_TICK
-		else if (MC_TICK_CHECK)
-			break
-	if (i)
-		sunlight_planes_need_vis.Cut(1, i+1)
-		i = 0
-
 	for (i in 1 to GLOB.SUNLIGHT_QUEUE_WORK.len)
 		var/turf/T = GLOB.SUNLIGHT_QUEUE_WORK[i]
 		if(T)
-			T.GetSkyAndWeatherStates() //TODO: Rename to "GetOutdoorState"
+			T.GetSkyAndWeatherStates()
 			if(T.outdoor_effect)
 				GLOB.SUNLIGHT_QUEUE_UPDATE += T.outdoor_effect
 
@@ -232,20 +219,15 @@ SUBSYSTEM_DEF(outdoor_effects)
 		i = 0
 
 	if(check_cycle())
-		nextBracket()
+		for (var/atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/SP in sunlighting_planes)
+			transitionSunlightColor(SP)
 
-/datum/controller/subsystem/outdoor_effects/proc/getSunlightEffect()
-	if(!sunlightEffect)
-		sunlightEffect = new /obj()
-		sunlightEffect.icon = 'icons/hud/screen_gen.dmi'
-		sunlightEffect.screen_loc = "WEST,SOUTH to EAST,NORTH"
-		sunlightEffect.icon_state = "flash"
-	return sunlightEffect
 
-/datum/controller/subsystem/outdoor_effects/proc/nextBracket()
-	/* transistion in an hour or time diff, whichever is smaller */
-	var timeDiff = min((1 HOURS / SSticker.station_time_rate_multiplier ),daytimeDiff(current_step_datum.start, next_step_datum.start))
-	animate(getSunlightEffect(),color=current_step_datum.color, time = timeDiff)
+//Transition from our last colour to our current colour (i.e if it is going from daylight (white) to sunset (red), we transition to red in the first hour of sunset)
+/datum/controller/subsystem/outdoor_effects/proc/transitionSunlightColor(atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/SP)
+	/* transistion in an hour or time diff from now to our next step, whichever is smaller */
+	var timeDiff = min((1 HOURS / SSticker.station_time_rate_multiplier ),daytimeDiff(station_time(), next_step_datum.start))
+	animate(SP,color=current_step_datum.color, time = timeDiff)
 
 // Updates overlays and vis_contents for outdoor effects
 /datum/controller/subsystem/outdoor_effects/proc/UpdateAppearance(atom/movable/outdoor_effect/OE)
@@ -289,8 +271,6 @@ SUBSYSTEM_DEF(outdoor_effects)
 	MA.blend_mode   	  = BLEND_OVERLAY
 	MA.icon 			  = 'icons/effects/weather_overlay.dmi'
 	MA.icon_state 		  = "weather_overlay"
-	MA.pixel_x            = -16 //Weather_overlay is 64x64 to overlap walls, etc. so center it
-	MA.pixel_y            = -16
 	MA.plane			  = WEATHER_PLANE /* we put this on a lower level than lighting so we dont multiply anything */
 	MA.invisibility 	  = INVISIBILITY_LIGHTING
 	return MA
@@ -326,9 +306,3 @@ SUBSYSTEM_DEF(outdoor_effects)
 					fa, fa, fa,  00 ,
 					00, 00, 00,  01 )
 	return MA
-
-#undef STEP_MORNING
-#undef STEP_DAY
-#undef STEP_EVENING
-#undef STEP_NIGHT
-

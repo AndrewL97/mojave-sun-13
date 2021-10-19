@@ -209,11 +209,14 @@
 /atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/Initialize()
 	. = ..()
 	filters += filter(type="layer", render_source=SUNLIGHTING_RENDER_TARGET)
-	SSoutdoor_effects.sunlight_planes_need_vis |= src
+	SSoutdoor_effects.sunlighting_planes |= src
+	color = SSoutdoor_effects.last_color
+	SSoutdoor_effects.transitionSunlightColor(src)
 
 /atom/movable/screen/fullscreen/lighting_backdrop/Sunlight/Destroy()
 	. = ..()
-	SSoutdoor_effects.sunlight_planes_need_vis -= src
+	SSoutdoor_effects.sunlighting_planes -= src
+
 /atom/movable/screen/fullscreen/weather
 	screen_loc = "CENTER"
 	transform = null

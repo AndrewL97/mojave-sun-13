@@ -1,9 +1,3 @@
-#define STARTUP_STAGE 1
-#define MAIN_STAGE 2
-#define WIND_DOWN_STAGE 3
-#define END_STAGE 4
-
-//Used for all kinds of weather, ex. lavaland ash storms.
 SUBSYSTEM_DEF(ParticleWeather)
 	name = "Particle Weather"
 	flags = SS_BACKGROUND
@@ -23,13 +17,11 @@ SUBSYSTEM_DEF(ParticleWeather)
 			runningWeather.tick()
 			for(var/mob/act_on as anything in GLOB.mob_living_list)
 				runningWeather.try_weather_act(act_on)
-
-		return // only 1 weather at a time
-
-	// start random weather
-	var/datum/particle_weather/our_event = pickweight(elligble_weather) //possible_weather
-	if(our_event)
-		run_weather(our_event)
+	else
+		// start random weather
+		var/datum/particle_weather/our_event = pickweight(elligble_weather) //possible_weather
+		if(our_event)
+			run_weather(our_event)
 
 
 //This has been mangled - currently only supports 1 weather effect serverwide so I can finish this
