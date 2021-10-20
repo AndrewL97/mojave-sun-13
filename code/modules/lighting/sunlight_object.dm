@@ -64,6 +64,9 @@ Sunlight System
 	T |= source_turf /* get our calculated indoor lighting */
 	GLOB.SUNLIGHT_QUEUE_CORNER += T
 
+	//Empty our affectingCorners list
+	affectingCorners = null
+
 /atom/movable/outdoor_effect/proc/ProcessState()
 	switch(state)
 		if(SKY_BLOCKED)
@@ -164,7 +167,7 @@ Sunlight System
 		TempState = SKY_BLOCKED
 
 	/* if border or indoor, initialize. Set sunlight state if valid */
-	if(!outdoor_effect && TempState <> SKY_BLOCKED || !roofStat["WEATHERPROOF"])
+	if(!outdoor_effect && (TempState <> SKY_BLOCKED || !roofStat["WEATHERPROOF"]))
 		outdoor_effect = new /atom/movable/outdoor_effect(src)
 	if(outdoor_effect)
 		outdoor_effect.state = TempState
@@ -175,7 +178,6 @@ Sunlight System
 /turf/proc/getCeilingStat(recursionStarted = FALSE)
 	. = list()
 
-
 	//Check yourself (before you wreck yourself)
 	if(isclosedturf(src)) //Closed, but we might be transparent
 		.["SKYVISIBLE"]   =  istransparentturf(src) // a column of glass should still let the sun in
@@ -184,11 +186,10 @@ Sunlight System
 		if(recursionStarted)
 			// This src is acting as a ceiling - so if we are a floor we weatherproof + block the sunlight of our down-Z turf
 			.["SKYVISIBLE"]   = istransparentturf(src) //If we are glass floor, we don't block
-			.["WEATHERPROOF"] = isnotweatherproofceiling(src) //If we are air or space, we aren't weatherproof (maybe catwalks eventually?)
+			.["WEATHERPROOF"] = !isnotweatherproofceiling(src) //If we are air or space, we aren't weatherproof (maybe catwalks eventually?)
 		else //We are open, so assume open to the elements
 			.["SKYVISIBLE"]   = TRUE
 			.["WEATHERPROOF"] = FALSE
-
 
 	// Early leave if we can't see the sky - if we are an opaque turf, we already know the results
 	// I can't think of a case where we would have a turf that would block light but let weather effects through - Maybe a vent?
@@ -197,7 +198,8 @@ Sunlight System
 		return .
 
 	//Ceiling Check
-	if (roofType) // Psuedo-roof, for the top of the map (no actual turf exists up here) -- We assume these are solid, if you add glass rooftypes then fix this
+	// Psuedo-roof, for the top of the map (no actual turf exists up here) -- We assume these are solid, if you add glass rooftypes then fix this
+	if (roofType)
 		.["SKYVISIBLE"]   =  FALSE
 		.["WEATHERPROOF"] =  TRUE
 	else

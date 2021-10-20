@@ -173,8 +173,7 @@ SUBSYSTEM_DEF(outdoor_effects)
 		var/atom/movable/outdoor_effect/U = GLOB.SUNLIGHT_QUEUE_UPDATE[i]
 		if(U)
 			U.ProcessState()
-			if(U.state != SKY_BLOCKED)
-				UpdateAppearance(U)
+			UpdateAppearance(U)
 
 		if(init_tick_checks)
 			CHECK_TICK
@@ -253,7 +252,7 @@ SUBSYSTEM_DEF(outdoor_effects)
 
 	OE.sunlight_overlay = MA
 	//Get weather overlay if not weatherproof
-	OE.overlays = OE.weatherproof ? list(OE.sunlight_overlay, getWeatherOverlay()) : list(OE.sunlight_overlay)
+	OE.overlays = OE.weatherproof ? list(OE.sunlight_overlay) : list(OE.sunlight_overlay, getWeatherOverlay())
 	OE.luminosity = MA.luminosity
 
 //Retrieve an overlay from the list - create if necessary

@@ -8,18 +8,19 @@
 
 //Rain - goes down
 /particles/weather/rain
-	icon_state             = list("drop"=10,"dot"=1)
+	icon_state             = "drop"
 	color                  = "#ccffff"
 	position               = generator("box", list(-300,-256,10), list(300,500,10))
 	grow			       = list(-0.01,-0.01)
-	gravity                = list(0, -2, -0.5)
+	gravity                = list(0, -10, -0.5)
+	velocity 			   = list(0, -2, 0)
 	drift                  = generator("circle", 0, 1) // Some random movement for variation
 	friction               = 0.3  // shed 30% of velocity and drift every 0.1s
 	transform 			   = null // Rain is directional - so don't make it "3D"
 	//Weather effects, max values
-	maxSpawning            = 50
-	minSpawning            = 10
-	wind                   = 4
+	maxSpawning            = 100
+	minSpawning            = 50
+	wind                   = 2
 
 
 //Snow - goes down and swirls
@@ -34,7 +35,7 @@
 	//Weather effects, max values
 	maxSpawning           = 50
 	minSpawning           = 10
-	wind                  = 1
+	wind                  = 2
 
 
 //Dust - goes sideways and swirls
@@ -51,7 +52,7 @@
 	//Weather effects, max values
 	maxSpawning           = 50
 	minSpawning           = 20
-	wind                  = 20
+	wind                  = 10
 
 
 //Rads - goes fucking everywhere
@@ -68,5 +69,5 @@
 	//Weather effects, max values
 	maxSpawning           = 50
 	minSpawning           = 20
-	wind                  = 3
+	wind                  = 10
 
