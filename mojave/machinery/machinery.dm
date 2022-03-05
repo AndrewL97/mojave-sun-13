@@ -50,6 +50,67 @@
 	light_on = FALSE
 	var/on = FALSE
 	var/datum/looping_sound/ms13/holotable/soundloop
+	var/processing = FALSE
+	// Height and width of pixel drawable area - todo convert to oval and use distance from centre of map instead of scaled size
+	var/width  = 26
+	var/height = 21
+	var/obj/tracker
+
+/particles/wartable_ping
+	// icon_state             = "drop"
+	color                  = "#ffffff"
+	position               = list(0,0)
+	spawning 		       = 0
+	count                  = 50
+	lifespan 			   = 50
+	fade 				   = 50
+	// grow			       = list(-0.01,-0.01)
+	// gravity                = list(0, -10, 0.5)
+	// drift                  = generator("circle", 0, 1) // Some random movement for variation
+	// friction               = 0.3  // shed 30% of velocity and drift every 0.1s
+	// transform 			   = null // Rain is directional - so don't make it "3D"
+	//Weather effects, max values
+
+
+/obj/machinery/ms13/wartable/process()
+	if(!tracker)
+		tracker = new /obj()
+		tracker.particles = new /particles/wartable_ping()
+		tracker.filters += filter(type = "bloom", threshold = rgb(255, 128, 255), size = 2, offset = 1, alpha = 255)
+		tracker.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+		tracker.icon_state = icon_state //TODO MAKE THIS CHANGE WITH
+		src.vis_contents = list(tracker)
+	if (processing)
+		return
+	processing = TRUE
+	var/list/mob/procList  = GLOB.suit_sensors_list
+	for(var/tracked_mob in procList)
+		if(!tracked_mob)
+			stack_trace("Null entry in wartable list.")
+			continue
+		var/turf/mobTurf = get_turf(tracked_mob)
+		if(!mobTurf)
+			return
+		tracker.particles.count = (tracker.particles.lifespan + tracker.particles.fade) * length(procList) * 2
+
+		// 1 particle per tick, lasting lifespan + fade ticks
+
+
+		// Scaling
+		var/scaleH = world.maxy / height
+		var/scaleW = world.maxx / width
+
+		// Positioning - shift to centre of map
+		var/x = (mobTurf.x / scaleW) - (width / 2)
+		var/y = (mobTurf.y / scaleH) - (height / 2)
+
+		tracker.particles.position = list(x,y)
+		tracker.particles.spawning = 1 // A big number!
+		sleep(1)
+		tracker.particles.spawning = 0
+	processing = FALSE
+
+
 
 /obj/machinery/ms13/wartable/Initialize()
 	. = ..()
