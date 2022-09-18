@@ -68,10 +68,10 @@
 		apply_damage(P.damage, P.damage_type, def_zone, armor_check, wound_bonus=P.wound_bonus, bare_wound_bonus=P.bare_wound_bonus, sharpness = P.sharpness, attack_direction = attack_direction)
 		*/
 		//MOJAVE EDIT BEGIN
-		apply_damage(P.damage, P.damage_type, def_zone, \
-					armor, wound_bonus=P.wound_bonus, bare_wound_bonus=P.bare_wound_bonus, \
-					sharpness = P.sharpness, attack_direction = attack_direction, \
-					reduced = subarmor)
+		// apply_damage(P.damage, P.damage_type, def_zone, \
+		// 			armor, wound_bonus=P.wound_bonus, bare_wound_bonus=P.bare_wound_bonus, \
+		// 			sharpness = P.sharpness, attack_direction = attack_direction, \
+		// 			reduced = subarmor)
 		//MOJAVE EDIT END
 		apply_effects(P.stun, P.knockdown, P.unconscious, P.slur, P.stutter, P.eyeblur, P.drowsy, armor, P.stamina, P.jitter, P.paralyze, P.immobilize)
 		if(P.dismemberment)
@@ -133,9 +133,9 @@
 		*/
 		//MOJAVE EDIT BEGIN
 		var/subarmor = run_subarmor_check(zone, MELEE, weak_against_armour = thrown_item.weak_against_subtractible_armour, sharpness = thrown_item.get_sharpness())
-		apply_damage(thrown_item.throwforce, thrown_item.damtype, zone, \
-					armor, sharpness = thrown_item.get_sharpness(), wound_bonus = (nosell_hit * CANT_WOUND), \
-					reduced = subarmor)
+		// apply_damage(thrown_item.throwforce, thrown_item.damtype, zone, \
+		// 			armor, sharpness = thrown_item.get_sharpness(), wound_bonus = (nosell_hit * CANT_WOUND), \
+		// 			reduced = subarmor)
 		//MOJAVE EDIT END
 		if(QDELETED(src)) //Damage can delete the mob.
 			return
