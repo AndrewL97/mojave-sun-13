@@ -26,7 +26,7 @@
 
 /datum/progressbar/New(mob/User, goal_number, atom/target, bonus_time, focus_sound, type) //MOJAVE SUN EDIT - Interactive Progressbar
 	. = ..()
-	if (!istype(target))
+	if(!istype(target))
 		EXCEPTION("Invalid target given")
 	if(QDELETED(User) || !istype(User))
 		stack_trace("/datum/progressbar created with [isnull(User) ? "null" : "invalid"] user")

@@ -421,14 +421,14 @@ GLOBAL_LIST_EMPTY(cached_storage_typecaches)
 	if(M.active_storage)
 		M.active_storage.hide_from(M)
 	orient2hud()
-	var/datum/ui_factory/tempFactory = new
-	var/obj/ui_component/storage_window = tempFactory.Template_Window_Standard(M.client, 0,0,300,300)
-	var/obj/ui_component/body = storage_window.get_child_ui("BODY")
-	world << "Body: [body]"
-	world << "Header: [storage_window.get_child_ui("HEADER")]"
-	body.add_arbitary_obj("boxes", boxes)
-	storage_window.get_child_ui("HEADER").add_arbitary_obj("closer", closer)
-	body.add_arbitary_obj("contents", real_location.contents)
+	// var/datum/ui_factory/tempFactory = new
+	// var/obj/ui_component/storage_window = tempFactory.Template_Window_Standard(M.client, 0,0,300,300)
+	// var/obj/ui_component/body = storage_window.get_child_ui("BODY")
+	// world << "Body: [body]"
+	// world << "Header: [storage_window.get_child_ui("HEADER")]"
+	// body.add_arbitary_obj("boxes", boxes)
+	// storage_window.get_child_ui("HEADER").add_arbitary_obj("closer", closer)
+	// body.add_arbitary_obj("contents", real_location.contents)
 	M.set_active_storage(src)
 	LAZYOR(is_using, M)
 	RegisterSignal(M, COMSIG_PARENT_QDELETING, .proc/mob_deleted)

@@ -8,12 +8,14 @@
 #define FLEX_ALIGN_SPACEBETWEEN                  6
 #define FLEX_ALIGN_SPACEAROUND                   7
 
-#define FLEX_DIRECTION_INHERIT                   0
-#define FLEX_DIMENSION_WIDTH                     1
-#define FLEX_DIMENSION_HEIGHT                    2
-#define FLEX_DIRECTION_LTR                       3
-#define FLEX_DIRECTION_RTL                       4
-#define FLEX_DIRECTION_NEVERUSED_1               -1
+
+#define FLEX_DIMENSION_WIDTH                     0
+#define FLEX_DIMENSION_HEIGHT                    1
+
+#define FLEX_DIRECTION_INHERIT                   "inherit"
+#define FLEX_DIRECTION_LTR                       "ltr"
+#define FLEX_DIRECTION_RTL                       "rtl"
+#define FLEX_DIRECTION_LIST list(FLEX_DIRECTION_INHERIT, FLEX_DIRECTION_LTR, FLEX_DIRECTION_RTL)
 
 #define FLEX_DISPLAY_FLEX                        1
 #define FLEX_DISPLAY_NONE                        2
@@ -29,6 +31,7 @@
 #define FLEX_EDGE_ALL                            8
 
 #define FLEX_EXPERIMENTALFEATURE_WEBFLEXBASIS    0
+
 #define FLEX_FLEXDIRECTION_COLUMN                1
 #define FLEX_FLEXDIRECTION_COLUMNREVERSE         2
 #define FLEX_FLEXDIRECTION_ROW                   3
