@@ -1,6 +1,5 @@
 // This is to handle static procs that would otherwise be in the correct class file
 
-
 ///// FLEX_VALUE /////
 // Undefined value type
 #define FLEX_VALUE_UNDEFINED new /datum/flex_value(null, FLEX_UNIT_UNDEFINED)

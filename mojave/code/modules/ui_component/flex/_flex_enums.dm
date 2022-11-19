@@ -12,10 +12,11 @@
 #define FLEX_DIMENSION_WIDTH                     0
 #define FLEX_DIMENSION_HEIGHT                    1
 
-#define FLEX_DIRECTION_INHERIT                   "inherit"
-#define FLEX_DIRECTION_LTR                       "ltr"
-#define FLEX_DIRECTION_RTL                       "rtl"
-#define FLEX_DIRECTION_LIST list(FLEX_DIRECTION_INHERIT, FLEX_DIRECTION_LTR, FLEX_DIRECTION_RTL)
+#define FLEX_DIRECTION_INHERIT                   0
+#define FLEX_DIRECTION_LTR                       1
+#define FLEX_DIRECTION_RTL                       2
+#define FLEX_DIRECTION_NEVERUSED_1              -1
+
 
 #define FLEX_DISPLAY_FLEX                        1
 #define FLEX_DISPLAY_NONE                        2

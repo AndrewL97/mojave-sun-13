@@ -829,6 +829,11 @@ GLOBAL_LIST_EMPTY(species_list)
 	return FALSE
 
 ///Returns the amount of currently living players
+/proc/LivingPlayers()
+
+
+
+
 /proc/living_player_count()
 	var/living_player_count = 0
 	for(var/mob in GLOB.player_list)

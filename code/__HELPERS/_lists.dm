@@ -29,6 +29,8 @@
 #define LAZYSET(L, K, V) if(!L) { L = list(); } L[K] = V;
 ///Sets the length of a lazylist
 #define LAZYSETLEN(L, V) if (!L) { L = list(); } L.len = V;
+///Increases the length of a lazylist if length is less than V
+#define LAZYMINLEN(L, V) if (!L) { L = list(); } L.len = max(L.len, V);
 ///Returns the lenght of the list
 #define LAZYLEN(L) length(L)
 ///Sets a list to null

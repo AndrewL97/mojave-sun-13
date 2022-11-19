@@ -24,7 +24,7 @@
 /// Folder directory for strings
 #define STRING_DIRECTORY "strings"
 
-// JSON text files found in the tgstation/strings folder 
+// JSON text files found in the tgstation/strings folder
 /// File location for brain damage traumas
 #define BRAIN_DAMAGE_FILE "traumas.json"
 /// File location for AI ion laws
@@ -55,3 +55,6 @@
 #define CLOWN_NONSENSE_FILE "clown_nonsense.json"
 /// File location for cult shuttle curse descriptions
 #define CULT_SHUTTLE_CURSE "cult_shuttle_curse.json"
+
+// Checks if a string ends with a suffix
+#define ENDSWITH(str, suf) (copytext(str, -length(suf)) == suf)
