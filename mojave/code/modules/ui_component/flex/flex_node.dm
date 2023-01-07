@@ -18,6 +18,10 @@
 /datum/flex_node/proc/GetChild(index)
 	return GLOB.flex.GetChild(src, index)
 
+// Calcualte layout for node and child node
+/datum/flex_node/proc/CalculateLayout(partentWidth, parentHeight, parentDirection)
+	GLOB.flex.CalculateLayout(src, partentWidth, parentHeight, parentDirection)
+
 // add child at end of flex node
 /datum/flex_node/proc/AddChild(datum/flex_node/child)
 	InsertChild(child, 4)
@@ -28,3 +32,4 @@
 
 /datum/flex_node/proc/RemoveChild(datum/flex_node/child)
 	GLOB.flex.RemoveChild(src, child)
+
