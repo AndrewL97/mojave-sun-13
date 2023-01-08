@@ -27,5 +27,7 @@
 	},
 	"[scss]": {
 		"editor.rulers": [80]
-	}
+	},
+	"editor.tabCompletion": "on",
+	"diffEditor.codeLens": true
 }
