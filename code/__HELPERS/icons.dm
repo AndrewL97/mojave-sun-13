@@ -216,6 +216,12 @@ world
 #define TO_HEX_DIGIT(n) ascii2text((n&15) + ((n&15)<10 ? 48 : 87))
 
 
+#define ICON_ANCHOR_TOP(parentHeight, height) (parentHeight/2 - height/2)
+#define ICON_ANCHOR_RIGHT(parentWidth, width) (parentWidth/2 - width/2)
+#define ICON_ANCHOR_BOTTOM(parentHeight, height) -(parentHeight/2 - height/2)
+#define ICON_ANCHOR_LEFT(parentWidth, width) -(parentWidth/2 - width/2)
+
+
 	// Multiply all alpha values by this float
 /icon/proc/ChangeOpacity(opacity = 1)
 	MapColors(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,opacity, 0,0,0,0)
