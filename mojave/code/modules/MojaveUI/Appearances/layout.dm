@@ -11,13 +11,15 @@
 /datum/mojaveUI/appearance
 	var/baseLayer = HUD_BACKGROUND_LAYER
 	var/icon/icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
+	var/icon_state = "background"
+	var/layersUsed = 1 // THIS MUST BE SET IF YOU USE MORE THAN ONE LAYER -- SEE BOX FOR EXAMPLE
 
 /datum/mojaveUI/appearance/proc/get(width=ICON_SIZE, height=ICON_SIZE, layer=HUD_BACKGROUND_LAYER)
 	RETURN_TYPE(/mutable_appearance)
 	baseLayer = layer
-	var/mutable_appearance/A = mutable_appearance(icon, icon_state = "background", layer = baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags = RESET_TRANSFORM)
+	var/mutable_appearance/A = mutable_appearance(icon, icon_state, layer = baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags = RESET_TRANSFORM)
 	A.transform = matrix().Scale(width / ICON_SIZE, height / ICON_SIZE)
-	A.color = "#[random_short_color()]"
+	// A.color = "#[random_short_color()]"
 	return A
 
 /datum/mojaveUI/appearance/cell/get(width=ICON_SIZE, height=ICON_SIZE)
@@ -29,6 +31,11 @@
 
 
 // ======================= BOX ======================= //
+
+// Metalic version of box appearance - need way to handle theme properly
+/datum/mojaveUI/appearance/box/metal/icon = 'mojave/icons/hud/mojaveUI/ms_ui_base_metal.dmi'
+
+/datum/mojaveUI/appearance/box/layersUsed = 3 // THIS MUST BE UPDATED IF MODIFYING THE BOX APPEARANCE
 
 /datum/mojaveUI/appearance/box/get(width=ICON_SIZE, height=ICON_SIZE, layer=HUD_BACKGROUND_LAYER)
 	RETURN_TYPE(/mutable_appearance)
@@ -98,6 +105,7 @@
 
 // ======================= CLOSE BUTTON ======================= //
 
+/datum/mojaveUI/appearance/closeButton/layersUsed = 2
 /datum/mojaveUI/appearance/closeButton/get(width=ICON_SIZE, height=ICON_SIZE, layer=HUD_BACKGROUND_LAYER)
 	RETURN_TYPE(/mutable_appearance)
 	var/mutable_appearance/A = ..()
@@ -110,19 +118,11 @@
 
 	// Otherwise we use the left, middle, and right icons - minimum of 20 pixels per icon
 	// left and right are 10x32, middle is 32x32 and is scaled to fit - left and right are added as overlays
-	var/mutable_appearance/Left = new()
-	Left.icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
-	Left.icon_state = "close_left"
+	var/mutable_appearance/Left = mutable_appearance(icon, icon_state = "close_left", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags = RESET_TRANSFORM)
 	Left.pixel_x = ICON_ANCHOR_LEFT(width, 10)
-	// Left.appearance_flags = RESET_TRANSFORM
-	Left.plane = ABOVE_HUD_PLANE
 
-	var/mutable_appearance/Right = new()
-	Right.icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
-	Right.icon_state = "close_right"
+	var/mutable_appearance/Right = mutable_appearance(icon, icon_state = "close_right", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags = RESET_TRANSFORM)
 	Right.pixel_x = ICON_ANCHOR_RIGHT(width, 10)
-	// Right.appearance_flags = RESET_TRANSFORM
-	Right.plane = ABOVE_HUD_PLANE
 
 	A.icon_state = "close_middle"
 	A.transform = matrix().Scale((width - 20) / ICON_SIZE, 1)

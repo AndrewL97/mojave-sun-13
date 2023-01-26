@@ -49,9 +49,14 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	// Whether the layout needs to be recalculated
 	var/dirty = 1
 
-/datum/mojaveUI/element/proc/getAppearance()
+/datum/mojaveUI/element/proc/getAppearance(layer = 0)
 	if(appearanceType)
-		return new appearanceType(src).get(calculated_layout["width"], calculated_layout["height"])
+		return new appearanceType(src).get(calculated_layout["width"], calculated_layout["height"], layer)
+
+/datum/mojaveUI/element/proc/getAppearanceLayersUsed()
+	if(appearanceType)
+		return initial(appearanceType.layersUsed)
+	return 0
 
 /datum/mojaveUI/element/proc/set_dirty()
 		dirty = 1

@@ -17,6 +17,9 @@
 	var/flow_direction = MOJAVEUI_FLOW_ROW
 	var/list/elements = list() // List of Element objects
 
+/datum/mojaveUI/element/flowContainer/layout
+	// Draw nothing, purely used for layout
+	appearanceType = null
 
 /datum/mojaveUI/element/flowContainer/set_dirty()
 	..()

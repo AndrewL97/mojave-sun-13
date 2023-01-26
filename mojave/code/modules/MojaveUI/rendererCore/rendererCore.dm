@@ -11,6 +11,13 @@
 	screen_loc = "CENTER,CENTER"
 	plane = ABOVE_HUD_PLANE
 
+	// When we draw an element, we get the number of layers it uses
+	// i.e box appearances are 3 (background, border, corners)
+	// This is the max number of layers used by a child element
+	// If we draw a functional element, we increment its layers by layersUsed + 1
+	// To ensure there are layer fighting issues
+	var/layersUsed = 0
+
 
 // Call to begin drawing the UI + show to client
 /obj/mojaveUI/proc/Show(client/c)
@@ -47,16 +54,18 @@
 // We start by drawing the root element, and then recursively draw any children
 /obj/mojaveUI/proc/_drawElement(x, y, datum/mojaveUI/element/e, client/c, forceDraw = FALSE)
 
-x	if(e.hidden)
+	if(e.hidden)
 		return
 
 	// If the element is functional, we create a new object for it, and set this element as the root + forceDraw it
 	// Otherwise we just draw the element
 	if(e.functional && !forceDraw)
 		var/obj/mojaveUI/functionalUIObject = new
+		// Increment layer to draw on top
+		functionalUIObject.layer = layer + layersUsed + 1
 		functionalUIObject.root = e
-		// functionalUIObject.pixel_x = x
-		// functionalUIObject.pixel_y = y
+		functionalUIObject.pixel_x = x
+		functionalUIObject.pixel_y = y
 		vis_contents |= functionalUIObject
 		// Draw from root - pass forceDraw to draw the functional element
 		functionalUIObject._drawElement(0, 0, e, c, TRUE)
@@ -66,7 +75,7 @@ x	if(e.hidden)
 	// SO CHILDREN ARE DRAWN ON TOP
 	_drawOverlay(x, y, e, c)
 
-	if(e.type == /datum/mojaveUI/element/flowContainer)
+	if(istype(e, /datum/mojaveUI/element/flowContainer) )
 		_drawContainer(x, y, e, c)
 
 // Draw the children of the given element
@@ -88,18 +97,20 @@ x	if(e.hidden)
 	var/remaining_width = e.calculated_layout["width"] - total_width - (e.padding * 2) - e.spacing * (e.elements.len - 1)
 	var/remaining_height = e.calculated_layout["height"] - total_height - (e.padding * 2) - e.spacing * (e.elements.len - 1)
 
-	// Adjust the starting position by the padding
+	// Adjust the starting position by the padding the first element
 	// This is so that the first element is drawn at the correct position
 	// 0,0 is the center of the element, so we need to adjust by half the width and height
-	switch(e.flow_direction)
-		if(MOJAVEUI_FLOW_ROW)
-			x += ICON_ANCHOR_LEFT(e.calculated_layout["width"], 0) + e.padding
-		if(MOJAVEUI_FLOW_ROWREVERSED)
-			x += ICON_ANCHOR_RIGHT(e.calculated_layout["width"], 0) - e.padding
-		if(MOJAVEUI_FLOW_COLUMN)
-			y += ICON_ANCHOR_TOP(e.calculated_layout["height"], 0) - e.padding
-		if(MOJAVEUI_FLOW_COLUMNREVERSED)
-			y += ICON_ANCHOR_BOTTOM(e.calculated_layout["height"], 0) + e.padding
+	if(length(e.elements))
+		var/datum/mojaveUI/element/first = e.elements[1]
+		switch(e.flow_direction)
+			if(MOJAVEUI_FLOW_ROW)
+				x += ICON_ANCHOR_LEFT(e.calculated_layout["width"], first.calculated_layout["width"]) + e.padding
+			if(MOJAVEUI_FLOW_ROWREVERSED)
+				x += ICON_ANCHOR_RIGHT(e.calculated_layout["width"], first.calculated_layout["width"]) - e.padding
+			if(MOJAVEUI_FLOW_COLUMN)
+				y += ICON_ANCHOR_TOP(e.calculated_layout["height"], first.calculated_layout["height"]) - e.padding
+			if(MOJAVEUI_FLOW_COLUMNREVERSED)
+				y += ICON_ANCHOR_BOTTOM(e.calculated_layout["height"], first.calculated_layout["height"]) + e.padding
 
 	for(var/datum/mojaveUI/element/child in e.elements)
 
@@ -134,7 +145,8 @@ x	if(e.hidden)
 
 // Draw the element at the given position - fetch the appearance object and add it to the overlays
 /obj/mojaveUI/proc/_drawOverlay(x, y, datum/mojaveUI/element/e)
-	var/mutable_appearance/overlay = e.getAppearance()
+	var/mutable_appearance/overlay = e.getAppearance(layer)
+	layersUsed = e.getAppearanceLayersUsed()
 	if(!overlay)
 		// If the element has no appearance, we don't draw it
 		// This can be used for "structural" elements like containers
