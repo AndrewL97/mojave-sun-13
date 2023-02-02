@@ -49,9 +49,19 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	// Whether the layout needs to be recalculated
 	var/dirty = 1
 
-/datum/mojaveUI/element/proc/getAppearance(layer = 0)
+/datum/mojaveUI/element/New()
+	. = ..()
+
+/datum/mojaveUI/element/proc/getAppearanceObject()
+	RETURN_TYPE(/datum/mojaveUI/appearance)
 	if(appearanceType)
-		return new appearanceType(src).get(calculated_layout["width"], calculated_layout["height"], layer)
+		return new appearanceType(src)
+
+/datum/mojaveUI/element/proc/getAppearance(layer = 0)
+	var/datum/mojaveUI/appearance/A = getAppearanceObject()
+	if(A)
+		return A.get(calculated_layout["width"], calculated_layout["height"], layer)
+
 
 /datum/mojaveUI/element/proc/getAppearanceLayersUsed()
 	if(appearanceType)
@@ -74,3 +84,14 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 /datum/mojaveUI/element/proc/defaultCalculatedLayout()
 	// x, y is relative to our parent element, not absolute
 	return list("element"=src, "width"=min_width, "height"=min_height)
+
+
+// spacer used to add space between elements, without displaying anything
+/datum/mojaveUI/element/spacer
+	appearanceType = null
+
+
+/datum/mojaveUI/element/spacer/New(minHeight = 0, minWidth = 0)
+	. = ..()
+	min_height = minHeight
+	min_width = minWidth

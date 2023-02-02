@@ -10,7 +10,7 @@
 	var/list/obj/mojaveUI/children = list()
 	screen_loc = "CENTER,CENTER"
 	plane = ABOVE_HUD_PLANE
-
+	appearance_flags = KEEP_TOGETHER
 	// When we draw an element, we get the number of layers it uses
 	// i.e box appearances are 3 (background, border, corners)
 	// This is the max number of layers used by a child element
@@ -145,8 +145,8 @@
 
 // Draw the element at the given position - fetch the appearance object and add it to the overlays
 /obj/mojaveUI/proc/_drawOverlay(x, y, datum/mojaveUI/element/e)
-	var/mutable_appearance/overlay = e.getAppearance(layer)
-	layersUsed = e.getAppearanceLayersUsed()
+	var/mutable_appearance/overlay = e.getAppearance(layer + layersUsed)
+	layersUsed += e.getAppearanceLayersUsed()
 	if(!overlay)
 		// If the element has no appearance, we don't draw it
 		// This can be used for "structural" elements like containers
