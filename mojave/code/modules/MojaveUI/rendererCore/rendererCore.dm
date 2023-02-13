@@ -115,6 +115,9 @@
 	for(var/datum/mojaveUI/element/child in e.elements)
 
 		// Pad by half of child dimension, depending on flow direction
+		// We center on the un-buffered axis so icons > 32 are centered correctly
+		// We use min_height/width to handle non-32 sized icons, we don't care about calulated
+		// dimensions for containers, etc.
 		switch(e.flow_direction)
 			if(MOJAVEUI_FLOW_ROW)
 				x += _getFlexedWidth(child, total_flex_x, remaining_width) / 2
@@ -126,9 +129,9 @@
 				y += _getFlexedHeight(child, total_flex_y, remaining_height) / 2
 
 		// Draw the child element at the current position
-		_drawElement(x, y, child, c)
+		_drawElement(x + iconXShim(child), y + iconYShim(child), child, c)
 
-		// Pad by half again, and spacing
+		// Pad by half again, with spacing, and restore the un-centered position
 		switch(e.flow_direction)
 			if(MOJAVEUI_FLOW_ROW)
 				x += (_getFlexedWidth(child, total_flex_x, remaining_width) / 2) + e.spacing
@@ -140,12 +143,24 @@
 				y += (_getFlexedHeight(child, total_flex_y, remaining_height) / 2) + e.spacing
 
 
-// Get height and width of element, flex or calculated, whichever is greater
+// Get height and width of element, flex or calculate	d, whichever is greater
 /obj/mojaveUI/proc/_getFlexedWidth(datum/mojaveUI/element/e, total_flex_x, remaining_width)
-	return max(e.calculated_layout["width"], e.flex_x * remaining_width / max(total_flex_x, 1)) // min to prevent divide by 0
+	return max(e.calculated_layout["width"], e.flex_x * remaining_width / max(total_flex_x, 1)) // max to prevent divide by 0
 
 /obj/mojaveUI/proc/_getFlexedHeight(datum/mojaveUI/element/e, total_flex_y, remaining_height)
-	return max(e.calculated_layout["height"], e.flex_y * remaining_height / max(total_flex_y, 1)) // min to prevent divide by 0
+	return max(e.calculated_layout["height"], e.flex_y * remaining_height / max(total_flex_y, 1)) // max to prevent divide by 0
+
+// These shims handle the extra space needed for icons that are not 32x32
+/obj/mojaveUI/proc/iconXShim(datum/mojaveUI/element/e)
+	if(e.min_width)
+		return (world.icon_size - e.min_width)  / 2
+	return 0
+
+/obj/mojaveUI/proc/iconYShim(datum/mojaveUI/element/e)
+	if(e.min_height)
+		return (world.icon_size - e.min_height)  / 2
+	return 0
+
 
 // Draw the element at the given position - fetch the appearance object and add it to the overlays
 /obj/mojaveUI/proc/_drawOverlay(x, y, datum/mojaveUI/element/e)

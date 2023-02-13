@@ -272,7 +272,7 @@ round(cos_inv_third+sqrt3_sin, 0.001), round(cos_inv_third-sqrt3_sin, 0.001), ro
 
 /matrix/proc/anchor_top_right(parentWidth, childWidth, parentHeight, childHeight)
 	RETURN_TYPE(/matrix)
-	return src.Translate((parentWidth - childWidth) / 2, (-parentHeight + childHeight) / 2)
+	return src.Translate((parentWidth - childWidth) / 2, (parentHeight - childHeight) / 2)
 
 /matrix/proc/anchor_bottom_left(parentWidth, childWidth, parentHeight, childHeight)
 	RETURN_TYPE(/matrix)

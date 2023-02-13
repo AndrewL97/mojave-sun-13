@@ -11,7 +11,7 @@
 	var/baseLayer = HUD_BACKGROUND_LAYER
 	var/icon/icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
 	var/layersUsed = 1 // THIS MUST BE SET IF YOU USE MORE THAN ONE LAYER -- SEE BOX FOR EXAMPLE
-	var/icon_state = "background"
+	var/icon_state = "" // Sets the base layer icon state - use "" when mixing scaled and unscaled icons - see Box for example
 	var/icon_height = 32
 	var/icon_width = 32
 	var/appearance_flags = RESET_TRANSFORM
@@ -22,18 +22,13 @@
 
 	// We make a dummy overlay to handle the KEEP_TOGETHER appearance
 	// previously this was the background icon, but the scaling was causing issues
-	var/mutable_appearance/A = mutable_appearance(icon, "", baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags = KEEP_TOGETHER)
+	var/mutable_appearance/A = mutable_appearance(icon, icon_state, baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags = KEEP_TOGETHER)
 	A.transform.anchor_center(width, icon_width, height, icon_height)
 	// A.color = "#[random_short_color()]"
 	return A
 
-/datum/mojaveUI/appearance/cell/get(width=icon_width, height=icon_height)
-	RETURN_TYPE(/mutable_appearance)
-	var/mutable_appearance/A = ..()
-	A.icon_state = "cell"
-	// ICON_DRAW_MIDDLE(A, width, height, 32, 32)
-	return A
-
+/datum/mojaveUI/appearance/cell
+	icon_state = "cell"
 
 // ======================= BOX ======================= //
 
@@ -47,7 +42,7 @@
 	var/mutable_appearance/A = ..()
 
 	// Apply standard background color
-	var/mutable_appearance/bg = mutable_appearance(icon, icon_state, layer = baseLayer, plane = ABOVE_HUD_PLANE)
+	var/mutable_appearance/bg = mutable_appearance(icon, icon_state = "background", layer = baseLayer, plane = ABOVE_HUD_PLANE)
 	bg.transform = matrix().Scale(width / icon_width, height / icon_height)
 	A.overlays += bg
 	A.overlays += getBorders(height, width)
@@ -72,7 +67,7 @@
 	corners[1].transform = corners[1].transform.anchor_top_left(width, icon_width, height, icon_height)
 
 	// top right
-	corners[2].transform = corners[2].transform.anchor_top_right(width, icon_width, height, height)
+	corners[2].transform = corners[2].transform.anchor_top_right(width, icon_width, height, icon_height	)
 
 	// bottom right
 	corners[3].transform = corners[3].transform.anchor_bottom_right(width, icon_width, height, icon_height)

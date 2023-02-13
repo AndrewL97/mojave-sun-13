@@ -24,7 +24,12 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 
 /datum/mojaveUI/element
 
-	// Configurable properties
+	// Configurable properties //
+
+	// minimum dimensions
+	// for the sake of centering, treat these as the icon's dimensions
+	// if you are centering a scalable (but 32 based) icon, set it to 0 or 32
+	// idk what to do if you want to set this to a size that doesn't match your icon
 	var/min_width = 32
 	var/min_height = 32
 
@@ -42,7 +47,8 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	var/flex_x = 0
 	var/flex_y = 0
 
-	// Calculated properties
+
+	// Calculated properties //
 
 	// list(element, width,height)
 	var/list/calculated_layout = list()
