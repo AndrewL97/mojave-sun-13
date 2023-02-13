@@ -29,7 +29,7 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	var/min_height = 32
 
 	// Whether the element can be interacted with - If FALSE we will be an overlay for our parent, to save on maptick
-	var/functional = FALSE
+	var/functional = TRUE
 
 	// Whether the element is hidden - hides children too
 	var/hidden = FALSE

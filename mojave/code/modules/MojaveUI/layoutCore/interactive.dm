@@ -3,6 +3,7 @@
 // buttons and switches
 
 /datum/mojaveUI/element/interactive
+	functional =  TRUE
 	appearanceType = /datum/mojaveUI/appearance/interactive
 	var/on = FALSE
 

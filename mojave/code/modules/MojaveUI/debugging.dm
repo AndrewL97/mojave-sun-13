@@ -3,8 +3,8 @@
 	set name = "storage"
 
 	var/obj/mojaveUI/storage/ui = new
-	ui.rows = 1
-	ui.cols = 1
+	ui.rows = 3
+	ui.cols = 3
 	ui.Show(usr.client)
 
 

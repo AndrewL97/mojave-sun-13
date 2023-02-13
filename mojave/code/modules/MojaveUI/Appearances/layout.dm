@@ -10,9 +10,8 @@
 /datum/mojaveUI/appearance
 	var/baseLayer = HUD_BACKGROUND_LAYER
 	var/icon/icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
-	var/icon_state = "background"
 	var/layersUsed = 1 // THIS MUST BE SET IF YOU USE MORE THAN ONE LAYER -- SEE BOX FOR EXAMPLE
-
+	var/icon_state = "background"
 	var/icon_height = 32
 	var/icon_width = 32
 	var/appearance_flags = RESET_TRANSFORM
@@ -20,9 +19,11 @@
 /datum/mojaveUI/appearance/proc/get(width=icon_width, height=icon_height, layer=HUD_BACKGROUND_LAYER)
 	RETURN_TYPE(/mutable_appearance)
 	baseLayer = layer
-	var/mutable_appearance/A = mutable_appearance(icon, icon_state, baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-	A.transform = matrix().Scale(width / icon_width, height / icon_height)
-	A.transform = A.transform.Translate(ICON_ANCHOR_CENTER(icon_width), ICON_ANCHOR_CENTER(icon_height))
+
+	// We make a dummy overlay to handle the KEEP_TOGETHER appearance
+	// previously this was the background icon, but the scaling was causing issues
+	var/mutable_appearance/A = mutable_appearance(icon, "", baseLayer, plane = ABOVE_HUD_PLANE, appearance_flags = KEEP_TOGETHER)
+	A.transform.anchor_center(width, icon_width, height, icon_height)
 	// A.color = "#[random_short_color()]"
 	return A
 
@@ -43,69 +44,67 @@
 
 /datum/mojaveUI/appearance/box/get(width=icon_width, height=icon_height, layer=HUD_BACKGROUND_LAYER)
 	RETURN_TYPE(/mutable_appearance)
-	var/mutable_appearance/A = ..() // Apply standard background color
-	for(var/i in 0 to 3)
-		var/mutable_appearance/bord = borderSide(height,width,i)
-		A.overlays += bord
-		var/mutable_appearance/corn = borderCorner(height,width,i)
-		A.overlays += corn
+	var/mutable_appearance/A = ..()
+
+	// Apply standard background color
+	var/mutable_appearance/bg = mutable_appearance(icon, icon_state, layer = baseLayer, plane = ABOVE_HUD_PLANE)
+	bg.transform = matrix().Scale(width / icon_width, height / icon_height)
+	A.overlays += bg
+	A.overlays += getBorders(height, width)
+	A.overlays += getCorners(height, width)
 	return A
 
 
 // returns a mutable appearance for a border corner - no stretching!
 // corner is 0-3 for top left, top right, bottom right, bottom left
-/datum/mojaveUI/appearance/box/proc/borderCorner(height,width,corner = 0)
+/datum/mojaveUI/appearance/box/proc/getCorners(height,width)
 
-	switch(corner)
-		if(0)
-			var/mutable_appearance/c = mutable_appearance(icon, icon_state = "border_top_left", layer = baseLayer+2, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			c.pixel_x = ICON_ANCHOR_LEFT(width, icon_width)
-			c.pixel_y = ICON_ANCHOR_TOP(height, icon_height)
-			return c
-		if(1)
-			var/mutable_appearance/c = mutable_appearance(icon, icon_state = "border_top_right", layer = baseLayer+2, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			c.pixel_x = ICON_ANCHOR_RIGHT(width, icon_width)
-			c.pixel_y = ICON_ANCHOR_TOP(height, icon_height)
-			return c
-		if(2)
-			var/mutable_appearance/c = mutable_appearance(icon, icon_state = "border_bottom_right", layer = baseLayer+2, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			c.pixel_x = ICON_ANCHOR_RIGHT(width, icon_width)
-			c.pixel_y = ICON_ANCHOR_BOTTOM(height, icon_height)
-			return c
-		if(3)
-			var/mutable_appearance/c = mutable_appearance(icon, icon_state = "border_bottom_left", layer = baseLayer+2, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			c.pixel_x = ICON_ANCHOR_LEFT(width, icon_width)
-			c.pixel_y = ICON_ANCHOR_BOTTOM(height, icon_height)
-			return c
-	throw EXCEPTION("Invalid corner index [corner]")
+	var/list/mutable_appearance/corners = list(
+		mutable_appearance(icon, icon_state = "border_top_left", layer = baseLayer + 2, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_top_right", layer = baseLayer + 2, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_bottom_right", layer = baseLayer + 2, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_bottom_left", layer = baseLayer + 2, plane = ABOVE_HUD_PLANE)
+	)
 
+	// transforms
+
+	// top left
+	corners[1].transform = corners[1].transform.anchor_top_left(width, icon_width, height, icon_height)
+
+	// top right
+	corners[2].transform = corners[2].transform.anchor_top_right(width, icon_width, height, height)
+
+	// bottom right
+	corners[3].transform = corners[3].transform.anchor_bottom_right(width, icon_width, height, icon_height)
+
+	// bottom left
+	corners[4].transform = corners[4].transform.anchor_bottom_left(width, icon_width, height, icon_height)
+
+	return corners
 
 // Returns a mutable appearance for a border side - stretched to height and width
 // side is 0-3 for top, right, bottom, left
-/datum/mojaveUI/appearance/box/proc/borderSide(height,width,side = 0)
+/datum/mojaveUI/appearance/box/proc/getBorders(height,width)
 
-	switch(side)
-		if(0)
-			var/mutable_appearance/border = mutable_appearance(icon, icon_state = "border_top", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			border.transform = matrix().Scale(width / icon_width, 1)
-			border.pixel_y = ICON_ANCHOR_TOP(height, icon_height)
-			return border
-		if(1)
-			var/mutable_appearance/border = mutable_appearance(icon, icon_state = "border_right", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			border.transform = matrix().Scale(1, height / icon_height)
-			border.pixel_x = ICON_ANCHOR_RIGHT(width, icon_width)
-			return border
-		if(2)
-			var/mutable_appearance/border = mutable_appearance(icon, icon_state = "border_bottom", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			border.transform = matrix().Scale(width / icon_width, 1)
-			border.pixel_y = ICON_ANCHOR_BOTTOM(height, icon_height)
-			return border
-		if(3)
-			var/mutable_appearance/border = mutable_appearance(icon, icon_state = "border_left", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-			border.transform = matrix().Scale(1, height / icon_height)
-			border.pixel_x = ICON_ANCHOR_LEFT(width, icon_width)
-			return border
-	throw EXCEPTION("Invalid side index [side]")
+	var/list/mutable_appearance/borders = list(
+		mutable_appearance(icon, icon_state = "border_top", layer = baseLayer + 1, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_right", layer = baseLayer + 1, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_bottom", layer = baseLayer + 1, plane = ABOVE_HUD_PLANE),
+		mutable_appearance(icon, icon_state = "border_left", layer = baseLayer + 1, plane = ABOVE_HUD_PLANE)
+	)
+
+	// transforms
+
+	// top
+	borders[1].transform = borders[1].transform.Scale(width / icon_width, 1).anchor_top(height,icon_height)
+	// right
+	borders[2].transform = borders[2].transform.Scale(1, height / icon_height).anchor_right(width, icon_width)
+	// bottom
+	borders[3].transform = borders[3].transform.Scale(width / icon_width, 1).anchor_bottom(height, icon_height)
+	// left
+	borders[4].transform = borders[4].transform.Scale(1, height / icon_height).anchor_left(width, icon_width)
+
+	return borders
 
 // ======================= CLOSE BUTTON ======================= //
 
@@ -122,12 +121,15 @@
 
 	// Otherwise we use the left, middle, and right icons - minimum of 20 pixels per icon
 	// left and right are 10x32, middle is 32x32 and is scaled to fit - left and right are added as overlays
-	var/mutable_appearance/Left = mutable_appearance(icon, icon_state = "close_left", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-	Left.pixel_x = ICON_ANCHOR_LEFT(width, 10)
+	var/mutable_appearance/Left = mutable_appearance(icon, icon_state = "close_left", layer = baseLayer+1, plane = ABOVE_HUD_PLANE)
+	// icon is 10 px wide
+	Left.transform.anchor_left(width, 10)
 
-	var/mutable_appearance/Right = mutable_appearance(icon, icon_state = "close_right", layer = baseLayer+1, plane = ABOVE_HUD_PLANE, appearance_flags=appearance_flags)
-	Right.pixel_x = ICON_ANCHOR_RIGHT(width, 10)
+	var/mutable_appearance/Right = mutable_appearance(icon, icon_state = "close_right", layer = baseLayer+1, plane = ABOVE_HUD_PLANE)
+	// icon is 10 px wide
+	Right.transform.anchor_right(width, 10)
 
+	// middle is 20 px wide, but scalable horizontally
 	A.icon_state = "close_middle"
 	A.transform = matrix().Scale((width - 20) / icon_width, 1)
 	A.overlays += Left

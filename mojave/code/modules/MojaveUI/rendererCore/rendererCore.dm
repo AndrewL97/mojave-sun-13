@@ -9,7 +9,6 @@
 	var/datum/mojaveUI/element/flowContainer/root
 	var/list/obj/mojaveUI/children = list()
 	screen_loc = "CENTER,CENTER"
-	plane = ABOVE_HUD_PLANE
 	appearance_flags = KEEP_TOGETHER
 	// When we draw an element, we get the number of layers it uses
 	// i.e box appearances are 3 (background, border, corners)
@@ -17,6 +16,8 @@
 	// If we draw a functional element, we increment its layers by layersUsed + 1
 	// To ensure there are layer fighting issues
 	var/layersUsed = 0
+	plane = ABOVE_HUD_PLANE
+	layer = 0
 
 
 // Call to begin drawing the UI + show to client
@@ -64,8 +65,7 @@
 		// Increment layer to draw on top
 		functionalUIObject.layer = layer + layersUsed + 1
 		functionalUIObject.root = e
-		functionalUIObject.pixel_x = x
-		functionalUIObject.pixel_y = y
+		functionalUIObject.transform = functionalUIObject.transform.Translate(x,y)
 		vis_contents |= functionalUIObject
 		// Draw from root - pass forceDraw to draw the functional element
 		functionalUIObject._drawElement(0, 0, e, c, TRUE)
@@ -97,44 +97,48 @@
 	var/remaining_width = e.calculated_layout["width"] - total_width - (e.padding * 2) - e.spacing * (e.elements.len - 1)
 	var/remaining_height = e.calculated_layout["height"] - total_height - (e.padding * 2) - e.spacing * (e.elements.len - 1)
 
-	// Adjust the starting position by the padding the first element
-	// This is so that the first element is drawn at the correct position
-	// 0,0 is the center of the element, so we need to adjust by half the width and height
-	if(length(e.elements))
-		var/datum/mojaveUI/element/first = e.elements[1]
-		switch(e.flow_direction)
-			if(MOJAVEUI_FLOW_ROW)
-				x += ICON_ANCHOR_LEFT(e.calculated_layout["width"], first.calculated_layout["width"]) + e.padding
-			if(MOJAVEUI_FLOW_ROWREVERSED)
-				x += ICON_ANCHOR_RIGHT(e.calculated_layout["width"], first.calculated_layout["width"]) - e.padding
-			if(MOJAVEUI_FLOW_COLUMN)
-				y += ICON_ANCHOR_TOP(e.calculated_layout["height"], first.calculated_layout["height"]) - e.padding
-			if(MOJAVEUI_FLOW_COLUMNREVERSED)
-				y += ICON_ANCHOR_BOTTOM(e.calculated_layout["height"], first.calculated_layout["height"]) + e.padding
+	// Our passed x,y vars are the center of this element
+	// So adjust x,y buffer by half the dimensions of the element and padding
+	// Padding is only added to the flow direction (i.e x for row, y for col)
+	switch(e.flow_direction)
+		if(MOJAVEUI_FLOW_ROW)
+			x += e.padding - (e.calculated_layout["width"] / 2)
+		if(MOJAVEUI_FLOW_ROWREVERSED)
+			x += (e.calculated_layout["width"] / 2) - e.padding
+		if(MOJAVEUI_FLOW_COLUMN)
+			y += (e.calculated_layout["height"] / 2) - e.padding
+		if(MOJAVEUI_FLOW_COLUMNREVERSED)
+			y += e.padding - (e.calculated_layout["height"] / 2)
+
+
 
 	for(var/datum/mojaveUI/element/child in e.elements)
 
-		// Adjust the position by the padding and dimensions of child if necessary
-		// Sprites are drawn from bottom left corner, so top to bottom or right to left we need to adjust the position
-
+		// Pad by half of child dimension, depending on flow direction
+		switch(e.flow_direction)
+			if(MOJAVEUI_FLOW_ROW)
+				x += _getFlexedWidth(child, total_flex_x, remaining_width) / 2
+			if(MOJAVEUI_FLOW_ROWREVERSED)
+				x -= _getFlexedWidth(child, total_flex_x, remaining_width) / 2
+			if(MOJAVEUI_FLOW_COLUMN)
+				y -= _getFlexedHeight(child, total_flex_y, remaining_height) / 2
+			if(MOJAVEUI_FLOW_COLUMNREVERSED)
+				y += _getFlexedHeight(child, total_flex_y, remaining_height) / 2
 
 		// Draw the child element at the current position
 		_drawElement(x, y, child, c)
 
-		// Calculate the position of the next element based on the flow direction
-		// We adjust by spacing, and then the width or height of the child element if we didn't previously
+		// Pad by half again, and spacing
 		switch(e.flow_direction)
 			if(MOJAVEUI_FLOW_ROW)
-				// In a row, the x position is increased by the width of the previous element and the spacing
-				x += _getFlexedWidth(child, total_flex_x, remaining_width) + e.spacing
+				x += (_getFlexedWidth(child, total_flex_x, remaining_width) / 2) + e.spacing
 			if(MOJAVEUI_FLOW_ROWREVERSED)
-				x -= _getFlexedWidth(child, total_flex_x, remaining_width) + e.spacing
+				x -= (_getFlexedWidth(child, total_flex_x, remaining_width) / 2) + e.spacing
 			if(MOJAVEUI_FLOW_COLUMN)
-				// In a column, the y position is increased by the height of the previous element and the spacing
-				y -= _getFlexedHeight(child, total_flex_y, remaining_height) + e.spacing
+				y -= (_getFlexedHeight(child, total_flex_y, remaining_height) / 2) + e.spacing
 			if(MOJAVEUI_FLOW_COLUMNREVERSED)
-				// In a reversed column, the y position is decreased by the height of the previous element and the spacing
-				y += _getFlexedHeight(child, total_flex_y, remaining_height) + e.spacing
+				y += (_getFlexedHeight(child, total_flex_y, remaining_height) / 2) + e.spacing
+
 
 // Get height and width of element, flex or calculated, whichever is greater
 /obj/mojaveUI/proc/_getFlexedWidth(datum/mojaveUI/element/e, total_flex_x, remaining_width)
@@ -151,7 +155,5 @@
 		// If the element has no appearance, we don't draw it
 		// This can be used for "structural" elements like containers
 		return
-	//overlay.transform = overlay.transform.Translate(x,y)
-	overlay.pixel_x = x
-	overlay.pixel_y = y
+	overlay.transform = overlay.transform.Translate(x,y)
 	overlays += overlay

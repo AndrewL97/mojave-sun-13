@@ -215,12 +215,6 @@ world
 
 #define TO_HEX_DIGIT(n) ascii2text((n&15) + ((n&15)<10 ? 48 : 87))
 
-#define ICON_ANCHOR_CENTER(dimension) (world.icon_size - dimension)/2
-#define ICON_ANCHOR_TOP(parentHeight, height) (parentHeight- height)/2
-#define ICON_ANCHOR_RIGHT(parentWidth, width) (parentWidth - width)/2
-#define ICON_ANCHOR_BOTTOM(parentHeight, height) -(parentHeight - height)/2
-#define ICON_ANCHOR_LEFT(parentWidth, width) -(parentWidth - width)/2
-
 
 	// Multiply all alpha values by this float
 /icon/proc/ChangeOpacity(opacity = 1)

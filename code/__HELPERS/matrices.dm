@@ -44,31 +44,34 @@
 	Turn(.) //BYOND handles cases such as -270, 360, 540 etc. DOES NOT HANDLE 180 TURNS WELL, THEY TWEEN AND LOOK LIKE SHIT
 
 /atom/proc/SpinAnimation(speed = 10, loops = -1, clockwise = 1, segments = 3, parallel = TRUE)
-	if(!segments)
-		return
-	var/segment = 360/segments
-	if(!clockwise)
-		segment = -segment
-	var/list/matrices = list()
-	for(var/i in 1 to segments-1)
-		var/matrix/M = matrix(transform)
-		M.Turn(segment*i)
-		matrices += M
-	var/matrix/last = matrix(transform)
-	matrices += last
+	var/list/arguments = list()
+	var/argument = ""
+	var/in_quote = 0
+	var/escaped = 0
 
-	speed /= segments
-
-	if(parallel)
-		animate(src, transform = matrices[1], time = speed, loops , flags = ANIMATION_PARALLEL)
-	else
-		animate(src, transform = matrices[1], time = speed, loops)
-	for(var/i in 2 to segments) //2 because 1 is covered above
-		animate(transform = matrices[i], time = speed)
-		//doesn't have an object argument because this is "Stacking" with the animate call above
-		//3 billion% intentional
-
-//Dumps the matrix data in format a-f
+	for(var/i in 1 to length(text))
+		var/char = copytext(text, i, i+1)
+		if(char == "\"")
+			if(escaped)
+				argument += char
+				escaped = 0
+			else
+				in_quote = !in_quote
+		else if(char == " " && !in_quote)
+			if(argument != "")
+				arguments += argument
+				argument = ""
+		else if(char == "\\")
+			if(escaped)
+				argument += char
+				escaped = 0
+			else
+				escaped = 1
+		else
+			argument += char
+			escaped = 0
+	if(argument != "")
+		arguments += argument
 /matrix/proc/tolist()
 	. = list()
 	. += a
@@ -237,6 +240,55 @@ round(cos_inv_third+sqrt3_sin, 0.001), round(cos_inv_third-sqrt3_sin, 0.001), ro
 					. += 0
 		else
 			CRASH("Invalid/unsupported color format argument in color_to_full_rgba_matrix()")
+
+
+
+
+// The below anchor helpers assume you haven't already translated the matrix
+
+/matrix/proc/anchor_center(parentWidth, childWidth, parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate((-parentWidth + childWidth) / 2, (parentHeight - childHeight) / 2)
+
+/matrix/proc/anchor_top(parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate(0, (parentHeight - childHeight) / 2)
+
+/matrix/proc/anchor_bottom(parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate(0, (-parentHeight + childHeight) / 2)
+
+/matrix/proc/anchor_left(parentWidth, childWidth)
+	RETURN_TYPE(/matrix)
+	return src.Translate((-parentWidth + childWidth) / 2, 0)
+
+/matrix/proc/anchor_right(parentWidth, childWidth)
+	RETURN_TYPE(/matrix)
+	return src.Translate((parentWidth - childWidth) / 2, 0)
+
+/matrix/proc/anchor_top_left(parentWidth, childWidth, parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate((-parentWidth + childWidth) / 2, (parentHeight - childHeight) / 2)
+
+/matrix/proc/anchor_top_right(parentWidth, childWidth, parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate((parentWidth - childWidth) / 2, (-parentHeight + childHeight) / 2)
+
+/matrix/proc/anchor_bottom_left(parentWidth, childWidth, parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate((-parentWidth + childWidth) / 2, (-parentHeight + childHeight) / 2)
+
+/matrix/proc/anchor_bottom_right(parentWidth, childWidth, parentHeight, childHeight)
+	RETURN_TYPE(/matrix)
+	return src.Translate((parentWidth - childWidth) / 2, (-parentHeight + childHeight) / 2)
+
+
+
+
+
+
+
+
 
 #undef LUMA_R
 #undef LUMA_G

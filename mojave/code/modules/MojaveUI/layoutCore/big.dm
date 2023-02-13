@@ -2,7 +2,7 @@
 
 // buttons and switches
 
-/datum/mojaveUI/element/auxMeter
+/datum/mojaveUI/element/interactive/auxMeter
 	appearanceType = /datum/mojaveUI/appearance/auxMeter
 	min_width = 128
 	min_height = 64
@@ -18,7 +18,7 @@
 
 // buttons and switches
 
-/datum/mojaveUI/element/auxPrimer
+/datum/mojaveUI/element/interactive/auxPrimer
 	appearanceType = /datum/mojaveUI/appearance/auxPrimer
 	min_width = 128
 	min_height = 64

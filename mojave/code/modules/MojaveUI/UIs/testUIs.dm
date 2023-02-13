@@ -33,41 +33,41 @@
 	rootContainer.flow_direction = MOJAVEUI_FLOW_ROW
 	rootContainer.appearanceType = /datum/mojaveUI/appearance/box/metal
 
-	// rootContainer.padding = 5
-	// rootContainer.spacing = 10
+	rootContainer.padding = 5
+	rootContainer.spacing = 10
 
-	// //////// Column 1
+	//////// Column 1
 
-	// var/datum/mojaveUI/element/flowContainer/col1 = new /datum/mojaveUI/element/flowContainer()
-	// rootContainer.add_element(col1)
-	// col1.appearanceType = /datum/mojaveUI/appearance/box/metal
-	// col1.flow_direction = MOJAVEUI_FLOW_COLUMN
-	// col1.padding = 5
-	// col1.spacing = 10
-	// // aux meter
-	// var/datum/mojaveUI/element/auxMeter/auxMeter = new
-	// col1.add_element(auxMeter)
+	var/datum/mojaveUI/element/flowContainer/col1 = new /datum/mojaveUI/element/flowContainer()
+	rootContainer.add_element(col1)
+	col1.appearanceType = /datum/mojaveUI/appearance/box/metal
+	col1.flow_direction = MOJAVEUI_FLOW_COLUMN
+	col1.padding = 5
+	col1.spacing = 10
+	// aux meter
+	var/datum/mojaveUI/element/interactive/auxMeter/auxMeter = new
+	col1.add_element(auxMeter)
 
-	// // aux primer
-	// var/datum/mojaveUI/element/auxPrimer/auxPrimer = new
-	// col1.add_element(auxPrimer)
+	// aux primer
+	var/datum/mojaveUI/element/interactive/auxPrimer/auxPrimer = new
+	col1.add_element(auxPrimer)
 
 
-	// //////// Column 2
-	// var/datum/mojaveUI/element/flowContainer/col2 = new /datum/mojaveUI/element/flowContainer()
-	// rootContainer.add_element(col2)
-	// col2.appearanceType = /datum/mojaveUI/appearance/box/metal
-	// col2.flow_direction = MOJAVEUI_FLOW_COLUMN
+	//////// Column 2
+	var/datum/mojaveUI/element/flowContainer/col2 = new /datum/mojaveUI/element/flowContainer()
+	rootContainer.add_element(col2)
+	col2.appearanceType = /datum/mojaveUI/appearance/box/metal
+	col2.flow_direction = MOJAVEUI_FLOW_COLUMN
 
-	// // // Green Amber and Red lights
-	// // col2.add_element(makeLightBox())
+	// Green Amber and Red lights
+	col2.add_element(makeLightBox())
 
-	// // // var/datum/mojaveUI/element/spacer = new(10)
-	// // // col2.add_element(spacer)
+	// // var/datum/mojaveUI/element/spacer = new(10)
+	// // col2.add_element(spacer)
 
-	// // // Heat Switch
-	// // var/datum/mojaveUI/element/interactive/switch/horizontal/heatSwitch = new
-	// // col2.add_element(heatSwitch)
+	// // Heat Switch
+	// var/datum/mojaveUI/element/interactive/switch/horizontal/heatSwitch = new
+	// col2.add_element(heatSwitch)
 
 	// // Ignition Button
 	// var/datum/mojaveUI/element/interactive/button/black/ignitionButton = new
@@ -80,17 +80,8 @@
 	// col3.flow_direction = MOJAVEUI_FLOW_ROW
 
 
-	// Power Output Toggle
-	var/datum/mojaveUI/element/interactive/switch/toggle/powerOutputToggleBig = new
-	rootContainer.add_element(powerOutputToggleBig)
-	powerOutputToggleBig.min_width = 64
 
-		// Power Output Toggle
-	var/datum/mojaveUI/element/interactive/switch/toggle/powerOutputToggle = new
-	rootContainer.add_element(powerOutputToggle)
-
-
-	// Green Amber and Red lights
+	// // Green Amber and Red lights
 	// col3.add_element(makeLightBox())
 	// col3.add_element(makeLightBox())
 
@@ -101,6 +92,9 @@
 	// var/datum/mojaveUI/element/interactive/switch/horizontal/powerSourceSwitch = new
 	// col3.add_element(powerSourceSwitch)
 
+	// // Power Output Toggle
+	// var/datum/mojaveUI/element/interactive/switch/toggle/powerOutputToggleBig = new
+	// col3.add_element(powerOutputToggleBig)
 
 	return rootContainer
 
