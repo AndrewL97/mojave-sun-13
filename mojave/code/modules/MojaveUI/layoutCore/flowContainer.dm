@@ -31,7 +31,8 @@
 		element.set_dirty()
 		set_dirty()
 
-/datum/mojaveUI/element/flowContainer/CalculateLayout()
+/datum/mojaveUI/element/flowContainer/CalculateLayout(parentPath)
+	elementPath = parentPath + MOJAVEUI_PATH_SEPARATOR + name
 	calculated_layout = defaultCalculatedLayout()
 	totalChildSize = list("width" = 0, "height" = 0)
 	switch(flow_direction)
@@ -54,7 +55,7 @@
 
 /datum/mojaveUI/element/flowContainer/proc/layout_row()
 	for(var/datum/mojaveUI/element/element in elements)
-		var/list/element_layout = element.layout()
+		var/list/element_layout = element.layout(elementPath)
 		totalChildSize["width"] += element_layout["width"] + spacing
 		totalChildSize["height"] = max(totalChildSize["height"], element_layout["height"])
 
@@ -65,7 +66,7 @@
 
 /datum/mojaveUI/element/flowContainer/proc/layout_column()
 	for(var/datum/mojaveUI/element/element in elements)
-		var/list/element_layout = element.layout()
+		var/list/element_layout = element.layout(elementPath)
 		totalChildSize["width"] = max(totalChildSize["width"], element_layout["width"])
 		totalChildSize["height"] += element_layout["height"] + spacing
 

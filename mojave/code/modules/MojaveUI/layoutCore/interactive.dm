@@ -28,13 +28,74 @@
 /datum/mojaveUI/element/interactive/getAppearanceObject()
 	. = ..()
 
-	if(istype(.,/datum/mojaveUI/appearance/light))
+	if(istype(.,/datum/mojaveUI/appearance/interactive))
 		var/datum/mojaveUI/appearance/light/L = .
 		L.on = on
 
 	return .
 
 
+// apply mousedown and mouseup events to our interactive things
+/datum/mojaveUI/element/interactive/applyFunctions(obj/mojaveUI/UIObj, atom/owner)
+	. = ..()
+	RegisterSignal(UIObject, COMSIG_MOUSEDOWN, .proc/on_mouse_down)
+	RegisterSignal(UIObject, COMSIG_MOUSEUP, .proc/on_mouse_up)
+
+/datum/mojaveUI/element/interactive/proc/on_mouse_down(client/source, atom/_target, turf/location, control, params)
+	var/list/modifiers = params2list(params)
+
+	if(LAZYACCESS(modifiers, SHIFT_CLICK))
+		return
+	if(LAZYACCESS(modifiers, CTRL_CLICK))
+		return
+	if(LAZYACCESS(modifiers, MIDDLE_CLICK))
+		return
+	if(LAZYACCESS(modifiers, RIGHT_CLICK))
+		return
+	if(LAZYACCESS(modifiers, ALT_CLICK))
+		return
 
 
+	// passed the checks, so handle appearance changes and then throw the signal
+	handle_mouse_down()
+	if(UIOwner)
+		SEND_SIGNAL(UIOwner, COMSIG_MOJAVEUI_MOUSEDOWN, name, elementPath)
 
+/datum/mojaveUI/element/interactive/proc/on_mouse_up(client/source, atom/_target, turf/location, control, params)
+
+	var/list/modifiers = params2list(params)
+
+	if(LAZYACCESS(modifiers, SHIFT_CLICK))
+		return
+	if(LAZYACCESS(modifiers, CTRL_CLICK))
+		return
+	if(LAZYACCESS(modifiers, MIDDLE_CLICK))
+		return
+	if(LAZYACCESS(modifiers, RIGHT_CLICK))
+		return
+	if(LAZYACCESS(modifiers, ALT_CLICK))
+		return
+
+
+	// passed the checks, so handle appearance changes and then throw the signal
+	handle_mouse_up()
+	if(UIOwner)
+		SEND_SIGNAL(UIOwner, COMSIG_MOJAVEUI_MOUSEUP, name, elementPath)
+
+
+// handle appearance changes
+/datum/mojaveUI/element/interactive/proc/handle_mouse_down()
+	on = TRUE
+	UIObject.drawObject(TRUE)
+
+/datum/mojaveUI/element/interactive/proc/handle_mouse_up()
+	on = FALSE
+	UIObject.drawObject(TRUE)
+
+// Switches, unlike buttons, toggle on down, and then do nothing on up
+/datum/mojaveUI/element/interactive/switch/handle_mouse_down()
+	on = !on
+	UIObject.drawObject(TRUE)
+
+/datum/mojaveUI/element/interactive/switch/handle_mouse_up()
+	return

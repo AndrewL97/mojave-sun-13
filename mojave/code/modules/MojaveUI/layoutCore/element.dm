@@ -21,10 +21,16 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 #define MOJAVEUI_FLOW_ROWREVERSED	2
 #define MOJAVEUI_FLOW_COLUMN		 3
 #define MOJAVEUI_FLOW_COLUMNREVERSED 4
+#define MOJAVEUI_PATH_SEPARATOR "."
 
 /datum/mojaveUI/element
 
 	// Configurable properties //
+
+	// The name of the element - used for identifying button's pressed, etc.
+	// This is used to produce elementPath, which is a list of names from the root element to this element
+	// Preferably this is at least unique within the parent element
+	var/name = "element"
 
 	// minimum dimensions
 	// for the sake of centering, treat these as the icon's dimensions
@@ -34,7 +40,7 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	var/min_height = 32
 
 	// Whether the element can be interacted with - If FALSE we will be an overlay for our parent, to save on maptick
-	var/functional = TRUE
+	var/functional = FALSE
 
 	// Whether the element is hidden - hides children too
 	var/hidden = FALSE
@@ -49,6 +55,11 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 
 
 	// Calculated properties //
+
+	// MOJAVEUI_PATH_SEPARATOR delimited list of elements from root to this element
+	var/elementPath = ""
+	var/obj/mojaveUI/UIObject = null // for functional elements, the UI object (i.e button) that this element represents
+	var/atom/UIOwner = null // for functional elements, the atom that owns the entire UI (i.e a computer, etc.)
 
 	// list(element, width,height)
 	var/list/calculated_layout = list()
@@ -68,6 +79,11 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	if(A)
 		return A.get(calculated_layout["width"], calculated_layout["height"], layer)
 
+/datum/mojaveUI/element/proc/getAppearanceDimensions()
+	if(appearanceType)
+		return list(initial(appearanceType.icon_height), initial(appearanceType.icon_width))
+	return list(world.icon_size, world.icon_size)
+
 
 /datum/mojaveUI/element/proc/getAppearanceLayersUsed()
 	if(appearanceType)
@@ -77,19 +93,26 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 /datum/mojaveUI/element/proc/set_dirty()
 		dirty = 1
 
-/datum/mojaveUI/element/proc/layout()
+/datum/mojaveUI/element/proc/layout(parentPath = "")
 	if(!dirty && calculated_layout)
 		return calculated_layout
-	return CalculateLayout()
+	return CalculateLayout(parentPath)
 
-/datum/mojaveUI/element/proc/CalculateLayout()
+/datum/mojaveUI/element/proc/CalculateLayout(parentPath)
 	calculated_layout = defaultCalculatedLayout()
 	dirty = 0
+	elementPath = parentPath + MOJAVEUI_PATH_SEPARATOR + name
 	return calculated_layout
 
 /datum/mojaveUI/element/proc/defaultCalculatedLayout()
 	// x, y is relative to our parent element, not absolute
 	return list("element"=src, "width"=min_width, "height"=min_height)
+
+
+/datum/mojaveUI/element/proc/applyFunctions(obj/mojaveUI/UIObj, atom/owner)
+	src.UIObject = UIObj
+	src.UIOwner = owner
+	return
 
 
 // spacer used to add space between elements, without displaying anything

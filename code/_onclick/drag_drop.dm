@@ -39,6 +39,7 @@
 	active_mousedown_item = mob.canMobMousedown(object, location, params)
 	if(active_mousedown_item)
 		active_mousedown_item.onMouseDown(object, location, params, mob)
+	. = ..()
 
 /client/MouseUp(object, location, control, params)
 	if(SEND_SIGNAL(src, COMSIG_CLIENT_MOUSEUP, object, location, control, params) & COMPONENT_CLIENT_MOUSEUP_INTERCEPT)
@@ -49,6 +50,7 @@
 	if(active_mousedown_item)
 		active_mousedown_item.onMouseUp(object, location, params, mob)
 		active_mousedown_item = null
+	. = ..()
 
 /mob/proc/CanMobAutoclick(object, location, params)
 

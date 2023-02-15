@@ -5,8 +5,12 @@
 
 
 /obj/mojaveUI
+
+	// The object that owns the ui - we pass signals to it so it can do things
+	var/atom/owner
+
 	// Root element must always be a flow container
-	var/datum/mojaveUI/element/flowContainer/root
+	var/datum/mojaveUI/element/root
 	var/list/obj/mojaveUI/children = list()
 	screen_loc = "CENTER,CENTER"
 	appearance_flags = KEEP_TOGETHER
@@ -30,7 +34,7 @@
 	// Calculate the layout of the root element
 	root.layout()
 	// Draw the root element
-	_drawElement(0, 0, root, c)
+	drawObject()
 	// Show the UI to the client
 	c.screen += src
 
@@ -38,11 +42,26 @@
 	. = ..()
 	_clearUI()
 
+
+// Draw the mojaveUI object - pass redraw if we only want to redraw our appearance
+// I think this will cause issues if you give a container functions, so maybe don't do that
+// We force draw the element
+// And apply our root element's functionality to the object if we are not redrawing
+/obj/mojaveUI/proc/drawObject(redraw = FALSE)
+	_clearUI(FALSE)
+	_drawElement(0, 0, root, TRUE)
+	// Our element configures signals, etc. on the object
+	// We also pass our owner, so we can register the signals for it as well
+	if(!redraw)
+		root.applyFunctions(src, owner)
+
+
 // Clear the UI - remove all children and overlays
-/obj/mojaveUI/proc/_clearUI()
-	for(var/obj/mojaveUI/child in children)
-		qdel(child)
-	children = list()
+/obj/mojaveUI/proc/_clearUI(killChildren = TRUE)
+	if(killChildren)
+		for(var/obj/mojaveUI/child in children)
+			qdel(child)
+		children = list()
 	overlays = list()
 	vis_contents = list()
 
@@ -53,7 +72,7 @@
 
 // This is the main proc that draws the UI
 // We start by drawing the root element, and then recursively draw any children
-/obj/mojaveUI/proc/_drawElement(x, y, datum/mojaveUI/element/e, client/c, forceDraw = FALSE)
+/obj/mojaveUI/proc/_drawElement(x, y, datum/mojaveUI/element/e, forceDraw = FALSE)
 
 	if(e.hidden)
 		return
@@ -67,19 +86,19 @@
 		functionalUIObject.root = e
 		functionalUIObject.transform = functionalUIObject.transform.Translate(x,y)
 		vis_contents |= functionalUIObject
-		// Draw from root - pass forceDraw to draw the functional element
-		functionalUIObject._drawElement(0, 0, e, c, TRUE)
+		functionalUIObject.drawObject()
+		children += functionalUIObject
 		return
 
 	// WE DRAW THE ELEMENT BEFORE ANY CHILDREN,
 	// SO CHILDREN ARE DRAWN ON TOP
-	_drawOverlay(x, y, e, c)
+	_drawOverlay(x, y, e)
 
 	if(istype(e, /datum/mojaveUI/element/flowContainer) )
-		_drawContainer(x, y, e, c)
+		_drawContainer(x, y, e)
 
 // Draw the children of the given element
-/obj/mojaveUI/proc/_drawContainer(x, y, datum/mojaveUI/element/flowContainer/e, client/c)
+/obj/mojaveUI/proc/_drawContainer(x, y, datum/mojaveUI/element/flowContainer/e)
 
 	// Get total flex_x and flex_y of all children + the total width and height of all children
 	// This is used to override the calculated width and height of the child elements when they are flexed
@@ -129,7 +148,7 @@
 				y += _getFlexedHeight(child, total_flex_y, remaining_height) / 2
 
 		// Draw the child element at the current position
-		_drawElement(x + iconXShim(child), y + iconYShim(child), child, c)
+		_drawElement(x + iconXShim(child), y + iconYShim(child), child)
 
 		// Pad by half again, with spacing, and restore the un-centered position
 		switch(e.flow_direction)
@@ -161,7 +180,6 @@
 		return (world.icon_size - e.min_height)  / 2
 	return 0
 
-
 // Draw the element at the given position - fetch the appearance object and add it to the overlays
 /obj/mojaveUI/proc/_drawOverlay(x, y, datum/mojaveUI/element/e)
 	var/mutable_appearance/overlay = e.getAppearance(layer + layersUsed)
@@ -170,5 +188,7 @@
 		// If the element has no appearance, we don't draw it
 		// This can be used for "structural" elements like containers
 		return
-	overlay.transform = overlay.transform.Translate(x,y)
+
+
+	overlay.transform = overlay.transform.Translate(x, y)
 	overlays += overlay

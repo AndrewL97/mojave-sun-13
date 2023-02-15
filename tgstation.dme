@@ -4438,6 +4438,7 @@
 #include "mojave\code\modules\MojaveUI\layoutCore\flowContainer.dm"
 #include "mojave\code\modules\MojaveUI\layoutCore\interactive.dm"
 #include "mojave\code\modules\MojaveUI\rendererCore\rendererCore.dm"
+#include "mojave\code\modules\MojaveUI\rendererCore\templateHelpers.dm"
 #include "mojave\code\modules\MojaveUI\UIs\testUIs.dm"
 #include "mojave\code\modules\MojaveUI\Widgets\cell.dm"
 #include "mojave\code\modules\preferences\character.dm"

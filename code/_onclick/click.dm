@@ -47,6 +47,18 @@
 	if(flags_1 & INITIALIZED_1)
 		usr.DblClickOn(src,params)
 
+// currently only used for mojaveUI buttons/switches
+// idc about usr.mouseDown, etc. because it's not used anywhere
+/atom/MouseDown(location, control, params)
+	. = ..()
+	if(flags_1 & INITIALIZED_1)
+		SEND_SIGNAL(src, COMSIG_MOUSEDOWN, location, control, params, usr)
+
+/atom/MouseUp(location, control, params)
+	. = ..()
+	if(flags_1 & INITIALIZED_1)
+		SEND_SIGNAL(src, COMSIG_MOUSEUP, location, control, params, usr)
+
 /atom/MouseWheel(delta_x,delta_y,location,control,params)
 	if(flags_1 & INITIALIZED_1)
 		usr.MouseWheelOn(src, delta_x, delta_y, params)
