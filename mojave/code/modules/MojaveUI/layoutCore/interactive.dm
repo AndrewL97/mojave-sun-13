@@ -7,6 +7,16 @@
 	appearanceType = /datum/mojaveUI/appearance/interactive
 	var/on = FALSE
 
+/datum/mojaveUI/element/interactive/operator[]=(key, value)
+	switch(key)
+		if("on")
+			on = value
+			if(UIObject)
+				UIObject.drawObject(TRUE)
+		else
+			. = ..()
+
+
 /datum/mojaveUI/element/interactive/button/black
 	appearanceType = /datum/mojaveUI/appearance/interactive/button/black
 
@@ -85,17 +95,14 @@
 
 // handle appearance changes
 /datum/mojaveUI/element/interactive/proc/handle_mouse_down()
-	on = TRUE
-	UIObject.drawObject(TRUE)
+	src["on"] = TRUE
 
 /datum/mojaveUI/element/interactive/proc/handle_mouse_up()
-	on = FALSE
-	UIObject.drawObject(TRUE)
+	src["on"] = FALSE
 
 // Switches, unlike buttons, toggle on down, and then do nothing on up
 /datum/mojaveUI/element/interactive/switch/handle_mouse_down()
-	on = !on
-	UIObject.drawObject(TRUE)
+	src["on"] = !on // mmm inconsistent yummy yummy code
 
 /datum/mojaveUI/element/interactive/switch/handle_mouse_up()
 	return

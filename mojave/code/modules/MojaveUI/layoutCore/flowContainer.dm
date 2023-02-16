@@ -1,6 +1,7 @@
 
 /datum/mojaveUI/element/flowContainer
 
+	elementTypeName = "flowContainer"
 	appearanceType = /datum/mojaveUI/appearance/box
 
 	// Containers should resize based on their children
@@ -11,11 +12,28 @@
 	var/spacing = 0
 	// internal padding for the container, currently for all sides
 	var/padding = 0
+	var/flow_direction = MOJAVEUI_FLOW_ROW
+	var/list/elements = list() // List of Element objects
 
 	var/list/totalChildSize
 
-	var/flow_direction = MOJAVEUI_FLOW_ROW
-	var/list/elements = list() // List of Element objects
+/datum/mojaveUI/element/flowContainer/operator[]=(key, value)
+	switch (key)
+		if("spacing")
+			spacing = value
+		if("padding")
+			padding = value
+		if("flow_direction")
+			flow_direction = value
+		if("elements")
+			if(istype(value, /list))
+				for(var/list/element in value)
+					add_element(MojaveUI_GenerateElement(element))
+			else
+				add_element(MojaveUI_GenerateElement(value))
+		else
+			..()
+
 
 /datum/mojaveUI/element/flowContainer/layout
 	// Draw nothing, purely used for layout
@@ -73,3 +91,6 @@
 	// trim excess spacing
 	if(length(elements))
 		totalChildSize["height"] -= spacing
+
+
+

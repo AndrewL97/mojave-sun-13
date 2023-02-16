@@ -8,6 +8,7 @@
 
 
 /datum/mojaveUI/appearance
+	var/appearanceTypeName = "appearance"
 	var/baseLayer = HUD_BACKGROUND_LAYER
 	var/icon/icon = 'mojave/icons/hud/mojaveUI/ms_ui_base.dmi'
 	var/layersUsed = 1 // THIS MUST BE SET IF YOU USE MORE THAN ONE LAYER -- SEE BOX FOR EXAMPLE

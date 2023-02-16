@@ -32,6 +32,12 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	// Preferably this is at least unique within the parent element
 	var/name = "element"
 
+	// Use to fetch the element type from the global element type list
+	// Set this in the object definition and leave it alone
+	// This should be unique across all element types
+	// i.e a big red button would be "button.red.big"
+	var/elementTypeName = "element"
+
 	// minimum dimensions
 	// for the sake of centering, treat these as the icon's dimensions
 	// if you are centering a scalable (but 32 based) icon, set it to 0 or 32
@@ -74,15 +80,50 @@ This will create a FlowLayout with three buttons arranged in a row, with 10 pixe
 	if(appearanceType)
 		return new appearanceType(src)
 
+// operator overload to dynamically set properties (without using vars everywhere)
+// only allow configurable properties to be set here
+// This crashes at the end for failures - so for overrides, call ..() at the end
+/datum/mojaveUI/element/proc/operator[]=(key, value)
+	switch(key)
+		if("name")
+			name = value
+		if("elementTypeName")
+			elementTypeName = value
+		if("min_width")
+			min_width = value
+		if("min_height")
+			min_height = value
+		if("functional")
+			functional = value
+		if("hidden")
+			hidden = value
+		if("appearanceType")
+			appearanceType = MojaveUI_GetAppearanceType(value)
+		if("flex_x")
+			flex_x = value
+		if("flex_y")
+			flex_y = value
+		else
+			CRASH("Invalid property [key] for [type]")
+			/*
+				Debugging tips:
+					If this is being hit when adding child elements, and Key is a list instead of a string - check you haven't got too many lists in your UI definition
+						i.e elements = list(list(list(type = "button", name = "button1")))
+			 */
+
+
 /datum/mojaveUI/element/proc/getAppearance(layer = 0)
 	var/datum/mojaveUI/appearance/A = getAppearanceObject()
 	if(A)
 		return A.get(calculated_layout["width"], calculated_layout["height"], layer)
 
-/datum/mojaveUI/element/proc/getAppearanceDimensions()
-	if(appearanceType)
-		return list(initial(appearanceType.icon_height), initial(appearanceType.icon_width))
-	return list(world.icon_size, world.icon_size)
+/datum/mojaveUI/element/proc/GetAppearanceHeight()
+	if(appearanceType) return initial(appearanceType.icon_height)
+	return world.icon_size
+
+/datum/mojaveUI/element/proc/GetAppearanceWidth()
+	if(appearanceType) return initial(appearanceType.icon_width)
+	return world.icon_size
 
 
 /datum/mojaveUI/element/proc/getAppearanceLayersUsed()

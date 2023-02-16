@@ -171,14 +171,10 @@
 
 // These shims handle the extra space needed for icons that are not 32x32
 /obj/mojaveUI/proc/iconXShim(datum/mojaveUI/element/e)
-	if(e.min_width)
-		return (world.icon_size - e.min_width)  / 2
-	return 0
+	return (world.icon_size - e.GetAppearanceWidth())  / 2
 
 /obj/mojaveUI/proc/iconYShim(datum/mojaveUI/element/e)
-	if(e.min_height)
-		return (world.icon_size - e.min_height)  / 2
-	return 0
+	return (world.icon_size - e.GetAppearanceHeight())  / 2
 
 // Draw the element at the given position - fetch the appearance object and add it to the overlays
 /obj/mojaveUI/proc/_drawOverlay(x, y, datum/mojaveUI/element/e)

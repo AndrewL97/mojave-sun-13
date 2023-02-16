@@ -29,88 +29,78 @@
 /obj/mojaveUI/generator
 
 /obj/mojaveUI/generator/_template()
-	var/datum/mojaveUI/element/flowContainer/rootContainer = new /datum/mojaveUI/element/flowContainer()
-	rootContainer.flow_direction = MOJAVEUI_FLOW_ROW
-	rootContainer.appearanceType = /datum/mojaveUI/appearance/box/metal
+	return MojaveUI_GenerateElement(list(
+		"flow_direction" = MOJAVEUI_FLOW_ROW,
+		"spacing" = 3,
+		"padding" = 3,
+		"elements" = list(
+			list(
+				"spacing" = 3,
+				"padding" = 3,
+				"flow_direction" = MOJAVEUI_FLOW_COLUMN,
+				"elements" = list(
+					list(
+						"type" = "auxMeter",
+						"name" = "auxMeter",
+					),
+					list(
+						"type" = "auxPrimer",
+						"name" = "auxPrimer",
+					),
+				)
+			),
+			list(
+				"spacing" = 3,
+				"padding" = 3,
+				"flow_direction" = MOJAVEUI_FLOW_COLUMN,
+				"elements" = list(
+					lightBox("Temperature"),
+					list(
+						"type" = "button.toggle.switch",
+						"name" = "heaterSwitch"
+					),
+					list(
+						"type" = "button.red",
+						"name" = "ignition"
+					),
+				)
+			),
+			list(
+				"spacing" = 3,
+				"padding" = 3,
+				"flow_direction" = MOJAVEUI_FLOW_COLUMN,
+				"elements" = list(
+					lightBox("Power"),
+					list(
+						"type" = "button.toggle.switch",
+						"name" = "powerInputSwitch"
+					),
+					list(
+						"type" = "button.toggle.switch",
+						"name" = "powerOutputSwitch"
+					)
+				)
+			)
+		)
+	))
 
-	rootContainer.padding = 5
-	rootContainer.spacing = 10
-
-	//////// Column 1
-
-	var/datum/mojaveUI/element/flowContainer/col1 = new /datum/mojaveUI/element/flowContainer()
-	rootContainer.add_element(col1)
-	col1.appearanceType = /datum/mojaveUI/appearance/box/metal
-	col1.flow_direction = MOJAVEUI_FLOW_COLUMN
-	col1.padding = 5
-	col1.spacing = 10
-	// aux meter
-	var/datum/mojaveUI/element/interactive/auxMeter/auxMeter = new
-	col1.add_element(auxMeter)
-
-	// aux primer
-	var/datum/mojaveUI/element/interactive/auxPrimer/auxPrimer = new
-	col1.add_element(auxPrimer)
-
-
-	//////// Column 2
-	var/datum/mojaveUI/element/flowContainer/col2 = new /datum/mojaveUI/element/flowContainer()
-	rootContainer.add_element(col2)
-	col2.appearanceType = /datum/mojaveUI/appearance/box/metal
-	col2.flow_direction = MOJAVEUI_FLOW_COLUMN
-
-	// Green Amber and Red lights
-	col2.add_element(makeLightBox())
-
-	// var/datum/mojaveUI/element/spacer = new(10)
-	// col2.add_element(spacer)
-
-	// Heat Switch
-	var/datum/mojaveUI/element/interactive/switch/horizontal/heatSwitch = new
-	col2.add_element(heatSwitch)
-
-	// Ignition Button
-	var/datum/mojaveUI/element/interactive/button/black/ignitionButton = new
-	col2.add_element(ignitionButton)
-
-
-
-	/////// Column 3
-	var/datum/mojaveUI/element/flowContainer/col3 = new /datum/mojaveUI/element/flowContainer()
-	rootContainer.add_element(col3)
-	col3.appearanceType = /datum/mojaveUI/appearance/box/metal
-	col3.flow_direction = MOJAVEUI_FLOW_COLUMN
-
-	// Green Amber and Red lights
-	col3.add_element(makeLightBox())
-
-	// var/datum/mojaveUI/element/spacer2 = new(10)
-	// col3.add_element(spacer2)
-
-	// Power Source Switch
-	var/datum/mojaveUI/element/interactive/switch/horizontal/powerSourceSwitch = new
-	col3.add_element(powerSourceSwitch)
-
-	// Power Output Toggle
-	var/datum/mojaveUI/element/interactive/switch/toggle/powerOutputToggleBig = new
-	col3.add_element(powerOutputToggleBig)
-
-	return rootContainer
-
-
-/proc/makeLightBox()
-	RETURN_TYPE(/datum/mojaveUI/element/flowContainer)
-
-	var/datum/mojaveUI/element/flowContainer/cont = new
-	cont.flow_direction = MOJAVEUI_FLOW_COLUMN
-	cont.appearanceType = /datum/mojaveUI/appearance/box/metal
-
-	// Green Amber and Red lights
-	var/datum/mojaveUI/element/light/green/greenLight2 = new
-	cont.add_element(greenLight2)
-	var/datum/mojaveUI/element/light/amber/amberLight2 = new
-	cont.add_element(amberLight2)
-	var/datum/mojaveUI/element/light/red/redLight2 = new
-	cont.add_element(redLight2)
-
-	return cont
+/obj/mojaveUI/generator/proc/lightBox(lightboxName)
+	return list(
+		"spacing" = 3,
+		"padding" = 3,
+		"flow_direction" = MOJAVEUI_FLOW_COLUMN,
+		"elements" = list(
+			list(
+				"type" = "display.light.green",
+				"name" = "[lightboxName]Green"
+			),
+			list(
+				"type" = "display.light.amber",
+				"name" = "[lightboxName]Amber"
+			),
+			list(
+				"type" = "display.light.red",
+				"name" = "[lightboxName]Red"
+			)
+		)
+	)
