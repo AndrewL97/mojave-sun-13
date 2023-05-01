@@ -8,7 +8,7 @@
 
 /datum/element/world_icon
 	id_arg_index = 2
-	element_flags = ELEMENT_BESPOKE | ELEMENT_DETACH
+	element_flags = ELEMENT_BESPOKE | ELEMENT_DETACH_ON_HOST_DESTROY
 	/**
 	 * If we want COMPLEX world icon behavior, this proc will handle icon updating when the item is NOT in the inventory.
 	 * I just assumed that the default update_icon is for inventory sprites because ss13 basically focuses on how the sprites

@@ -10,11 +10,6 @@
 	. = ..()
 	AddElement(/datum/element/world_icon, null, icon, 'mojave/icons/objects/clothing/clothing_inventory/belts_inventory.dmi')
 
-/obj/item/storage/belt/holster/ms13/equipped(mob/user, slot)
-	. = ..()
-
-/obj/item/storage/belt/holster/ms13/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_items = 3 // This thing is super busted. See you on the other side.
 	STR.max_w_class = WEIGHT_CLASS_NORMAL
@@ -34,6 +29,7 @@
 		/obj/item/ammo_box/ms13/cpistol,
 		/obj/item/gun/ballistic/revolver
 		))
+
 /obj/item/storage/belt/holster/ms13/sheriff/full_44/PopulateContents()
 	var/static/items_inside = list(
 		/obj/item/gun/ballistic/revolver/ms13/rev44 = 1,

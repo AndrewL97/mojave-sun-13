@@ -238,7 +238,7 @@ GLOBAL_LIST_INIT(log_recipes, list ( \
 	. += GLOB.log_recipes
 
 /obj/item/stack/sheet/ms13/log/attackby(obj/item/W, mob/user, params)
-	if(W.sharpness & SHARP_AXE)
+	if(W.tool_behaviour in list(TOOL_SAW, TOOL_AXE))
 		if(amount > 1)
 			user.show_message(span_notice("You can only chop one log at a time!"), MSG_VISUAL)
 			return

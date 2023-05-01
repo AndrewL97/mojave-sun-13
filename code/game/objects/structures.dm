@@ -70,6 +70,8 @@
 
 // MOJAVE SUN EDIT BEGIN - This is put here so that we don't have to redefine this on every single structure and can do it cleaner.
 
+/obj/structure/var/projectile_passchance = 0 // MOJAVE SUN EDIT - projectile passthrough chance 100% always goes through, 0% never goes through. Definition isn't required if structure doesn't have density, duh.
+
 /obj/structure/CanAllowThrough(atom/movable/mover, border_dir)
 	. = ..()
 	if(istype(loc, /obj/structure) in get_turf(mover))

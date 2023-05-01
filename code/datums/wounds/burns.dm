@@ -48,9 +48,14 @@
 		if(victim.reagents.has_reagent(/datum/reagent/medicine/mine_salve))
 			sanitization += 0.3
 			flesh_healing += 0.5
-// gomble todo gauze
-	if(limb.current_gauze)
-		limb.seep_gauze(WOUND_BURN_SANITIZATION_RATE * seconds_per_tick)
+
+
+	// MOJAVE SUN EDIT BEGIN
+	var/bandage_factor = 1// ORIGINAL IS if(limb.current_gauze)
+	if(limb.current_gauze && limb.current_gauze.seep_gauze(WOUND_BURN_SANITIZATION_RATE, GAUZE_STAIN_PUS)) //  ORIGINAL IS 	limb.seep_gauze(WOUND_BURN_SANITIZATION_RATE * delta_time)
+		bandage_factor = limb.current_gauze.sanitisation_factor
+	// MOJAVE SUN EDIT END
+
 
 	if(flesh_healing > 0) // good bandages multiply the length of flesh healing
 		//var/bandage_factor = limb.current_gauze?.burn_cleanliness_bonus || 1 // MOJAVE SUN EDIT

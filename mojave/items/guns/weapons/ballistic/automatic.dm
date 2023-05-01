@@ -1,3 +1,8 @@
+// GOMBLE KILL ME
+/obj/var/grid_width = 0
+/obj/var/grid_height = 0
+
+
 //Guns
 /obj/item/gun/ballistic/automatic/ms13/semi/service
 	name = "service rifle"

@@ -828,8 +828,8 @@
 
 /mob/living/simple_animal/hostile/retaliate/trader/ms13/drought/general_goods/initial_products()
 	return list(
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/sarsaparilla = list(20, rand(2,6)),
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cola = list(20, rand(2,6)),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/sarsaparilla = list(20, rand(2,6)),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cola = list(20, rand(2,6)),
 		/obj/item/food/ms13/prewar/canned/porknbeans = list(25, rand(1,4)),
 		/obj/item/food/ms13/prewar/canned/cajunrice = list(20, rand(1,3)),
 		/obj/item/food/ms13/prewar/canned/dogfood = list(15, rand(0,2)),
@@ -862,10 +862,10 @@
 
 /mob/living/simple_animal/hostile/retaliate/trader/ms13/drought/general_goods/initial_wanteds()
 	return list(
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quartz = list(50, rand(0,1), ""),
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quantum = list(50, rand(0,1), ""),
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_dark = list(50, rand(0,1), ""),
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_victory = list(40, rand(0,2), ""),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quartz = list(50, rand(0,1), ""),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quantum = list(50, rand(0,1), ""),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_dark = list(50, rand(0,1), ""),
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_victory = list(40, rand(0,2), ""),
 		/obj/item/stack/sheet/ms13/scrap_gold = list(8, rand(3,15), ", per piece of gold"),
 		/obj/item/stack/sheet/ms13/scrap_silver = list(6, rand(3,15), ", per piece of silver"),
 		/obj/item/stack/sheet/ms13/refined_gold = list(50, rand(1,5), ", per ingot of gold"),

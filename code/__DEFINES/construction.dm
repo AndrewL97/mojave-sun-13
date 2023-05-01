@@ -147,6 +147,9 @@ GLOBAL_LIST_INIT(crafting_category_food, list(
 #define CAT_TOOLS "Tools"
 #define CAT_CULT "Blood Cult"
 
+// tablecrafting interface types - MOJAVE EDIT START
+/*
+
 GLOBAL_LIST_INIT(crafting_category, list(
 	CAT_WEAPON_RANGED,
 	CAT_WEAPON_MELEE,
@@ -168,11 +171,9 @@ GLOBAL_LIST_INIT(crafting_category, list(
 	CAT_CULT,
 ))
 
-/// GOMBLE TODO - Tablecrafting, replace list above
+*/
 
-/*
 
-// tablecrafting interface types - MOJAVE EDIT START
 
 #define CAT_MEDICAL "Medical"
 #define CAT_ARMOR "Armor"
@@ -197,11 +198,27 @@ GLOBAL_LIST_INIT(crafting_category, list(
 #define CRAFTING_BENCH_SMELTER    1<<6
 #define CRAFTING_BENCH_CAMPFIRE   1<<7
 
+GLOBAL_LIST_INIT(crafting_category, list(
+	CAT_MEDICAL,
+	CAT_ARMOR,
+	CAT_HEADGEAR,
+	CAT_UNDER,
+	CAT_MISCCLOTHING,
+	CAT_WEAPONS,
+	CAT_GUNS,
+	CAT_JUNK_AMMO,
+	CAT_STAN_AMMO,
+	CAT_ELECTRONICS,
+	CAT_UTILITY,
+	CAT_SMELTER,
+	CAT_MELT
+))
+
+
+
 // tablecrafting interface types - MOJAVE EDIT END
 
 
-
-*/
 
 
 //rcd modes

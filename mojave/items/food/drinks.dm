@@ -1,6 +1,6 @@
 // For bottles and drink containers //
 
-/obj/item/reagent_containers/food/drinks/drinkingglass/ms13
+/obj/item/reagent_containers/cup/glass/drinkingglass/ms13
 	name = "glass"
 	amount_per_transfer_from_this = 10
 	possible_transfer_amounts = list(10, 15, 20, 25, 30, 50)
@@ -12,7 +12,7 @@
 	grid_height = 64
 	grid_width = 32
 
-/obj/item/reagent_containers/food/drinks/mug/ms13
+/obj/item/reagent_containers/cup/glass/mug/ms13
 	name = "mug"
 	desc = "An old mug, if only you had some coffee"
 	icon = 'mojave/icons/objects/food/liquids/drink_containers_world.dmi'
@@ -23,11 +23,11 @@
 	grid_height = 32
 	grid_width = 32
 
-/obj/item/reagent_containers/food/drinks/mug/ms13/Initialize()
+/obj/item/reagent_containers/cup/glass/mug/ms13/Initialize()
 	. = ..()
 	AddElement(/datum/element/world_icon, null, icon, 'mojave/icons/objects/food/liquids/drink_containers_inventory.dmi')
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13
+/obj/item/reagent_containers/cup/soda_cans/ms13
 	name = "bottle"
 	icon = 'mojave/icons/objects/food/liquids/drink_containers_world.dmi'
 	icon_state = "bottle"
@@ -36,18 +36,18 @@
 	spillable = FALSE
 	volume = 45 // Volume of the container. Keep it relatively realistic or somethin'.
 	list_reagents = null // IMMERSION ANNOUNCEMENT: Drinks usually aren't filled to the literal top. Leave a bit less in there.
-	foodtype = SUGAR
+	drink_type = SUGAR
 	isGlass = TRUE
 	w_class = WEIGHT_CLASS_SMALL
 	grid_height = 64
 	grid_width = 32
 	var/captype = null
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/Initialize()
+/obj/item/reagent_containers/cup/soda_cans/ms13/Initialize()
 	. = ..()
 	AddElement(/datum/element/world_icon, null, icon, 'mojave/icons/objects/food/liquids/drink_containers_inventory.dmi')
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/open_soda(mob/user)
+/obj/item/reagent_containers/cup/soda_cans/ms13/open_soda(mob/user)
 	to_chat(user, "You pry the top off \the [src] off with a satisfying hiss.")
 	reagents.flags |= OPENCONTAINER
 	playsound(src, "can_open", 50, TRUE)
@@ -55,81 +55,81 @@
 
 //// Soda! ////
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cola
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cola
 	name = "Nuka cola bottle"
 	desc = "A Nuka cola bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_cola"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_cola = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_dark
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_dark
 	name = "Nuka dark bottle"
 	desc = "A Nuka cola bottle. Made to sell off delicious soda to the masses. Allegedly 25 ApV."
 	icon_state = "nuka_dark"
 	list_reagents = list(/datum/reagent/consumable/ethanol/ms13/nuka_dark = 40)
-	foodtype = SUGAR | ALCOHOL
+	drink_type = SUGAR | ALCOHOL
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_victory
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_victory
 	name = "Nuka victory bottle"
 	desc = "A Nuka victory bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_victory"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_victory = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quantum
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quantum
 	name = "Nuka quantum bottle"
 	desc = "A Nuka victory bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_quantum"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_quantum = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quartz
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quartz
 	name = "Nuka quartz bottle"
 	desc = "A Nuka quarz bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_quartz"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_quartz = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cherry
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cherry
 	name = "Nuka cherry bottle"
 	desc = "A Nuka cherry bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_cherry"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_cherry = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_grape
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_grape
 	name = "Nuka grape bottle"
 	desc = "A Nuka grape bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_grape"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_grape = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_orange
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_orange
 	name = "Nuka orange bottle"
 	desc = "A Nuka orange bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_orange"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_orange = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cranberry // Want a nuka cranberry?
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cranberry // Want a nuka cranberry?
 	name = "Nuka cranberry bottle"
 	desc = "A Nuka cranberry bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_cranberry"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_cranberry = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_wild
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_wild
 	name = "Nuka wild bottle"
 	desc = "A Nuka wild bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_wild"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_wild = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_lime
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_lime
 	name = "Nuka lime bottle"
 	desc = "A Nuka lime bottle. Made to sell off delicious soda to the masses."
 	icon_state = "nuka_lime"
 	list_reagents = list(/datum/reagent/consumable/ms13/nuka_lime = 40)
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_custom
+/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_custom
 	name = "Nuka custom bottle"
 	desc = "A blank Nuka cola bottle. Vendored off in mixing stations for people that wish to make their own combination of flavors."
 	icon_state = "nuka_custom"
 	list_reagents = null
 	reagent_flags = OPENCONTAINER | DUNKABLE // No cap!
 
-/obj/item/reagent_containers/food/drinks/soda_cans/ms13/sarsaparilla
+/obj/item/reagent_containers/cup/soda_cans/ms13/sarsaparilla
 	name = "sunset sarsaparilla bottle"
 	desc = "A sunset sarsaparilla bottle. Once a prized drink of the west, always a prized drink of the west."
 	icon_state = "sarsaparilla"
@@ -144,7 +144,7 @@
 	icon = 'mojave/icons/objects/food/liquids/drink_containers_world.dmi'
 	icon_state = "bottle"
 	list_reagents = null
-	foodtype = ALCOHOL
+	foodtypes = ALCOHOL
 	w_class = WEIGHT_CLASS_NORMAL
 
 /obj/item/reagent_containers/food/drinks/bottle/ms13/Initialize()

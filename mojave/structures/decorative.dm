@@ -530,7 +530,7 @@
 
 /obj/structure/fluff/ms13/trash/papers/attack_hand(mob/living/user, list/modifiers)
 	. = ..()
-	if(!user.canUseTopic(src, BE_CLOSE, NO_DEXTERITY))
+	if(!user.can_perform_action(src, NO_DEXTERITY))
 		return
 	to_chat(user, span_notice("You begin salvaging through the pile for a paper."))
 	if(do_after(user, 5 SECONDS, src))

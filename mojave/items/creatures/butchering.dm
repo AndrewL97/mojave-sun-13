@@ -116,7 +116,7 @@
 	grid_height = 128
 	grid_width = 128
 
-/obj/item/ms13/hide/large/ComponentInitialize()
+/obj/item/ms13/hide/large/Initialize()
 	. = ..()
 	AddComponent(/datum/component/two_handed, require_twohands=TRUE)
 
@@ -233,7 +233,7 @@
 	w_class = WEIGHT_CLASS_HUGE
 	throw_range = 1
 
-/obj/item/food/meat/slab/ms13/carcass/large/ComponentInitialize()
+/obj/item/food/meat/slab/ms13/carcass/large/Initialize()
 	. = ..()
 	AddComponent(/datum/component/two_handed, require_twohands=TRUE)
 

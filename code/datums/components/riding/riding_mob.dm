@@ -130,9 +130,15 @@
 /// If we're a cyborg or animal and we spin, we yeet whoever's on us off us
 /datum/component/riding/creature/proc/check_emote(mob/living/user, datum/emote/emote)
 	SIGNAL_HANDLER
+
+	// START MS13 Edit
+	/* Mojave Sun - Removed emotes
 	if((!iscyborg(user) && !isanimal_or_basicmob(user)) || !istype(emote, /datum/emote/spin))
-		// GOMBLE TODO - emotez
 		return
+	*/
+	if(!iscyborg(user) && !isanimal_or_basicmob(user))
+		return
+	// END MS13 Edit
 
 	for(var/mob/yeet_mob in user.buckled_mobs)
 		force_dismount(yeet_mob, (!user.combat_mode)) // gentle on help, byeeee if not

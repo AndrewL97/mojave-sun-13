@@ -98,7 +98,7 @@
 	if(M.stat == UNCONSCIOUS || HARD_CRIT)
 		M.visible_message(span_alert("[M] makes choking sounds as a light foam pours from their mouth."), span_userdanger("You can feel yourself choking on something."), span_hear("You hear choking."), 4)
 		M.emote("twitch")
-		M.Jitter(1)
+		M.set_jitter_if_lower(1 SECONDS * seconds_per_tick)
 	return ..()
 
 // Rad-X //
@@ -314,7 +314,7 @@
 	M.setOrganLoss(ORGAN_SLOT_LUNGS, rand(0.25, 1))
 	if(prob(12))
 		M.emote("twitch")
-		M.Jitter(5)
+		M.set_jitter_if_lower(5 SECONDS * seconds_per_tick)
 	return ..()
 
 /datum/reagent/ms13/rocket/overdose_start(mob/living/M)
@@ -457,7 +457,7 @@
 /datum/reagent/ms13/psycho/overdose_process(mob/living/M)
 	M.adjustOrganLoss(ORGAN_SLOT_HEART, 0.5)
 	if(prob(15))
-		M.Jitter(10)
+		M.set_jitter_if_lower(10 SECONDS * seconds_per_tick)
 		M.emote(pick("twitch", "shiver"))
 	if(prob(15))
 		M.adjustToxLoss(2, 0)
@@ -520,7 +520,7 @@
 		to_chat(M, span_userdanger("[pick("OH SHIT!", "THE PAIN!", "AGHHHH!", "OH GOD IT HURTS!")]"))
 	if(prob(10))
 		M.vomit(25, TRUE ,TRUE)
-	M.Jitter(20)
+	M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)
 	M.emote(pick("twitch", "shiver"))
 	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, rand(1, 5))
 	return ..()
@@ -630,7 +630,7 @@
 	else
 		to_chat(M, span_userdanger("Oh dear god... Shouldn't do that..."))
 		our_heart.applyOrganDamage(9.5 * (OD_multiplier))
-		if(DT_PROB(14.5, delta_time))
+		if(SPT_PROB(14.5, delta_time))
 			M.losebreath += rand(4, 8)
 			M.adjustOxyLoss(rand(3, 8))
 			if(prob(25 * (OD_multiplier)))
@@ -647,7 +647,7 @@
 	var/obj/item/organ/heart/our_heart = M.getorganslot(ORGAN_SLOT_HEART)
 	our_heart.applyOrganDamage(9.5 * (OD_multiplier))
 
-	if(DT_PROB(7.5, delta_time))
+	if(SPT_PROB(7.5, delta_time))
 		M.losebreath += rand(2, 4)
 		M.adjustOxyLoss(rand(1, 3))
 		if(prob(25 * (OD_multiplier)))

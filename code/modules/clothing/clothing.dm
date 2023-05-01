@@ -381,7 +381,9 @@
 	if (armor_value < 0)
 		. = "-"
 	. += "\Roman[round(abs(armor_value), 10) / 10]"
-	return . */ //MOJAVE EDIT - Comments all of this out because, like with the weapon description proc, it is stupid and we shouldn't have it or should implement it in a better, less gamey way. 
+	return .
+	// */ //MOJAVE EDIT - Comments all of this out because, like with the weapon description proc, it is stupid and we shouldn't have it or should implement it in a better, less gamey way.
+	// GOMBLE TODO - I believe this was all commented out for the ms armor system
 
 /obj/item/clothing/atom_break(damage_flag)
 	. = ..()

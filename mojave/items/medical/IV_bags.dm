@@ -48,7 +48,7 @@
 		update_appearance()
 
 /obj/item/reagent_containers/blood/ms13/MouseDrop(mob/living/target)
-	if(!ishuman(usr) || !usr.canUseTopic(src, BE_CLOSE) || !isliving(target))
+	if(!ishuman(usr) || !usr.can_perform_action(src) || !isliving(target))
 		return
 	if(attached)
 		visible_message("\The [attached] detaches from \the [src]")

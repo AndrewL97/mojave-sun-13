@@ -4,6 +4,7 @@
 
 /obj/machinery/ms13/agriculture
 	name = "dirt crate"
+	desc = "A box of mildly fertile soil to grow crops in."
 	icon = 'mojave/icons/hydroponics/soil.dmi'
 	icon_state = "crate_full"
 	density = TRUE
@@ -481,13 +482,22 @@
 	var/message = span_warning("[oldPlantName] suddenly mutates into [myseed.plantname]!")
 	addtimer(CALLBACK(src, .proc/after_mutation, message), 0.5 SECONDS)
 
+// Replaces old TRAY_NAME_UPDATE macro -- called via update_appearance()
+/obj/machinery/ms13/agriculture/update_name(updates)
+	. = ..()
+	if(myseed)
+		name = "[initial(name)] ([myseed.plantname])"
+	else
+		name = initial(name)
+
 /**
  * Called after plant mutation, update the appearance of the tray content and send a visible_message()
  */
 /obj/machinery/ms13/agriculture/proc/after_mutation(message)
 		update_appearance()
 		visible_message(message)
-		TRAY_NAME_UPDATE
+
+		update_appearance()
 /**
  * Plant Death Proc.
  * Cleans up various stats for the plant upon death, including harvestability, and plant health.
@@ -573,7 +583,6 @@
 			SEND_SIGNAL(O, COMSIG_SEED_ON_PLANTED, src)
 			to_chat(user, span_notice("You plant [O]."))
 			set_seed(O)
-			TRAY_NAME_UPDATE
 			age = 1
 			set_plant_health(myseed.endurance)
 			lastcycle = world.time
@@ -584,8 +593,9 @@
 
 	else if(istype(O, /obj/item/storage/bag/plants))
 		attack_hand(user)
-		for(var/obj/item/food/grown/G in locate(user.x,user.y,user.z))
-			SEND_SIGNAL(O, COMSIG_TRY_STORAGE_INSERT, G, user, TRUE)
+		// GOMBLE - MS13 Inventory
+		// for(var/obj/item/food/grown/G in locate(user.x,user.y,user.z))
+		// 	SEND_SIGNAL(O, COMSIG_TRY_STORAGE_INSERT, G, user, TRUE)
 		return
 
 	else if(default_unfasten_wrench(user, O))
@@ -604,8 +614,6 @@
 				set_plant_health(0, update_icon = FALSE, forced = TRUE)
 				lastproduce = 0
 				set_seed(null)
-				name = initial(name)
-				desc = initial(desc)
 			return
 	else
 		return ..()
@@ -635,14 +643,13 @@
 		to_chat(user, span_notice("You remove the dead plant from [src]."))
 		set_seed(null)
 		update_appearance()
-		TRAY_NAME_UPDATE
 	else
 		if(user)
 			user.examinate(src)
 
 /obj/machinery/ms13/agriculture/CtrlClick(mob/user)
 	. = ..()
-	if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+	if(!user.can_perform_action(src, FORBID_TELEKINESIS_REACH))
 		return
 	if(!powered())
 		to_chat(user, span_warning("[name] has no power."))
@@ -673,9 +680,6 @@
 		to_chat(user, span_notice("You harvest [product_count] items from the [myseed.plantname]."))
 	if(!myseed.get_gene(/datum/plant_gene/trait/repeated_harvest))
 		set_seed(null)
-		name = initial(name)
-		desc = initial(desc)
-		TRAY_NAME_UPDATE
 		if(self_sustaining) //No reason to pay for an empty tray.
 			set_self_sustaining(FALSE)
 	else

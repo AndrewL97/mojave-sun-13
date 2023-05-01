@@ -31,13 +31,12 @@
 	AddElement(/datum/element/world_icon, null, 'mojave/icons/objects/clothing/clothing_world/backpack_world.dmi', icon)
 	inhand_icon_state = icon_state
 	worn_icon_state = icon_state
-
-/obj/item/storage/ms13/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_BULKY
 	STR.max_items = 36
 	STR.max_combined_w_class = 100
+
+
 
 //STANDARD BACKPACKS
 
@@ -48,8 +47,6 @@
 	storage_flags = 0
 	component_type = /datum/component/storage/concrete/ms13/satchel
 
-/obj/item/storage/ms13/satchel/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_NORMAL
 	STR.max_items = 24
@@ -95,12 +92,11 @@
 	icon_state = "military"
 	component_type = /datum/component/storage/concrete/ms13/biggie_bag
 
-/obj/item/storage/ms13/military/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_BULKY
 	STR.max_items = 42
 	STR.max_combined_w_class = 100
+
 
 /obj/item/storage/ms13/military_duffel
 	name = "military duffel bag"
@@ -113,8 +109,6 @@
 	equip_delay_other = 2.25 SECONDS
 	component_type = /datum/component/storage/concrete/ms13/big_duffel
 
-/obj/item/storage/ms13/military_duffel/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_HUGE
 	STR.max_items = 35

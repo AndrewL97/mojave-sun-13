@@ -163,6 +163,8 @@ DEFINE_BITFIELD(smoothing_flags, list(
 
 #define SMOOTH_GROUP_GAS_TANK S_OBJ(72)
 
+#define MAX_S_OBJ 72 // MS13 - Match with above last number - used for FO smoothing in mojave/../icon_smoothing.dm
+
 /// Performs the work to set smoothing_groups and canSmoothWith.
 /// An inlined function used in both turf/Initialize and atom/Initialize.
 #define SETUP_SMOOTHING(...) \

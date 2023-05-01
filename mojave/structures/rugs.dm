@@ -83,7 +83,7 @@
 	rolltime = 5 SECONDS
 	remarks = null
 
-/obj/structure/ms13/rug/mat/ComponentInitialize()
+/obj/structure/ms13/rug/mat/Initialize()
 	. = ..()
 	AddComponent(/datum/component/simple_rotation)
 
@@ -139,7 +139,7 @@
 	"Yep...",
 	"They don't make them like they used to.")
 
-/obj/structure/ms13/rug/mat/rubber/ComponentInitialize()
+/obj/structure/ms13/rug/mat/rubber/Initialize()
 	return
 
 /obj/structure/ms13/rug/mat/rubber/single
@@ -174,7 +174,7 @@
 	. = ..()
 	AddElement(/datum/element/world_icon, null, icon, 'mojave/icons/objects/clutter/clutter_inventory.dmi')
 
-/obj/item/ms13/rug/ComponentInitialize()
+/obj/item/ms13/rug/Initialize()
 	. = ..()
 	AddComponent(/datum/component/two_handed, require_twohands=TRUE)
 
@@ -216,9 +216,6 @@
 	throw_range = 6
 	origin_type = /obj/structure/ms13/rug/mat
 	w_class = WEIGHT_CLASS_NORMAL
-
-/obj/item/ms13/rug/mat/ComponentInitialize()
-	return
 
 /obj/item/ms13/rug/mat/welcome
 	origin_type = /obj/structure/ms13/rug/mat/welcome

@@ -117,7 +117,7 @@
 	if(istype(carbon_user) && (carbon_user.fatness == FATNESS_OBESE))
 		. += span_warning("Your fat ass probably won't fit inside.")
 
-/obj/item/clothing/suit/space/hardsuit/ms13/power_armor/mob_can_equip(mob/living/M, mob/living/equipper, slot, disable_warning, bypass_equip_delay_self)
+/obj/item/clothing/suit/space/hardsuit/ms13/power_armor/mob_can_equip(mob/living/M, slot, disable_warning, bypass_equip_delay_self, ignore_equipped = FALSE)
 	if((slot == ITEM_SLOT_OCLOTHING) && no_fatties && iscarbon(M))
 		var/mob/living/carbon/carbon_fatass = M
 		if(carbon_fatass.fatness == FATNESS_OBESE)
@@ -151,7 +151,7 @@
 	user.base_pixel_y = user.base_pixel_y + 6
 	user.pixel_y = user.base_pixel_y
 	ADD_TRAIT(user, TRAIT_FORCED_STANDING, "power_armor") //It's a suit of armor, it ain't going to fall over just because the pilot is dead
-	ADD_TRAIT(user, TRAIT_NOSLIPALL, "power_armor")
+	ADD_TRAIT(user, TRAIT_NO_SLIP_ALL, "power_armor")
 	ADD_TRAIT(user, TRAIT_STUNIMMUNE, "power_armor")
 	ADD_TRAIT(user, TRAIT_NOMOBSWAP, "power_armor")
 	ADD_TRAIT(user, TRAIT_PUSHIMMUNE, "power_armor")
@@ -167,7 +167,7 @@
 		UnregisterSignal(listeningTo, COMSIG_MOVABLE_MOVED)
 	listeningTo = null
 	REMOVE_TRAIT(user, TRAIT_FORCED_STANDING, "power_armor") //It's a suit of armor, it ain't going to fall over just because the pilot is dead
-	REMOVE_TRAIT(user, TRAIT_NOSLIPALL, "power_armor")
+	REMOVE_TRAIT(user, TRAIT_NO_SLIP_ALL, "power_armor")
 	REMOVE_TRAIT(user, TRAIT_STUNIMMUNE, "power_armor")
 	REMOVE_TRAIT(user, TRAIT_NOMOBSWAP, "power_armor")
 	REMOVE_TRAIT(user, TRAIT_PUSHIMMUNE, "power_armor")

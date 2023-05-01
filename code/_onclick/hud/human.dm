@@ -335,7 +335,7 @@
 	rest_icon.hud = src
 	rest_icon.update_appearance()
 	static_inventory += rest_icon
-	/*/MOJAVE SUN EDIT START - UI Removal -- GOMBLE TODO I think this is empty now :) 
+	/*/MOJAVE SUN EDIT START - UI Removal -- GOMBLE TODO I think this is empty now :)
 	*///MOJAVE SUN EDIT START - UI Removal
 	spacesuit = new /atom/movable/screen/spacesuit
 	spacesuit.hud = src

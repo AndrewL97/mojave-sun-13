@@ -140,9 +140,7 @@ SUBSYSTEM_DEF(atoms)
 			if(arguments[1]) //mapload
 				late_loaders += A
 			else
-				A.LateInitialize(FALSE) //MOJAVE SUN EDIT - Wallening Testmerge
-			else
-				A.LateInitialize()
+				A.LateInitialize() // GOMBLE UPSTREAM NOTE -- Should this pass false?
 		if(INITIALIZE_HINT_QDEL)
 			qdel(A)
 			qdeleted = TRUE

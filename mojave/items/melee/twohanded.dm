@@ -55,7 +55,8 @@
 	wound_bonus = 12
 	bare_wound_bonus = 8
 	throw_range = 3
-	sharpness = SHARP_EDGED | SHARP_AXE
+	sharpness = SHARP_EDGED
+	tool_behaviour = TOOL_AXE
 	toolspeed = 0.75
 	grid_height = 192
 	grid_width = 64
@@ -189,7 +190,7 @@
 	name = "heavy weapon"
 	desc = "Generic heavy weapon go haha BRRR"
 
-/obj/item/ms13/twohanded/heavy/ComponentInitialize()
+/obj/item/ms13/twohanded/heavy/Initialize()
 	. = ..()
 	AddComponent(/datum/component/two_handed, require_twohands=TRUE)
 
@@ -240,7 +241,8 @@
 
 	if(on)
 		force = 60
-		sharpness = SHARP_EDGED | SHARP_AXE
+		sharpness = SHARP_EDGED
+		tool_behaviour = TOOL_SAW
 		attack_verb_continuous = list("slices", "slashes", "cuts", "rends", "saws", "tears")
 		attack_verb_simple = list("slice", "slash", "cut", "rend", "saw", "tear")
 		hitsound = list('mojave/sound/ms13weapons/meleesounds/ripper_hit1.ogg', 'mojave/sound/ms13weapons/meleesounds/ripper_hit2.ogg', 'mojave/sound/ms13weapons/meleesounds/ripper_hit3.ogg')
@@ -249,16 +251,15 @@
 	else
 		force = 15
 		sharpness = NONE
+		tool_behaviour = TOOL_AXE
 		attack_verb_continuous = list("smacks", "beats", "slashes", "cuts", "clubs")
 		attack_verb_simple = list("smack", "beat", "slash", "cut", "club")
 		hitsound = 'mojave/sound/ms13weapons/meleesounds/hatchet_hit.ogg'
 		soundloop.stop()
 
 	if(src == user.get_active_held_item()) //update inhands
-		user.update_inv_hands()
-	for(var/X in actions)
-		var/datum/action/A = X
-		A.UpdateButtonIcon()
+		user.update_held_items()
+	update_item_action_buttons()
 
 /obj/item/ms13/twohanded/heavy/lance
 	name = "thermic lance"
@@ -301,7 +302,5 @@
 		force = 10
 
 	if(src == user.get_active_held_item()) //update inhands
-		user.update_inv_hands()
-	for(var/X in actions)
-		var/datum/action/A = X
-		A.UpdateButtonIcon()
+		user.update_held_items()
+	update_item_action_buttons()

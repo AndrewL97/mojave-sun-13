@@ -6,11 +6,11 @@
 	plane = GAME_PLANE_FOV_HIDDEN
 	layer = ABOVE_MOB_LAYER
 	density = TRUE
-	assemblytype = null
+	var/assemblytype = /obj/item/stack/sheet/ms13/scrap
 	can_crush = FALSE
 	spark_system = null
 	max_integrity = 1000
-	armor = list(MELEE = 50, BULLET = 80, LASER = 90, ENERGY = 90, BOMB = 30, BIO = 100, FIRE = 80, ACID = 100)
+	armor_type = /datum/armor/door_ms13
 	damage_deflection = 15
 	sparks = FALSE
 	ms13_flags_1 = LOCKABLE_1
@@ -25,6 +25,17 @@
 	var/has_damage_overlay = TRUE
 	//used for mirrored overlays
 	var/mirrored = FALSE
+
+/datum/armor/door_ms13
+	melee = 50
+	bullet = 80
+	laser = 90
+	energy = 90
+	bomb = 30
+	bio = 100
+	fire = 80
+	acid = 100
+
 
 /obj/machinery/door/unpowered/ms13/Initialize()
 	. = ..()
@@ -172,7 +183,7 @@
 	else
 		icon_state = "[door_type]_open"
 
-/obj/machinery/door/unpowered/ms13/try_to_activate_door(mob/living/M)
+/obj/machinery/door/unpowered/ms13/try_to_activate_door(mob/user, access_bypass = FALSE)
 	add_fingerprint(M)
 	if(density)
 		open()
@@ -218,9 +229,7 @@
 	name = "metal door"
 	icon_state = "metal_closed"
 	door_type = "metal"
-	assemblytype = /obj/item/stack/sheet/ms13/scrap
 	max_integrity = 2000 //its metal
-	armor = list(MELEE = 80, BULLET = 90, LASER = 60, ENERGY = 90, BOMB = 30, BIO = 100, FIRE = 80, ACID = 100)
 	damage_deflection = 25
 	hitted_sound = 'mojave/sound/ms13effects/metal_door_hit.ogg'
 
@@ -313,7 +322,6 @@
 	name = "generic ms13 see-through door"
 	glass = TRUE
 	opacity = 0
-	assemblytype = /obj/item/stack/sheet/ms13/scrap
 	var/passthrough_chance = 80
 
 /obj/machinery/door/unpowered/ms13/seethrough/CanAllowThrough(atom/movable/mover, border_dir)
@@ -336,7 +344,6 @@
 	door_type = "metal_window"
 	passthrough_chance = 40 //Small window!
 	max_integrity = 1500 //its metal
-	armor = list(MELEE = 80, BULLET = 90, LASER = 60, ENERGY = 90, BOMB = 30, BIO = 100, FIRE = 80, ACID = 100)
 	damage_deflection = 25
 	hitted_sound = 'mojave/sound/ms13effects/metal_door_hit.ogg'
 

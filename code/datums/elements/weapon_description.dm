@@ -122,3 +122,5 @@
 			return "EXCELLENT"
 		else
 			return "WEIRD"
+
+*/

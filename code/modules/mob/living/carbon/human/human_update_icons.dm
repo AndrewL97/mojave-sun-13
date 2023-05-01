@@ -92,7 +92,6 @@ There are several things that need to be remembered:
 			target_overlay = "[target_overlay]_d"
 
 		var/mutable_appearance/uniform_overlay
-		// GOMBLE TODO I can't remember what this gender check thing did
 		//This is how non-humanoid clothing works. You check if the mob has the right bodyflag, and the clothing has the corresponding clothing flag.
 		//handled_by_bodytype is used to track whether or not we successfully used an alternate sprite. It's set to TRUE to ease up on copy-paste.
 		//icon_file MUST be set to null by default, or it causes issues.
@@ -107,6 +106,9 @@ There are several things that need to be remembered:
 			icon_file = MONKEY_UNIFORM_FILE
 		else if((dna?.species.bodytype & BODYTYPE_DIGITIGRADE) && (uniform.supports_variations_flags & CLOTHING_DIGITIGRADE_VARIATION))
 			icon_file = DIGITIGRADE_UNIFORM_FILE
+
+		// GOMBLE TODO -- I have no idea why we commented out the female icon code - wouldn't we just set NO_FEMALE_UNIFORM on all of our stuff?
+
 		//Female sprites have lower priority than digitigrade sprites
 		else if(dna.species.sexes && (dna.species.bodytype & BODYTYPE_HUMANOID) && physique == FEMALE && !(uniform.female_sprite_flags & NO_FEMALE_UNIFORM)) //Agggggggghhhhh
 			woman = TRUE
@@ -128,9 +130,6 @@ There are several things that need to be remembered:
 		if(OFFSET_UNIFORM in dna.species.offset_features)
 			uniform_overlay?.pixel_x += dna.species.offset_features[OFFSET_UNIFORM][1]
 			uniform_overlay?.pixel_y += dna.species.offset_features[OFFSET_UNIFORM][2]
-		// MOJAVE EDIT BEGIN - Fatties
-		uniform_overlay = apply_fatness_filter(uniform_overlay, TRUE)
-		// MOJAVE EDIT END - Fatties
 		overlays_standing[UNIFORM_LAYER] = uniform_overlay
 		apply_overlay(UNIFORM_LAYER)
 
@@ -149,15 +148,6 @@ There are several things that need to be remembered:
 		var/obj/item/worn_item = wear_id
 		update_hud_id(worn_item)
 		var/icon_file = 'icons/mob/clothing/id.dmi'
-		wear_id.screen_loc = ui_id
-		if(client && hud_used?.hud_shown)
-			if(hud_used.inventory_shown)  // MOjAVE EDIT -- ID is part if inventory toggle
-				client.screen += wear_id  // MOjAVE EDIT -- ID is part if inventory toggle
-
-		update_observer_view(wear_id)
-
-		if(!icon_exists(icon_file, RESOLVE_ICON_STATE(worn_item)))
-			icon_file = 'icons/mob/clothing/id.dmi'
 
 		id_overlay = wear_id.build_worn_icon(default_layer = ID_LAYER, default_icon_file = icon_file)
 
@@ -167,19 +157,6 @@ There are several things that need to be remembered:
 			id_overlay.pixel_x += dna.species.offset_features[OFFSET_ID][1]
 			id_overlay.pixel_y += dna.species.offset_features[OFFSET_ID][2]
 		overlays_standing[ID_LAYER] = id_overlay
-
-// GOMBLE TODO - obese again?
-		if(shown_id)
-			var/mutable_appearance/id_card_overlay = overlays_standing[ID_CARD_LAYER]
-			id_card_overlay = shown_id.build_worn_icon(default_layer = ID_CARD_LAYER, default_icon_file = 'icons/mob/clothing/id_card.dmi')
-			if(OFFSET_ID in dna.species.offset_features)
-				id_card_overlay.pixel_x += dna.species.offset_features[OFFSET_ID][1]
-				id_card_overlay.pixel_y += dna.species.offset_features[OFFSET_ID][2]
-
-			// MOJAVE EDIT BEGIN - Fatties
-			id_card_overlay = apply_fatness_filter(id_card_overlay, TRUE)
-			// MOJAVE EDIT END - Fatties
-			overlays_standing[ID_CARD_LAYER] = id_card_overlay
 
 	apply_overlay(ID_LAYER)
 
@@ -192,8 +169,7 @@ There are several things that need to be remembered:
 		inv.update_icon()
 
 	//Bloody hands begin
-	// GOMBLE TODO - MS blood
-	var/mutable_appearance/bloody_overlay = mutable_appearance('icons/effects/blood.dmi', "bloodyhands", -GLOVES_LAYER)
+	var/mutable_appearance/bloody_overlay = mutable_appearance('mojave/icons/effects/blood.dmi', "bloodyhands", -GLOVES_LAYER) //MOJAVE SUN EDIT - Blood Sprites
 	cut_overlay(bloody_overlay)
 	if(!gloves && blood_in_hands && (num_hands > 0))
 		bloody_overlay = mutable_appearance('icons/effects/blood.dmi', "bloodyhands", -GLOVES_LAYER)
@@ -397,9 +373,6 @@ There are several things that need to be remembered:
 		if(OFFSET_BELT in dna.species.offset_features)
 			belt_overlay.pixel_x += dna.species.offset_features[OFFSET_BELT][1]
 			belt_overlay.pixel_y += dna.species.offset_features[OFFSET_BELT][2]
-		// MOJAVE EDIT BEGIN - Fatties
-		belt_overlay = apply_fatness_filter(belt_overlay, TRUE)
-		// MOJAVE EDIT END - Fatties
 		overlays_standing[BELT_LAYER] = belt_overlay
 
 	apply_overlay(BELT_LAYER)
@@ -420,9 +393,6 @@ There are several things that need to be remembered:
 		if(OFFSET_SUIT in dna.species.offset_features)
 			suit_overlay.pixel_x += dna.species.offset_features[OFFSET_SUIT][1]
 			suit_overlay.pixel_y += dna.species.offset_features[OFFSET_SUIT][2]
-		// MOJAVE EDIT BEGIN - Fatties
-		suit_overlay = apply_fatness_filter(suit_overlay, TRUE)
-		// MOJAVE EDIT END - Fatties
 		overlays_standing[SUIT_LAYER] = suit_overlay
 	update_body_parts()
 	update_mutant_bodyparts()

@@ -69,4 +69,5 @@
 	var/obj/item/backpack = H.get_item_by_slot(ITEM_SLOT_BACK)
 	if(!backpack)
 		return
-	SEND_SIGNAL(backpack, COMSIG_TRY_STORAGE_INSERT, ammo_stack, null, TRUE, TRUE, FALSE)
+	// GOMBLE - MS13 Inventory
+	//	SEND_SIGNAL(backpack, COMSIG_TRY_STORAGE_INSERT, ammo_stack, null, TRUE, TRUE, FALSE)

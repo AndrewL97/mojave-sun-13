@@ -64,7 +64,7 @@
 
 /obj/machinery/ms13/wartable/attack_hand(mob/living/user)
 	. = ..()
-	if(user.canUseTopic(src, BE_CLOSE, NO_DEXTERITY)) //Can only actually activate this from the base tile in the bottom left due to the size of it. :Thinking://
+	if(user.can_perform_action(src, NEED_DEXTERITY)) //Can only actually activate this from the base tile in the bottom left due to the size of it. :Thinking://
 		if(on)
 			on = FALSE
 			icon_state = "wartable_off"
@@ -172,7 +172,7 @@
 	icon_state = "coffee"
 	var/has_mug = FALSE //this is deep as fuark
 	var/list/mugs
-	var/obj/item/reagent_containers/food/drinks/mug = null
+	var/obj/item/reagent_containers/cup/glass/mug = null
 	max_integrity = 150
 
 /obj/machinery/ms13/coffee/Initialize()
@@ -225,7 +225,7 @@
 		icon_state = initial(icon_state)
 
 /obj/machinery/ms13/coffee/attackby(obj/item/I, mob/living/user, params)
-	if(istype(I, /obj/item/reagent_containers/food/drinks/mug/ms13))
+	if(istype(I, /obj/item/reagent_containers/cup/glass/mug/ms13))
 		var/obj/item/reagent_containers/B = I
 		. = TRUE //no afterattack
 		if(!user.transferItemToLoc(B, src))

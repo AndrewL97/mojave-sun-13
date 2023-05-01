@@ -215,8 +215,6 @@
 	. = ..()
 	AddElement(/datum/element/item_scaling, 0.35, 1)
 
-/obj/item/storage/pill_bottle/ms13/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_TINY
 	STR.max_items = 8

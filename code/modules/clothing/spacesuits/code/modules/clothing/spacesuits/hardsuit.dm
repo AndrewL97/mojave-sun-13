@@ -8,7 +8,7 @@
 	icon_state = "hardsuit0-engineering"
 	inhand_icon_state = "eng_helm"
 	max_integrity = 300
-	armor = list(MELEE = 10, BULLET = 5, LASER = 10, ENERGY = 20, BOMB = 10, BIO = 100, FIRE = 50, ACID = 75)
+	armor_type = /datum/armor/hardsuit
 	light_system = MOVABLE_LIGHT_DIRECTIONAL
 	light_range = 4
 	light_power = 1
@@ -21,6 +21,18 @@
 	flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 	visor_flags_cover = HEADCOVERSEYES | HEADCOVERSMOUTH | PEPPERPROOF
 
+/datum/armor/hardsuit
+	// armor = list(MELEE = 10, BULLET = 5, LASER = 10, ENERGY = 20, BOMB = 10, BIO = 100, FIRE = 50, ACID = 75)
+	melee = 10
+	bullet = 5
+	laser = 10
+	energy = 20
+	bomb = 10
+	bio = 100
+	fire = 50
+	acid = 75
+
+
 /obj/item/clothing/head/helmet/space/hardsuit/Destroy()
 	. = ..()
 	if(!QDELETED(suit))
@@ -30,11 +42,11 @@
 /obj/item/clothing/head/helmet/space/hardsuit/attack_self(mob/user)
 	on = !on
 	icon_state = "[basestate][on]-[hardsuit_type]"
-	user.update_inv_head() //so our mob-overlays update
+	user.update_worn_head()
 
 	set_light_on(on)
 
-	update_action_buttons()
+	user.update_action_buttons()
 
 /obj/item/clothing/head/helmet/space/hardsuit/dropped(mob/user)
 	..()
@@ -694,7 +706,7 @@
 	armor = list(MELEE = 30, BULLET = 5, LASER = 10, ENERGY = 20, BOMB = 10, BIO = 100, FIRE = 60, ACID = 30)
 	helmettype = /obj/item/clothing/head/helmet/space/hardsuit/clown
 
-/obj/item/clothing/suit/space/hardsuit/clown/mob_can_equip(mob/M, mob/living/equipper, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE)
+/obj/item/clothing/suit/space/hardsuit/clown/mob_can_equip(mob/living/M, slot, disable_warning = FALSE, bypass_equip_delay_self = FALSE, ignore_equipped = FALSE)
 	if(!..() || !ishuman(M))
 		return FALSE
 	if(is_clown_job(M.mind.assigned_role))

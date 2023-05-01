@@ -41,7 +41,7 @@
 /obj/item/reagent_containers/hypospray/medipen/ms13/attack_self(mob/user/)
 	if(!reagents.total_volume)
 		return
-	if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK, FALSE, FLOOR_OKAY))
+	if(!user.can_perform_action(src, FORBID_TELEKINESIS_REACH, ALLOW_RESTING))
 		return
 	if(do_after(user, 0.65 SECONDS))
 		inject(user)

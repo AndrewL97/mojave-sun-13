@@ -5,7 +5,7 @@ The simple animal this is attached to should also be able to destroy obstacles s
 */
 
 /datum/element/generic_patrol_animal
-	element_flags = ELEMENT_DETACH
+	element_flags = ELEMENT_DETACH_ON_HOST_DESTROY
 	var/list/attached_animals = list()
 	///Weights that the animal will prefer when choosing the next node to patrol towards
 	var/list/animal_node_weights = list()

@@ -73,7 +73,7 @@
 	var/splats = 1 //MOJAVE SUN EDIT - Blood Sprites
 
 /obj/effect/decal/cleanable/blood/splatter/replace_decal(obj/effect/decal/cleanable/C) //MOJAVE SUN EDIT - Blood Sprites
-	C.add_blood_DNA(return_blood_DNA())
+	C.add_blood_DNA(GET_ATOM_BLOOD_DNA(src))
 	if (bloodiness)
 		C.bloodiness = min((C.bloodiness + bloodiness), BLOOD_AMOUNT_PER_DECAL)
 	return

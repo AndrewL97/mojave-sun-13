@@ -698,7 +698,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			if(left_leg && (IS_ORGANIC_LIMB(left_leg)))
 				var/mutable_appearance/markings_l_leg_overlay = mutable_appearance(markings.icon, "[markings.icon_state]_l_leg", -BODY_LAYER)
 				standing += markings_l_leg_overlay
-// GOMBLE TODO - Gender prefs
+
 	//Underwear, Undershirts & Socks
 	if(!(NO_UNDERWEAR in species_traits))
 		if(species_human.underwear)
@@ -712,7 +712,6 @@ GLOBAL_LIST_EMPTY(features_by_species)
 				if(!underwear.use_static)
 					underwear_overlay.color = species_human.underwear_color
 				underwear_overlay.pixel_y += height_offset
-				underwear_overlay = species_human.apply_fatness_filter(underwear_overlay, TRUE)
 				standing += underwear_overlay
 
 		if(species_human.undershirt)
@@ -729,9 +728,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		if(species_human.socks && species_human.num_legs >= 2 && !(src.bodytype & BODYTYPE_DIGITIGRADE))
 			var/datum/sprite_accessory/socks/socks = GLOB.socks_list[species_human.socks]
 			if(socks)
-				var/mutable_appearance/socks_overlay = mutable_appearance(socks.icon, socks.icon_state, -BODY_LAYER)
-				socks_overlay = species_human.apply_fatness_filter(socks_overlay, TRUE)
-				standing += socks_overlay
+				standing += mutable_appearance(socks.icon, socks.icon_state, -BODY_LAYER)
 
 	if(standing.len)
 		species_human.overlays_standing[BODY_LAYER] = standing
@@ -1016,7 +1013,6 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		if(ITEM_SLOT_SUITSTORE)
 			if(HAS_TRAIT(I, TRAIT_NODROP))
 				return FALSE
-			/*MOJAVE SUN EDIT BEGIN
 			if(!H.wear_suit)
 				if(!disable_warning)
 					to_chat(H, span_warning("You need a suit before you can attach this [I.name]!"))
@@ -1025,13 +1021,11 @@ GLOBAL_LIST_EMPTY(features_by_species)
 				if(!disable_warning)
 					to_chat(H, span_warning("You somehow have a suit with no defined allowed items for suit storage, stop that."))
 				return FALSE
-			MOJAVE SUN EDIT END */
-			if(I.w_class > WEIGHT_CLASS_HUGE) //MOJAVE EDIT - Original weight class is bulky, changed to allow for our guns to be huge items.
+			if(I.w_class > WEIGHT_CLASS_BULKY)
 				if(!disable_warning)
 					to_chat(H, span_warning("The [I.name] is too big to attach!")) //should be src?
 				return FALSE
 			if( istype(I, /obj/item/modular_computer/pda) || istype(I, /obj/item/pen) || is_type_in_list(I, H.wear_suit.allowed) )
-				// GOMBLE TODO: Put obj/item/gun in allowed list -> MOJAVE SUN EDIT This is so we can rebrand the """"""suit slot""""""" into a gun sling spot
 				return TRUE
 			return FALSE
 		if(ITEM_SLOT_HANDCUFFED)
@@ -1216,11 +1210,6 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			return FALSE
 
 		var/armor_block = target.run_armor_check(affecting, MELEE)
-		//MOJAVE EDIT BEGIN
-		var/armor_reduce = target.run_subarmor_check(affecting, MELEE)
-		var/subarmor_flags = target.get_subarmor_flags(affecting)
-		var/edge_protection = target.get_edge_protection(affecting)
-		//MOJAVE EDIT END
 
 		playsound(target.loc, attacking_bodypart.unarmed_attack_sound, 25, TRUE, -1)
 
@@ -1234,7 +1223,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 
 		if(user.limb_destroyer)
 			target.dismembering_strike(user, affecting.body_zone)
-		// GOMBLE TODO - Attack
+
 		var/attack_direction = get_dir(user, target)
 		var/attack_type = attacking_bodypart.attack_type
 		if(atk_effect == ATTACK_EFFECT_KICK)//kicks deal 1.5x raw damage
@@ -1244,17 +1233,6 @@ GLOBAL_LIST_EMPTY(features_by_species)
 			target.apply_damage(damage, attack_type, affecting, armor_block, attack_direction = attack_direction)
 		else//other attacks deal full raw damage + 1.5x in stamina damage
 			target.apply_damage(damage, attack_type, affecting, armor_block, attack_direction = attack_direction)
-			*/
-			//MOJAVE EDIT BEGIN
-			target.apply_damage(damage, \
-								user.dna.species.attack_type, \
-								affecting, \
-								armor_block, \
-								attack_direction = attack_direction, \
-								reduced = armor_reduce, \
-								edge_protection = edge_protection, \
-								subarmor_flags = subarmor_flags)
-			//MOJAVE EDIT END
 			target.apply_damage(damage*1.5, STAMINA, affecting, armor_block)
 			if(damage >= 9)
 				target.force_say()
@@ -1317,7 +1295,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 		harm(owner, target, attacker_style)
 	else
 		help(owner, target, attacker_style)
-// GOMBLE TODO - something about ribs? -- this file is really diffy, so review the whole thing
+
 /datum/species/proc/spec_attacked_by(obj/item/weapon, mob/living/user, obj/item/bodypart/affecting, mob/living/carbon/human/human)
 	// Allows you to put in item-specific reactions based on species
 	if(user != human)
@@ -1336,19 +1314,8 @@ GLOBAL_LIST_EMPTY(features_by_species)
 	var/def_zone = affecting.body_zone
 
 	var/armor_block = human.run_armor_check(affecting, MELEE, span_notice("Your armor has protected your [hit_area]!"), span_warning("Your armor has softened a hit to your [hit_area]!"),weapon.armour_penetration, weak_against_armour = weapon.weak_against_armour)
-	/* MOJAVE EDIT REMOVAL
 	armor_block = min(ARMOR_MAX_BLOCK, armor_block) //cap damage reduction at 90%
-	
-	*/
 	var/Iwound_bonus = weapon.wound_bonus
-	//MOJAVE EDIT BEGIN
-	var/armor_block = H.run_armor_check(affecting, MELEE, armour_penetration = I.armour_penetration, weak_against_armour = I.weak_against_armour)
-	armor_block = min(90,armor_block) //cap damage reduction at 90%
-	var/armor_reduce = H.run_subarmor_check(affecting, MELEE, armour_penetration = I.subtractible_armour_penetration, weak_against_armour = I.weak_against_subtractible_armour, sharpness = I.get_sharpness())
-	var/edge_protection = H.get_edge_protection(affecting)
-	edge_protection = max(0, edge_protection - I.edge_protection_penetration)
-	var/subarmor_flags = H.get_subarmor_flags(affecting)
-	//MOJAVE EDIT END
 
 	// this way, you can't wound with a surgical tool on help intent if they have a surgery active and are lying down, so a misclick with a circular saw on the wrong limb doesn't bleed them dry (they still get hit tho)
 	if((weapon.item_flags & SURGICAL_TOOL) && !user.combat_mode && human.body_position == LYING_DOWN && (LAZYLEN(human.surgeries) > 0))
@@ -1360,37 +1327,9 @@ GLOBAL_LIST_EMPTY(features_by_species)
 
 
 	var/attack_direction = get_dir(user, human)
-	/* MOJAVE EDIT REMOVAL
 	apply_damage(weapon.force * weakness, weapon.damtype, def_zone, armor_block, human, wound_bonus = Iwound_bonus, bare_wound_bonus = weapon.bare_wound_bonus, sharpness = weapon.get_sharpness(), attack_direction = attack_direction)
-	apply_damage(I.force * weakness, I.damtype, def_zone, armor_block, H, wound_bonus = Iwound_bonus, bare_wound_bonus = I.bare_wound_bonus, sharpness = I.get_sharpness(), attack_direction = attack_direction)
-	*/
-	//MOJAVE EDIT BEGIN
-	apply_damage(I.force * weakness, \
-				I.damtype, \
-				def_zone, \
-				armor_block, \
-				H, \
-				wound_bonus = Iwound_bonus, \
-				bare_wound_bonus = I.bare_wound_bonus, \
-				sharpness = I.get_sharpness(), \
-				attack_direction = attack_direction, \
-				reduced = armor_reduce, \
-				edge_protection = edge_protection, \
-				subarmor_flags = subarmor_flags)
 
 	if(!weapon.force)
-	//COOL BABY BACK RIBS CODE HERE
-	var/list/modifiers = params2list(params)
-	if(can_be_mcribs && (def_zone == BODY_ZONE_CHEST) && LAZYACCESS(modifiers, RIGHT_CLICK) && \
-		!length(H.internal_organs) && (length(H.bodyparts) <= 1))
-		var/obj/item/bodypart/chest = H.get_bodypart(BODY_ZONE_CHEST)
-		if(chest?.get_damage() >= 100)
-			INVOKE_ASYNC(src, .proc/try_to_mcrib, user, I, H)
-			return TRUE
-
-	//MOJAVE EDIT END
-
-	if(!I.force)
 		return FALSE //item force is zero
 	var/bloody = FALSE
 	if(weapon.damtype != BRUTE)
@@ -1422,7 +1361,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 						human.gain_trauma(/datum/brain_trauma/mild/concussion)
 				else
 					human.adjustOrganLoss(ORGAN_SLOT_BRAIN, weapon.force * 0.2)
-				*/
+
 				if(human.mind && human.stat == CONSCIOUS && human != user && prob(weapon.force + ((100 - human.health) * 0.5))) // rev deconversion through blunt trauma.
 					var/datum/antagonist/rev/rev = human.mind.has_antag_datum(/datum/antagonist/rev)
 					if(rev)
@@ -1438,7 +1377,7 @@ GLOBAL_LIST_EMPTY(features_by_species)
 				if(human.glasses && prob(33))
 					human.glasses.add_mob_blood(human)
 					human.update_worn_glasses()
-				*/
+
 		if(BODY_ZONE_CHEST)
 			if(human.stat == CONSCIOUS && !weapon.get_sharpness() && armor_block < 50)
 				if(prob(weapon.force))

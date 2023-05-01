@@ -1,4 +1,4 @@
-#define S_OBJ_FO(num) (MAX_S_OBJ + 1 + num)
+#define S_OBJ_FO(num) (S_OBJ(MAX_S_OBJ + 1 + num))
 
 #define SMOOTH_GROUP_MS13_WALL S_OBJ_FO(0)				///obj/structure/table/ms13/low_wall, /turf/closed/wall/ms13
 #define SMOOTH_GROUP_MS13_WALL_METAL S_OBJ_FO(1)		///obj/structure/table/ms13/low_wall/metal, /turf/closed/wall/ms13/metal

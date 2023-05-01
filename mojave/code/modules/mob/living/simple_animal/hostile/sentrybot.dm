@@ -431,7 +431,7 @@ GLOBAL_LIST_INIT(sentrybot_dying_sound, list(
 	desc = "Throws a bunch of flame at the target"
 	cooldown_time = 6 SECONDS
 	click_to_activate = TRUE
-	var/obj/projectile/bullet/incendiary/backblast/proj = /obj/projectile/bullet/incendiary/backblast
+	var/obj/projectile/bullet/incendiary/fire/backblast/proj = /obj/projectile/bullet/incendiary/fire/backblast
 
 /datum/action/cooldown/flamethrow/Activate(atom/target_atom)
 	StartCooldown(6 SECONDS)

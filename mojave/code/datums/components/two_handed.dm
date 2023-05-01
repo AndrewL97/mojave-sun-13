@@ -30,11 +30,13 @@
 		return
 	user.wield_ui_update(wielded)
 
-/datum/component/two_handed/unwield(mob/living/carbon/user)
+// Gomble Note - To maintain compatibility w/ TG, I have added show_messages and can_drop -> see twohanded.dm
+/datum/component/two_handed/unwield(mob/living/carbon/user, show_message=TRUE, can_drop=TRUE)
 	. = ..()
 	if(!isliving(user))
 		return
 	user.wield_ui_update(wielded)
+
 
 /datum/component/two_handed/proc/check_wielded(obj/item/source)
 	return wielded

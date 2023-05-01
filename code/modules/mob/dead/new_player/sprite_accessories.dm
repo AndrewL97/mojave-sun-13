@@ -16,8 +16,8 @@
 	from doing this unless you absolutely know what you are doing, and have defined a
 	conversion in savefile.dm
 */
-/* MOJAVE - moved to mojave directory
-/proc/init_sprite_accessory_subtypes(prototype, list/L, list/male, list/female, add_blank)//Roundstart argument builds a specific list for roundstart parts where some parts may be locked
+
+/proc/init_sprite_accessory_subtypes(prototype, list/L, list/male, list/female,roundstart = FALSE, add_blank, list/bald) //Roundstart argument builds a specific list for roundstart parts where some parts may be locked
 	if(!istype(L))
 		L = list()
 	if(!istype(male))
@@ -26,6 +26,10 @@
 		female = list()
 
 	for(var/path in subtypesof(prototype))
+		if(roundstart)
+			var/datum/sprite_accessory/P = path
+			if(initial(P.locked))
+				continue
 		var/datum/sprite_accessory/D = new path()
 
 		if(D.icon_state)
@@ -65,7 +69,7 @@
 	 */
 	var/color_src = MUTCOLORS
 	/// Decides if this sprite has an "inner" part, such as the fleshy parts on ears.
-	var/hasinner = FALSE
+	var/hasinner
 	/// Is this part locked from roundstart selection? Used for parts that apply effects.
 	var/locked = FALSE
 	/// Should we center the sprite?
@@ -77,15 +81,20 @@
 	/// Should this sprite block emissives?
 	var/em_block = FALSE
 
+	// MS13 categorizing
+	var/category = ""
+
 /datum/sprite_accessory/blank
 	name = "None"
 	icon_state = "None"
+	locked = FALSE
 
 //////////////////////
 // Hair Definitions //
 //////////////////////
 /datum/sprite_accessory/hair
-	icon = 'icons/mob/species/human/human_face.dmi'   // default icon for all hairs
+	icon = 'icons/mob/human_face.dmi'   // default icon for all hairs
+	locked = TRUE // MS13 -- Disable by default as we are only using some. Check for locked = FALSE for hair types we use
 
 	// please make sure they're sorted alphabetically and, where needed, categorized
 	// try to capitalize the names please~
@@ -93,48 +102,56 @@
 	// you do not need to define _s or _l sub-states, game automatically does this for you
 
 /datum/sprite_accessory/hair/afro
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Afro"
 	icon_state = "hair_afro"
 
 /datum/sprite_accessory/hair/afro2
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Afro 2"
 	icon_state = "hair_afro2"
 
 /datum/sprite_accessory/hair/afro_large
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Afro (Large)"
 	icon_state = "hair_bigafro"
-
-/datum/sprite_accessory/hair/allthefuzz
-	name = "All The Fuzz"
-	icon_state = "hair_allthefuzz"
 
 /datum/sprite_accessory/hair/antenna
 	name = "Ahoge"
 	icon_state = "hair_antenna"
 
 /datum/sprite_accessory/hair/bald
+	category = SPRITE_CATEGORY_HAIR_BALD
+	locked = FALSE
 	name = "Bald"
 	icon_state = null
 
 /datum/sprite_accessory/hair/balding
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Balding Hair"
 	icon_state = "hair_e"
 
 /datum/sprite_accessory/hair/bedhead
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bedhead"
 	icon_state = "hair_bedhead"
 
 /datum/sprite_accessory/hair/bedhead2
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bedhead 2"
 	icon_state = "hair_bedheadv2"
 
 /datum/sprite_accessory/hair/bedhead3
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bedhead 3"
 	icon_state = "hair_bedheadv3"
-
-/datum/sprite_accessory/hair/bedheadv4
-	name = "Bedhead 4x"
-	icon_state = "hair_bedheadv4"
 
 /datum/sprite_accessory/hair/bedheadlong
 	name = "Long Bedhead"
@@ -143,10 +160,6 @@
 /datum/sprite_accessory/hair/bedheadfloorlength
 	name = "Floorlength Bedhead"
 	icon_state = "hair_floorlength_bedhead"
-
-/datum/sprite_accessory/hair/badlycut
-	name = "Shorter Long Bedhead"
-	icon_state = "hair_verybadlycut"
 
 /datum/sprite_accessory/hair/beehive
 	name = "Beehive"
@@ -157,18 +170,26 @@
 	icon_state = "hair_beehivev2"
 
 /datum/sprite_accessory/hair/bob
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bob Hair"
 	icon_state = "hair_bob"
 
 /datum/sprite_accessory/hair/bob2
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bob Hair 2"
 	icon_state = "hair_bob2"
 
 /datum/sprite_accessory/hair/bob3
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Bob Hair 3"
 	icon_state = "hair_bobcut"
 
 /datum/sprite_accessory/hair/bob4
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bob Hair 4"
 	icon_state = "hair_bob4"
 
@@ -177,10 +198,14 @@
 	icon_state = "hair_bobcurl"
 
 /datum/sprite_accessory/hair/boddicker
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Boddicker"
 	icon_state = "hair_boddicker"
 
 /datum/sprite_accessory/hair/bowlcut
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Bowlcut"
 	icon_state = "hair_bowlcut"
 
@@ -197,6 +222,8 @@
 	icon_state = "hair_braided"
 
 /datum/sprite_accessory/hair/front_braid
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Braided Front"
 	icon_state = "hair_braidfront"
 
@@ -205,110 +232,155 @@
 	icon_state = "hair_braid2"
 
 /datum/sprite_accessory/hair/lowbraid
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Braid (Low)"
 	icon_state = "hair_hbraid"
 
 /datum/sprite_accessory/hair/shortbraid
 	name = "Braid (Short)"
 	icon_state = "hair_shortbraid"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/braidtail
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Braided Tail"
 	icon_state = "hair_braidtail"
 
 /datum/sprite_accessory/hair/bun
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bun Head"
 	icon_state = "hair_bun"
 
 /datum/sprite_accessory/hair/bun2
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bun Head 2"
 	icon_state = "hair_bunhead2"
 
 /datum/sprite_accessory/hair/bun3
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bun Head 3"
 	icon_state = "hair_bun3"
 
 /datum/sprite_accessory/hair/largebun
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Bun (Large)"
 	icon_state = "hair_largebun"
 
 /datum/sprite_accessory/hair/manbun
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Bun (Manbun)"
 	icon_state = "hair_manbun"
 
 /datum/sprite_accessory/hair/tightbun
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Bun (Tight)"
 	icon_state = "hair_tightbun"
 
 /datum/sprite_accessory/hair/business
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Business Hair"
 	icon_state = "hair_business"
 
 /datum/sprite_accessory/hair/business2
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Business Hair 2"
 	icon_state = "hair_business2"
 
 /datum/sprite_accessory/hair/business3
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Business Hair 3"
 	icon_state = "hair_business3"
 
 /datum/sprite_accessory/hair/business4
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Business Hair 4"
 	icon_state = "hair_business4"
 
 /datum/sprite_accessory/hair/buzz
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Buzzcut"
 	icon_state = "hair_buzzcut"
-
-/datum/sprite_accessory/hair/chinbob
-	name = "Chin-Length Bob Cut"
-	icon_state = "hair_chinbob"
 
 /datum/sprite_accessory/hair/comet
 	name = "Comet"
 	icon_state = "hair_comet"
 
 /datum/sprite_accessory/hair/cia
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "CIA"
 	icon_state = "hair_cia"
 
 /datum/sprite_accessory/hair/coffeehouse
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Coffee House"
 	icon_state = "hair_coffeehouse"
 
 /datum/sprite_accessory/hair/combover
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Combover"
 	icon_state = "hair_combover"
 
 /datum/sprite_accessory/hair/cornrows1
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Cornrows"
 	icon_state = "hair_cornrows"
 
 /datum/sprite_accessory/hair/cornrows2
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Cornrows 2"
 	icon_state = "hair_cornrows2"
 
 /datum/sprite_accessory/hair/cornrowbun
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Cornrow Bun"
 	icon_state = "hair_cornrowbun"
 
 /datum/sprite_accessory/hair/cornrowbraid
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Cornrow Braid"
 	icon_state = "hair_cornrowbraid"
 
 /datum/sprite_accessory/hair/cornrowdualtail
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Cornrow Tail"
 	icon_state = "hair_cornrowtail"
 
 /datum/sprite_accessory/hair/crew
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Crewcut"
 	icon_state = "hair_crewcut"
 
 /datum/sprite_accessory/hair/curls
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Curls"
 	icon_state = "hair_curls"
 
 /datum/sprite_accessory/hair/cut
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Cut Hair"
 	icon_state = "hair_c"
 
@@ -325,6 +397,8 @@
 	icon_state = "hair_doublebun"
 
 /datum/sprite_accessory/hair/dreadlocks
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Dreadlocks"
 	icon_state = "hair_dreads"
 
@@ -337,10 +411,14 @@
 	icon_state = "hair_drillhairextended"
 
 /datum/sprite_accessory/hair/emo
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Emo"
 	icon_state = "hair_emo"
 
 /datum/sprite_accessory/hair/emofrine
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Emo Fringe"
 	icon_state = "hair_emofringe"
 
@@ -349,20 +427,29 @@
 	icon_state = "hair_nofade"
 
 /datum/sprite_accessory/hair/highfade
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Fade (High)"
 	icon_state = "hair_highfade"
 
 /datum/sprite_accessory/hair/medfade
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Fade (Medium)"
 	icon_state = "hair_medfade"
 
 /datum/sprite_accessory/hair/lowfade
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Fade (Low)"
 	icon_state = "hair_lowfade"
 
 /datum/sprite_accessory/hair/baldfade
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Fade (Bald)"
 	icon_state = "hair_baldfade"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/feather
 	name = "Feather"
@@ -377,6 +464,8 @@
 	icon_state = "hair_sargeant"
 
 /datum/sprite_accessory/hair/flair
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Flair"
 	icon_state = "hair_flair"
 
@@ -385,6 +474,8 @@
 	icon_state = "hair_bigflattop"
 
 /datum/sprite_accessory/hair/flow_hair
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Flow Hair"
 	icon_state = "hair_f"
 
@@ -393,10 +484,14 @@
 	icon_state = "hair_gelled"
 
 /datum/sprite_accessory/hair/gentle
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Gentle"
 	icon_state = "hair_gentle"
 
 /datum/sprite_accessory/hair/halfbang
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Half-banged Hair"
 	icon_state = "hair_halfbang"
 
@@ -405,26 +500,39 @@
 	icon_state = "hair_halfbang2"
 
 /datum/sprite_accessory/hair/halfshaved
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Half-shaved"
 	icon_state = "hair_halfshaved"
 
 /datum/sprite_accessory/hair/hedgehog
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Hedgehog Hair"
 	icon_state = "hair_hedgehog"
 
 /datum/sprite_accessory/hair/himecut
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Hime Cut"
 	icon_state = "hair_himecut"
 
 /datum/sprite_accessory/hair/himecut2
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Hime Cut 2"
 	icon_state = "hair_himecut2"
 
 /datum/sprite_accessory/hair/shorthime
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Hime Cut (Short)"
 	icon_state = "hair_shorthime"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/himeup
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Hime Updo"
 	icon_state = "hair_himeup"
 
@@ -445,6 +553,8 @@
 	icon_state = "hair_joestar"
 
 /datum/sprite_accessory/hair/keanu
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Keanu Hair"
 	icon_state = "hair_keanu"
 
@@ -461,26 +571,38 @@
 	icon_state = "hair_long2"
 
 /datum/sprite_accessory/hair/long3
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Hair 3"
 	icon_state = "hair_long3"
 
 /datum/sprite_accessory/hair/long_over_eye
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Over Eye"
 	icon_state = "hair_longovereye"
 
 /datum/sprite_accessory/hair/longbangs
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Bangs"
 	icon_state = "hair_lbangs"
 
 /datum/sprite_accessory/hair/longemo
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Emo"
 	icon_state = "hair_longemo"
 
 /datum/sprite_accessory/hair/longfringe
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Fringe"
 	icon_state = "hair_longfringe"
 
 /datum/sprite_accessory/hair/sidepartlongalt
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Long Side Part"
 	icon_state = "hair_longsidepart"
 
@@ -489,14 +611,20 @@
 	icon_state = "hair_megaeyebrows"
 
 /datum/sprite_accessory/hair/messy
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Messy"
 	icon_state = "hair_messy"
 
 /datum/sprite_accessory/hair/modern
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Modern"
 	icon_state = "hair_modern"
 
 /datum/sprite_accessory/hair/mohawk
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Mohawk"
 	icon_state = "hair_d"
 
@@ -513,6 +641,8 @@
 	icon_state = "hair_shavedmohawk"
 
 /datum/sprite_accessory/hair/unshavenmohawk
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Mohawk (Unshaven)"
 	icon_state = "hair_unshaven_mohawk"
 
@@ -535,48 +665,65 @@
 /datum/sprite_accessory/hair/over_eye
 	name = "Over Eye"
 	icon_state = "hair_shortovereye"
-
-/datum/sprite_accessory/hair/hair_overeyetwo
-	name = "Over Eye 2"
-	icon_state = "hair_overeyetwo"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/oxton
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Oxton"
 	icon_state = "hair_oxton"
 
 /datum/sprite_accessory/hair/parted
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Parted"
 	icon_state = "hair_parted"
 
 /datum/sprite_accessory/hair/partedside
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Parted (Side)"
 	icon_state = "hair_part"
 
 /datum/sprite_accessory/hair/kagami
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Pigtails"
 	icon_state = "hair_kagami"
 
 /datum/sprite_accessory/hair/pigtail
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Pigtails 2"
 	icon_state = "hair_pigtails"
 
 /datum/sprite_accessory/hair/pigtail2
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Pigtails 3"
 	icon_state = "hair_pigtails2"
 
 /datum/sprite_accessory/hair/pixie
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Pixie Cut"
 	icon_state = "hair_pixie"
 
 /datum/sprite_accessory/hair/pompadour
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Pompadour"
 	icon_state = "hair_pompadour"
 
 /datum/sprite_accessory/hair/bigpompadour
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Pompadour (Big)"
 	icon_state = "hair_bigpompadour"
 
 /datum/sprite_accessory/hair/ponytail1
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Ponytail"
 	icon_state = "hair_ponytail"
 
@@ -585,10 +732,14 @@
 	icon_state = "hair_ponytail2"
 
 /datum/sprite_accessory/hair/ponytail3
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Ponytail 3"
 	icon_state = "hair_ponytail3"
 
 /datum/sprite_accessory/hair/ponytail4
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Ponytail 4"
 	icon_state = "hair_ponytail4"
 
@@ -609,6 +760,8 @@
 	icon_state = "hair_highponytail"
 
 /datum/sprite_accessory/hair/stail
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Ponytail (Short)"
 	icon_state = "hair_stail"
 
@@ -617,10 +770,14 @@
 	icon_state = "hair_longstraightponytail"
 
 /datum/sprite_accessory/hair/countryponytail
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Ponytail (Country)"
 	icon_state = "hair_country"
 
 /datum/sprite_accessory/hair/fringetail
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Ponytail (Fringe)"
 	icon_state = "hair_fringetail"
 
@@ -641,14 +798,20 @@
 	icon_state = "hair_sidetail4"
 
 /datum/sprite_accessory/hair/spikyponytail
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Ponytail (Spiky)"
 	icon_state = "hair_spikyponytail"
 
 /datum/sprite_accessory/hair/poofy
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Poofy"
 	icon_state = "hair_poofy"
 
 /datum/sprite_accessory/hair/quiff
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Quiff"
 	icon_state = "hair_quiff"
 
@@ -657,28 +820,41 @@
 	icon_state = "hair_ronin"
 
 /datum/sprite_accessory/hair/shaved
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Shaved"
 	icon_state = "hair_shaved"
 
 /datum/sprite_accessory/hair/shavedpart
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Shaved Part"
 	icon_state = "hair_shavedpart"
 
 /datum/sprite_accessory/hair/shortbangs
 	name = "Short Bangs"
 	icon_state = "hair_shortbangs"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/short
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Short Hair"
 	icon_state = "hair_a"
 
 /datum/sprite_accessory/hair/shorthair2
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Short Hair 2"
 	icon_state = "hair_shorthair2"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/shorthair3
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Short Hair 3"
 	icon_state = "hair_shorthair3"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/shorthair4
 	name = "Short Hair 4"
@@ -695,8 +871,11 @@
 /datum/sprite_accessory/hair/shorthair7
 	name = "Short Hair 7"
 	icon_state = "hair_shorthairg"
+	locked = FALSE
 
 /datum/sprite_accessory/hair/shorthaireighties
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 	name = "Short Hair 80s"
 	icon_state = "hair_80s"
 
@@ -705,14 +884,20 @@
 	icon_state = "hair_rosa"
 
 /datum/sprite_accessory/hair/shoulderlength
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Shoulder-length Hair"
 	icon_state = "hair_b"
 
 /datum/sprite_accessory/hair/sidecut
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Sidecut"
 	icon_state = "hair_sidecut"
 
 /datum/sprite_accessory/hair/skinhead
+	category = SPRITE_CATEGORY_HAIR_BALD
+	locked = FALSE
 	name = "Skinhead"
 	icon_state = "hair_skinhead"
 
@@ -721,6 +906,8 @@
 	icon_state = "hair_protagonist"
 
 /datum/sprite_accessory/hair/spiky
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Spiky"
 	icon_state = "hair_spikey"
 
@@ -733,6 +920,8 @@
 	icon_state = "hair_spiky2"
 
 /datum/sprite_accessory/hair/swept
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Swept Back Hair"
 	icon_state = "hair_swept"
 
@@ -741,6 +930,8 @@
 	icon_state = "hair_swept2"
 
 /datum/sprite_accessory/hair/thinning
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Thinning"
 	icon_state = "hair_thinning"
 
@@ -753,6 +944,8 @@
 	icon_state = "hair_thinningrear"
 
 /datum/sprite_accessory/hair/topknot
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Topknot"
 	icon_state = "hair_topknot"
 
@@ -761,25 +954,37 @@
 	icon_state = "hair_tressshoulder"
 
 /datum/sprite_accessory/hair/trimmed
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Trimmed"
 	icon_state = "hair_trimmed"
 
 /datum/sprite_accessory/hair/trimflat
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Trim Flat"
 	icon_state = "hair_trimflat"
 
 /datum/sprite_accessory/hair/twintails
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Twintails"
 	icon_state = "hair_twintail"
 
 /datum/sprite_accessory/hair/undercut
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Undercut"
 	icon_state = "hair_undercut"
 
 /datum/sprite_accessory/hair/undercutleft
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 	name = "Undercut Left"
 	icon_state = "hair_undercutleft"
 
+	category = SPRITE_CATEGORY_HAIR_SHORT
+	locked = FALSE
 /datum/sprite_accessory/hair/undercutright
 	name = "Undercut Right"
 	icon_state = "hair_undercutright"
@@ -793,6 +998,8 @@
 	icon_state = "hair_updo"
 
 /datum/sprite_accessory/hair/longer
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 	name = "Very Long Hair"
 	icon_state = "hair_vlong"
 
@@ -803,10 +1010,13 @@
 /datum/sprite_accessory/hair/longest2
 	name = "Very Long Over Eye"
 	icon_state = "hair_longest2"
-
+	category = SPRITE_CATEGORY_HAIR_MEDIUM
+	locked = FALSE
 /datum/sprite_accessory/hair/veryshortovereye
 	name = "Very Short Over Eye"
 	icon_state = "hair_veryshortovereyealternate"
+	category = SPRITE_CATEGORY_HAIR_LONG
+	locked = FALSE
 
 /datum/sprite_accessory/hair/longestalt
 	name = "Very Long with Fringe"
@@ -819,10 +1029,6 @@
 /datum/sprite_accessory/hair/wisp
 	name = "Wisp"
 	icon_state = "hair_wisp"
-*/
-/datum/sprite_accessory/hair/ziegler
-	name = "Ziegler"
-	icon_state = "hair_ziegler"
 
 /*
 /////////////////////////////////////
@@ -833,7 +1039,7 @@
 */
 
 /datum/sprite_accessory/gradient
-	icon = 'icons/mob/species/hair_gradients.dmi'
+	icon = 'icons/mob/hair_gradients.dmi'
 	///whether this gradient applies to hair and/or beards. Some gradients do not work well on beards.
 	var/gradient_category = GRADIENT_APPLIES_TO_HAIR|GRADIENT_APPLIES_TO_FACIAL_HAIR
 
@@ -922,9 +1128,9 @@
 /////////////////////////////
 // Facial Hair Definitions //
 /////////////////////////////
-/* MOJAVE - moved to mojave directory
+
 /datum/sprite_accessory/facial_hair
-	icon = 'icons/mob/species/human/human_face.dmi'
+	icon = 'icons/mob/human_face.dmi'
 	gender = MALE // barf (unless you're a dorf, dorfs dig chix w/ beards :P)
 	em_block = TRUE
 
@@ -1088,9 +1294,10 @@
 ///////////////////////////
 
 /datum/sprite_accessory/underwear
-	icon = 'icons/mob/clothing/underwear.dmi'
+	icon = 'mojave/icons/mob/clothing/underwear.dmi' // MS13 - WAS: 'icons/mob/clothing/underwear.dmi'
 	use_static = FALSE
 	em_block = TRUE
+	locked = TRUE // MS13 - disable category -- see Mojave/**/sprite_accessories.dm for used types
 
 
 //MALE UNDERWEAR
@@ -1098,34 +1305,35 @@
 	name = "Nude"
 	icon_state = null
 	gender = NEUTER
+	locked = FALSE // MS13 -- only TG type we use for this category
 
 /datum/sprite_accessory/underwear/male_briefs
-	name = "Briefs"
+	name = "Men's Briefs"
 	icon_state = "male_briefs"
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_boxers
-	name = "Boxers"
+	name = "Men's Boxer"
 	icon_state = "male_boxers"
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_stripe
-	name = "Striped Boxers"
+	name = "Men's Striped Boxer"
 	icon_state = "male_stripe"
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_midway
-	name = "Midway Boxers"
+	name = "Men's Midway Boxer"
 	icon_state = "male_midway"
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_longjohns
-	name = "Long Johns"
+	name = "Men's Long Johns"
 	icon_state = "male_longjohns"
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_kinky
-	name = "Jockstrap"
+	name = "Men's Kinky"
 	icon_state = "male_kinky"
 	gender = MALE
 
@@ -1135,25 +1343,25 @@
 	gender = MALE
 
 /datum/sprite_accessory/underwear/male_hearts
-	name = "Hearts Boxers"
+	name = "Men's Hearts Boxer"
 	icon_state = "male_hearts"
 	gender = MALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/male_commie
-	name = "Commie Boxers"
+	name = "Men's Striped Commie Boxer"
 	icon_state = "male_commie"
 	gender = MALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/male_usastripe
-	name = "Freedom Boxers"
+	name = "Men's Striped Freedom Boxer"
 	icon_state = "male_assblastusa"
 	gender = MALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/male_uk
-	name = "UK Boxers"
+	name = "Men's Striped UK Boxer"
 	icon_state = "male_uk"
 	gender = MALE
 	use_static = TRUE
@@ -1161,32 +1369,32 @@
 
 //FEMALE UNDERWEAR
 /datum/sprite_accessory/underwear/female_bikini
-	name = "Bikini"
+	name = "Ladies' Bikini"
 	icon_state = "female_bikini"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_lace
-	name = "Lace Bikini"
+	name = "Ladies' Lace"
 	icon_state = "female_lace"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_bralette
-	name = "Bralette w/ Boyshorts"
+	name = "Ladies' Bralette"
 	icon_state = "female_bralette"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_sport
-	name = "Sports Bra w/ Boyshorts"
+	name = "Ladies' Sport"
 	icon_state = "female_sport"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_thong
-	name = "Thong"
+	name = "Ladies' Thong"
 	icon_state = "female_thong"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_strapless
-	name = "Strapless Bikini"
+	name = "Ladies' Strapless"
 	icon_state = "female_strapless"
 	gender = FEMALE
 
@@ -1196,67 +1404,67 @@
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_onepiece
-	name = "One-Piece Swimsuit"
+	name = "Ladies' One Piece Swimsuit"
 	icon_state = "swim_onepiece"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_strapless_onepiece
-	name = "Strapless One-Piece Swimsuit"
+	name = "Ladies' Strapless One Piece Swimsuit"
 	icon_state = "swim_strapless_onepiece"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_twopiece
-	name = "Two-Piece Swimsuit"
+	name = "Ladies' Two Piece Swimsuit"
 	icon_state = "swim_twopiece"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_strapless_twopiece
-	name = "Strapless Two-Piece Swimsuit"
+	name = "Ladies' Strapless Two Piece Swimsuit"
 	icon_state = "swim_strapless_twopiece"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_stripe
-	name = "Strapless Striped Swimsuit"
+	name = "Ladies' Stripe Swimsuit"
 	icon_state = "swim_stripe"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/swimsuit_halter
-	name = "Halter Swimsuit"
+	name = "Ladies' Halter Swimsuit"
 	icon_state = "swim_halter"
 	gender = FEMALE
 
 /datum/sprite_accessory/underwear/female_white_neko
-	name = "Neko Bikini (White)"
+	name = "Ladies' White Neko"
 	icon_state = "female_neko_white"
 	gender = FEMALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/female_black_neko
-	name = "Neko Bikini (Black)"
+	name = "Ladies' Black Neko"
 	icon_state = "female_neko_black"
 	gender = FEMALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/female_commie
-	name = "Commie Bikini"
+	name = "Ladies' Commie"
 	icon_state = "female_commie"
 	gender = FEMALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/female_usastripe
-	name = "Freedom Bikini"
+	name = "Ladies' Freedom"
 	icon_state = "female_assblastusa"
 	gender = FEMALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/female_uk
-	name = "UK Bikini"
+	name = "Ladies' UK"
 	icon_state = "female_uk"
 	gender = FEMALE
 	use_static = TRUE
 
 /datum/sprite_accessory/underwear/female_kinky
-	name = "Lingerie"
+	name = "Ladies' Kinky"
 	icon_state = "female_kinky"
 	gender = FEMALE
 	use_static = TRUE
@@ -1266,13 +1474,15 @@
 ////////////////////////////
 
 /datum/sprite_accessory/undershirt
-	icon = 'icons/mob/clothing/underwear.dmi'
+	icon = 'mojave/icons/mob/clothing/underwear.dmi'
 	em_block = TRUE
+	locked = TRUE // MS13 - disable category -- see Mojave/**/sprite_accessories.dm for used types
 
 /datum/sprite_accessory/undershirt/nude
 	name = "Nude"
 	icon_state = null
 	gender = NEUTER
+	locked = FALSE // MS13 - only TG type we use in this category
 
 // please make sure they're sorted alphabetically and categorized
 
@@ -1551,12 +1761,14 @@
 ///////////////////////
 
 /datum/sprite_accessory/socks
-	icon = 'icons/mob/clothing/underwear.dmi'
+	icon = 'mojave/icons/mob/clothing/underwear.dmi' // MS13 - WAS: 'icons/mob/clothing/underwear.dmi'
 	em_block = TRUE
+	locked = TRUE // MS13 - disable category -- see Mojave/**/sprite_accessories.dm for used types
 
 /datum/sprite_accessory/socks/nude
 	name = "Nude"
 	icon_state = null
+	locked = FALSE // MS13 - Only TG type we use in this category
 
 // please make sure they're sorted alphabetically and categorized
 
@@ -1592,10 +1804,6 @@
 	name = "Knee-high (Thin)"
 	icon_state = "thin_knee"
 
-/datum/sprite_accessory/socks/trans_knee
-	name = "Knee-high (Trans)"
-	icon_state = "trans_knee"
-
 /datum/sprite_accessory/socks/uk_knee
 	name = "Knee-High (UK)"
 	icon_state = "uk_knee"
@@ -1603,10 +1811,6 @@
 /datum/sprite_accessory/socks/white_knee
 	name = "Knee-high (White)"
 	icon_state = "white_knee"
-
-/datum/sprite_accessory/socks/fishnet_knee
-	name = "Knee-high (Fishnet)"
-	icon_state = "fishnet_knee"
 
 /datum/sprite_accessory/socks/black_norm
 	name = "Normal (Black)"
@@ -1660,10 +1864,6 @@
 	name = "Stockings (Yellow)"
 	icon_state = "stockings_yellow"
 
-/datum/sprite_accessory/socks/stockings_fishnet
-	name = "Stockings (Fishnet)"
-	icon_state = "fishnet_full"
-
 /datum/sprite_accessory/socks/ace_thigh
 	name = "Thigh-high (Ace)"
 	icon_state = "ace_thigh"
@@ -1696,10 +1896,6 @@
 	name = "Thigh-high (Thin)"
 	icon_state = "thin_thigh"
 
-/datum/sprite_accessory/socks/trans_thigh
-	name = "Thigh-high (Trans)"
-	icon_state = "trans_thigh"
-
 /datum/sprite_accessory/socks/uk_thigh
 	name = "Thigh-high (UK)"
 	icon_state = "uk_thigh"
@@ -1707,10 +1903,6 @@
 /datum/sprite_accessory/socks/white_thigh
 	name = "Thigh-high (White)"
 	icon_state = "white_thigh"
-
-/datum/sprite_accessory/socks/fishnet_thigh
-	name = "Thigh-high (Fishnet)"
-	icon_state = "fishnet_thigh"
 
 /datum/sprite_accessory/socks/thocks
 	name = "Thocks"
@@ -1721,7 +1913,7 @@
 /////////////////////////////
 
 /datum/sprite_accessory/body_markings
-	icon = 'icons/mob/species/lizard/lizard_misc.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 
 /datum/sprite_accessory/body_markings/none
 	name = "None"
@@ -1743,10 +1935,8 @@
 	gender_specific = 1
 
 /datum/sprite_accessory/tails
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
-
-/datum/sprite_accessory/tails/lizard
-	icon = 'icons/mob/species/lizard/lizard_tails.dmi'
 
 /datum/sprite_accessory/tails/lizard/smooth
 	name = "Smooth"
@@ -1766,18 +1956,16 @@
 
 /datum/sprite_accessory/tails/human/cat
 	name = "Cat"
-	icon = 'icons/mob/species/human/cat_features.dmi'
-	icon_state = "default"
+	icon_state = "cat"
 	color_src = HAIR
 
 /datum/sprite_accessory/tails/monkey
 	name = "Monkey"
-	icon = 'icons/mob/species/monkey/monkey_tail.dmi'
 	icon_state = "monkey"
 	color_src = FALSE
 
 /datum/sprite_accessory/pod_hair
-	icon = 'icons/mob/species/podperson_hair.dmi'
+	icon = 'icons/mob/podperson_hair.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/pod_hair/ivy
@@ -1821,7 +2009,7 @@
 	icon_state = "hibiscus"
 
 /datum/sprite_accessory/snouts
-	icon = 'icons/mob/species/lizard/lizard_misc.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/snouts/sharp
@@ -1841,7 +2029,7 @@
 	icon_state = "roundlight"
 
 /datum/sprite_accessory/horns
-	icon = 'icons/mob/species/lizard/lizard_misc.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/horns/none
@@ -1869,7 +2057,7 @@
 	icon_state = "angler"
 
 /datum/sprite_accessory/ears
-	icon = 'icons/mob/species/human/cat_features.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/ears/none
@@ -1879,27 +2067,19 @@
 /datum/sprite_accessory/ears/cat
 	name = "Cat"
 	icon_state = "cat"
-	hasinner = TRUE
+	hasinner = 1
 	color_src = HAIR
-
-/datum/sprite_accessory/ears/fox
-	icon = 'icons/mob/species/human/fox_features.dmi'
-	name = "Fox"
-	icon_state = "fox"
-	hasinner = TRUE
-	color_src = HAIR
-	locked = TRUE
 
 /datum/sprite_accessory/wings/none
 	name = "None"
 	icon_state = "none"
 
 /datum/sprite_accessory/wings
-	icon = 'icons/mob/species/wings.dmi'
+	icon = 'icons/mob/clothing/wings.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/wings_open
-	icon = 'icons/mob/species/wings.dmi'
+	icon = 'icons/mob/clothing/wings.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/wings/angel
@@ -2020,7 +2200,7 @@
 	dimension_y = 32
 
 /datum/sprite_accessory/frills
-	icon = 'icons/mob/species/lizard/lizard_misc.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 
 /datum/sprite_accessory/frills/none
 	name = "None"
@@ -2039,11 +2219,11 @@
 	icon_state = "aqua"
 
 /datum/sprite_accessory/spines
-	icon = 'icons/mob/species/lizard/lizard_spines.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/spines_animated
-	icon = 'icons/mob/species/lizard/lizard_spines.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	em_block = TRUE
 
 /datum/sprite_accessory/spines/none
@@ -2102,10 +2282,10 @@
 	name = "Normal Legs"
 
 /datum/sprite_accessory/legs/digitigrade_lizard
-	name = DIGITIGRADE_LEGS
+	name = "Digitigrade Legs"
 
 /datum/sprite_accessory/caps
-	icon = 'icons/mob/species/mush_cap.dmi'
+	icon = 'icons/mob/mutant_bodyparts.dmi'
 	color_src = HAIR
 	em_block = TRUE
 
@@ -2114,7 +2294,7 @@
 	icon_state = "round"
 
 /datum/sprite_accessory/moth_wings
-	icon = 'icons/mob/species/moth/moth_wings.dmi'
+	icon = 'icons/mob/moth_wings.dmi'
 	color_src = null
 	em_block = TRUE
 
@@ -2211,12 +2391,8 @@
 	name = "Plasmafire"
 	icon_state = "plasmafire"
 
-/datum/sprite_accessory/moth_wings/moffra
-	name = "Moffra"
-	icon_state = "moffra"
-
 /datum/sprite_accessory/moth_antennae //Finally splitting the sprite
-	icon = 'icons/mob/species/moth/moth_antennae.dmi'
+	icon = 'icons/mob/moth_antennae.dmi'
 	color_src = null
 
 /datum/sprite_accessory/moth_antennae/plain
@@ -2298,12 +2474,8 @@
 	name = "Plasmafire"
 	icon_state = "plasmafire"
 
-/datum/sprite_accessory/moth_antennae/moffra
-	name = "Moffra"
-	icon_state = "moffra"
-
 /datum/sprite_accessory/moth_markings // the markings that moths can have. finally something other than the boring tan
-	icon = 'icons/mob/species/moth/moth_markings.dmi'
+	icon = 'icons/mob/moth_markings.dmi'
 	color_src = null
 
 /datum/sprite_accessory/moth_markings/none
@@ -2365,4 +2537,3 @@
 /datum/sprite_accessory/moth_markings/witchwing
 	name = "Witch Wing"
 	icon_state = "witchwing"
-*/

@@ -95,6 +95,8 @@ GLOBAL_LIST_INIT(available_ui_styles, list(
 	// subtypes can override this to force a specific UI style
 	var/ui_style
 
+	var/contains_off_screen_hud = FALSE // MOJAVE SUN EDIT - handling for secondary map skin for HUD
+
 /datum/hud/New(mob/owner)
 	mymob = owner
 

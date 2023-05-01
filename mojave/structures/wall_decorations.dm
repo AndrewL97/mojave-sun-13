@@ -93,7 +93,7 @@
 	register_context()
 
 /obj/structure/ms13/wall_decor/flag/attackby(obj/item/I, mob/user, params)
-	if(!user.canUseTopic(src, BE_CLOSE, NO_DEXTERITY))
+	if(!user.can_perform_action(src, NEED_DEXTERITY))
 		return
 
 	if(I.tool_behaviour == TOOL_KNIFE)

@@ -12,7 +12,7 @@
 		return
 	if(broken || !Adjacent(user))
 		return
-	if(!user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+	if(!user.can_perform_action(src, FORBID_TELEKINESIS_REACH))
 		return //no tele-grooming
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
@@ -28,14 +28,7 @@
 		var/hairchoice = tgui_alert(H, "Head or Facial hair?", "Adjust Hair", list("Head", "Facial"))
 		if(hairchoice == "Head")
 			//for(var/datum/sprite_accessory/H in GLOB.hairstyles_list)
-			if(H.hairstyle in GLOB.hairstyles_bald_list)
-				new_hair = tgui_input_list(usr, "What hair style do you want?", "Hair style choice", GLOB.hairstyles_bald_list)
-			else if(H.hairstyle in GLOB.hairstyles_short_list)
-				new_hair = tgui_input_list(usr, "What hair style do you want?", "Hair style choice", GLOB.hairstyles_short_list)
-			else if(H.hairstyle in GLOB.hairstyles_medium_list)
-				new_hair = tgui_input_list(usr, "What hair style do you want?", "Hair style choice", GLOB.hairstyles_medium_list)
-			else if(H.hairstyle in GLOB.hairstyles_long_list)
-				new_hair = tgui_input_list(usr, "What hair style do you want?", "Hair style choice", GLOB.hairstyles_long_list)
+			new_hair = tgui_input_list(usr, "What hair style do you want?", "Hair style choice", (get_sprite_category(H.hairstyle.category)))
 		if(new_hair)
 			if(do_after(user, 4 SECONDS, src))
 				H.hairstyle = new_hair

@@ -210,7 +210,6 @@
 	attack_verb_simple = list("slap", "punch")
 	//MOJAVE EDIT BEGIN
 	max_damage = 65 //Original value is 50
-	max_stamina_damage = 65 //Original value is 50
 	//MOJAVE EDIT END
 	body_zone = BODY_ZONE_R_ARM
 	body_part = ARM_RIGHT
@@ -335,10 +334,6 @@
 	icon_state = "default_human_l_leg"
 	attack_verb_continuous = list("kicks", "stomps")
 	attack_verb_simple = list("kick", "stomp")
-	//MOJAVE EDIT BEGIN
-	max_damage = 65 //Original value is 50
-	max_stamina_damage = 65 //Original value is 50
-	//MOJAVE EDIT END
 	body_zone = BODY_ZONE_L_LEG
 	body_part = LEG_LEFT
 	plaintext_zone = "left leg"
@@ -439,7 +434,6 @@
 	attack_verb_simple = list("kick", "stomp")
 	//MOJAVE EDIT BEGIN
 	max_damage = 65 //Original value is 50
-	max_stamina_damage = 65 //Original value is 50
 	//MOJAVE EDIT END
 	body_zone = BODY_ZONE_R_LEG
 	body_part = LEG_RIGHT

@@ -178,7 +178,7 @@
 	if(broken || !active)
 		return
 
-	if(!user.canUseTopic(src, BE_CLOSE, NO_DEXTERITY))
+	if(!user.can_perform_action(src, BE_CLOSE, NEED_DEXTERITY))
 		return
 
 	if(password_needed && !unlocked)
@@ -282,7 +282,7 @@
 	..()
 	var/mob/living/U = usr
 
-	if(usr.canUseTopic(src) && !href_list["close"])
+	if(usr.can_perform_action(src) && !href_list["close"])
 		add_fingerprint(U)
 		U.set_machine(src)
 		switch(href_list["choice"])
@@ -491,7 +491,7 @@
 
 /obj/machinery/ms13/terminal/wall/AltClick(mob/user)
 	. = ..()
-	if(!user.canUseTopic(src, BE_CLOSE, NO_DEXTERITY))
+	if(!user.can_perform_action(src, NEED_DEXTERITY))
 		return
 	if(broken)
 		return

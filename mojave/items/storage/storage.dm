@@ -20,8 +20,6 @@
 	. = ..()
 	AddElement(/datum/element/world_icon, null, icon, 'mojave/icons/objects/medical/medical_inventory.dmi')
 
-/obj/item/storage/firstaid/ms13/ComponentInitialize()
-	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_SMALL
 	STR.max_items = 12
@@ -65,7 +63,7 @@
 	grid_width = 96
 	ms13_flags_1 = LOCKABLE_1
 
-/obj/item/storage/firstaid/ms13/bag/ComponentInitialize()
+/obj/item/storage/firstaid/ms13/bag/Initialize()
 	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_w_class = WEIGHT_CLASS_NORMAL

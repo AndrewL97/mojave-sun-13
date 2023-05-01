@@ -17,7 +17,7 @@ GLOBAL_LIST_EMPTY(frill_objects)
   ** Yes, this is ugly. The alternative is making two different elements for the same purpose.
   */
 /datum/element/frill
-	element_flags = ELEMENT_BESPOKE | ELEMENT_DETACH
+	element_flags = ELEMENT_BESPOKE | ELEMENT_DETACH_ON_HOST_DESTROY
 	id_arg_index = 2
 	var/icon_path
 

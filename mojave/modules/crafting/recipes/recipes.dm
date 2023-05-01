@@ -6,6 +6,9 @@
 // treat this is a flag, so recipes can be shared between (i.e bandages on GENERAL and ARMTAILOR)
 /datum/crafting_recipe/var/crafting_interface = CRAFTING_BENCH_HANDS
 
+// Used to specify trait requirements to know/craft the recipe
+/datum/crafting_recipe/var/trait
+
 // Used to display relevant recipes - match to the recipe's crafting_interface
 /datum/component/personal_crafting/var/crafting_interface = CRAFTING_BENCH_HANDS
 

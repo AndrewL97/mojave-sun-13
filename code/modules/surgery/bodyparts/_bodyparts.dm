@@ -145,10 +145,12 @@
 	var/cached_bleed_rate = 0
 	/// How much generic bleedstacks we have on this bodypart
 	var/generic_bleedstacks
+	/// If we have a gauze wrapping currently applied (not including splints)
+	var/obj/item/stack/current_gauze
 	/// If we have a gauze wrapping currently applied 	// MOJAVE SUN EDIT - ORIGINAL IS /// If we have a gauze wrapping currently applied (not including splints)
-	var/datum/bodypart_aid/gauze/current_gauze 	// MOJAVE SUN EDIT - ORIGINAL IS var/obj/item/stack/current_gauze
+	// var/datum/bodypart_aid/gauze/current_gauze 	// MOJAVE SUN EDIT - ORIGINAL IS var/obj/item/stack/current_gauze -- GOMBLE TODO
 	/// If we have a splint currently applied // MOJAVE SUN EDIT
-	var/datum/bodypart_aid/splint/current_splint // MOJAVE SUN EDIT
+	var/datum/bodypart_aid/splint/current_splint // MOJAVE SUN EDI
 	/// If something is currently grasping this bodypart and trying to staunch bleeding (see [/obj/item/hand_item/self_grasp])
 	var/obj/item/hand_item/self_grasp/grasped_by
 
@@ -346,7 +348,7 @@
 				return
 	return ..()
 
-/* MOJAVE SUN EDIT REMOVAL
+// GOMBLE TODO -- we seem to have added butchering
 /obj/item/bodypart/attackby(obj/item/weapon, mob/user, params)
 	SHOULD_CALL_PARENT(TRUE)
 
@@ -362,7 +364,6 @@
 			drop_organs(user, TRUE)
 	else
 		return ..()
-*/
 
 /obj/item/bodypart/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	SHOULD_CALL_PARENT(TRUE)
@@ -452,16 +453,11 @@
 	// what kind of wounds we're gonna roll for, take the greater between brute and burn, then if it's brute, we subdivide based on sharpness
 	var/wounding_type = (brute > burn ? WOUND_BLUNT : WOUND_BURN)
 	var/wounding_dmg = max(brute, burn)
-
-	/* MOJAVE EDIT REMOVAL
+	// GOMBLE TODO - do we need SHARP_IMPALING, etc?
 	if(wounding_type == WOUND_BLUNT && sharpness)
-	*/
-	//MOJAVE EDIT BEGIN
-	if(sharpness && (wounding_type == WOUND_BLUNT) && (wounding_dmg > edge_protection))
-	//MOJAVE EDIT END
 		if(sharpness & SHARP_EDGED)
 			wounding_type = WOUND_SLASH
-		else if (sharpness & SHARP_POINTY || sharpness & SHARP_IMPALING) //MOJAVE EDIT - Makes it so impaling sharpness class inflicts pierce/stab wounds.
+		else if (sharpness & SHARP_POINTY)
 			wounding_type = WOUND_PIERCE
 
 	if(owner)
@@ -1081,48 +1077,36 @@
  * the gauze falls off.
  *
  * Arguments:
- * * new_gauze- Just the gauze stack we're taking a sheet from to apply here	// MOJAVE SUN EDIT - ORIGINAL IS * * gauze- Just the gauze stack we're taking a sheet from to apply here
+ * * gauze- Just the gauze stack we're taking a sheet from to apply here
  */
-/obj/item/bodypart/proc/apply_gauze(obj/item/stack/medical/gauze/new_gauze)// MOJAVE SUN EDIT - ORIGINAL IS /obj/item/bodypart/proc/apply_gauze(obj/item/stack/gauze)
-	if(!istype(new_gauze) || current_gauze)// MOJAVE SUN EDIT - ORIGINAL IS 	if(!istype(gauze) || !gauze.absorption_capacity)
+/obj/item/bodypart/proc/apply_gauze(obj/item/stack/gauze)
+	if(!istype(gauze) || !gauze.absorption_capacity)
 		return
-	// MOJAVE SUN EDIT BEGIN
-	current_gauze = new new_gauze.gauze_type(src)
-	new_gauze.use(1)
-	// var/newly_gauzed = FALSE
-	// if(!current_gauze)
-	//	newly_gauzed = TRUE
-	// QDEL_NULL(current_gauze)
-	// current_gauze = new gauze.type(src, 1)
-	// gauze.use(1)
-	// if(newly_gauzed)
-	// SEND_SIGNAL(src, COMSIG_BODYPART_GAUZED, gauze)
-	// MOJAVE SUN EDIT END
+	var/newly_gauzed = FALSE
+	if(!current_gauze)
+		newly_gauzed = TRUE
+	QDEL_NULL(current_gauze)
+	current_gauze = new gauze.type(src, 1)
+	gauze.use(1)
+	if(newly_gauzed)
+		SEND_SIGNAL(src, COMSIG_BODYPART_GAUZED, gauze)
+
 /**
-* apply_splint() much like above, except with a splint // MOJAVE SUN EDIT - ORIGINAL IS seep_gauze() is for when a gauze wrapping absorbs blood or pus from wounds, lowering its absorption capacity.
+ * seep_gauze() is for when a gauze wrapping absorbs blood or pus from wounds, lowering its absorption capacity.
  *
- * This proc applies a splint to a bodypart. Splints are used to stabilize muscle and bone wounds, aswell as to protect from hits causing internal bleeding // MOJAVE SUN EDIT - ORIGINAL IS The passed amount of seepage is deducted from the bandage's absorption capacity, and if we reach a negative absorption capacity, the bandages falls off and we're left with nothing.
+ * The passed amount of seepage is deducted from the bandage's absorption capacity, and if we reach a negative absorption capacity, the bandages falls off and we're left with nothing.
  *
  * Arguments:
- * * new_splint- Just the gauze stack we're taking a sheet from to apply here // MOJAVE SUN EDIT - ORIGINAL IS seep_amt - How much absorption capacity we're removing from our current bandages (think, how much blood or pus are we soaking up this tick?)
+ * * seep_amt - How much absorption capacity we're removing from our current bandages (think, how much blood or pus are we soaking up this tick?)
  */
-// MOJAVE SUN EDIT BEGIN
-
-/obj/item/bodypart/proc/apply_splint(obj/item/stack/medical/splint/new_splint)
-	if(!istype(new_splint) || current_splint)
-		return
-	current_splint = new new_splint.splint_type(src)
-	new_splint.use(1)
-
-/*/obj/item/bodypart/proc/seep_gauze(seep_amt = 0)
+/obj/item/bodypart/proc/seep_gauze(seep_amt = 0)
 	if(!current_gauze)
 		return
 	current_gauze.absorption_capacity -= seep_amt
 	if(current_gauze.absorption_capacity <= 0)
 		owner.visible_message(span_danger("\The [current_gauze.name] on [owner]'s [name] falls away in rags."), span_warning("\The [current_gauze.name] on your [name] falls away in rags."), vision_distance=COMBAT_MESSAGE_RANGE)
 		QDEL_NULL(current_gauze)
-		SEND_SIGNAL(src, COMSIG_BODYPART_GAUZE_DESTROYED)*/
-// MOJAVE SUN EDIT END
+		SEND_SIGNAL(src, COMSIG_BODYPART_GAUZE_DESTROYED)
 
 ///Loops through all of the bodypart's external organs and update's their color.
 /obj/item/bodypart/proc/recolor_external_organs()

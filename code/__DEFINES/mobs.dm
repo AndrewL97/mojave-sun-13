@@ -612,6 +612,15 @@
 //Keep up to date with the highest key value
 #define GRADIENTS_LEN 2
 
+// /datum/sprite_accessory defines
+// really only used for hair, but whatever bro
+#define SPRITE_CATEGORY_HAIR_BALD "bald"
+#define SPRITE_CATEGORY_HAIR_SHORT "short"
+#define SPRITE_CATEGORY_HAIR_MEDIUM "medium"
+#define SPRITE_CATEGORY_HAIR_LONG "long"
+
+
+
 // /datum/sprite_accessory/gradient defines
 #define GRADIENT_APPLIES_TO_HAIR (1<<0)
 #define GRADIENT_APPLIES_TO_FACIAL_HAIR (1<<1)

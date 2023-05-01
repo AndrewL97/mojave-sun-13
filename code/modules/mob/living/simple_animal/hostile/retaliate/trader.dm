@@ -18,7 +18,7 @@
 #define TRADER_PRODUCT_INFO_PRICE_MOD_DESCRIPTION 3
 
 /**
-// GOMBLE TODO - MA's ai traders/**
+// GOMBLE TODO - MA's ai traders
 
  * # Trader
  *

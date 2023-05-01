@@ -10,17 +10,17 @@
 	name = "cola spawner"
 	icon_state = "ms13_cola"
 	loot = list(
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cola,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/sarsaparilla,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cherry,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_grape,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_orange,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_lime,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_wild,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_victory,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quartz,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cranberry,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quantum
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cola,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/sarsaparilla,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cherry,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_grape,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_orange,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_lime,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_wild,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_victory,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quartz,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cranberry,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quantum
 		)
 
 /obj/effect/spawner/random/ms13/drink/soda_uncommon
@@ -28,9 +28,9 @@
 	icon_state = "ms13_cola"
 	spawn_loot_chance = 35
 	loot = list(
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quartz,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_cranberry,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_quantum
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quartz,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_cranberry,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_quantum
 		)
 
 
@@ -44,7 +44,7 @@
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/trooper_beer,
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/caligary_beer,
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/plain,
-		/obj/item/reagent_containers/food/drinks/soda_cans/ms13/nuka_dark,
+		/obj/item/reagent_containers/cup/soda_cans/ms13/nuka_dark,
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/moonshine,
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/whiskey,
 		/obj/item/reagent_containers/food/drinks/bottle/ms13/vodka,

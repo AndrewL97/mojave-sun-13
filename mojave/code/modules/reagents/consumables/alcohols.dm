@@ -5,8 +5,11 @@
 	nutriment_factor = 0
 	taste_description = "pure, burning, absolute alcohol"
 	boozepwr = 95
-	glass_name = "glass of clear liquid"
-	glass_desc = "A completely clear liquid, spare for the occasional bubble rising to the top. A sniff of this nearly burns your nose hairs clean off."
+
+/datum/glass_style/drinking_glass/ethanol/ms13
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13
+	name = "glass of clear liquid"
+	desc = "A completely clear liquid, spare for the occasional bubble rising to the top. A sniff of this nearly burns your nose hairs clean off."
 
 //// Basic pre-war alcohols ////
 
@@ -16,8 +19,11 @@
 	color = "#cecbc5"
 	boozepwr = 75
 	taste_description = "strong alcohol and strange herb-y sugar"
-	glass_name = "glass of clear green liquid"
-	glass_desc = "A clear green liquid with an intense alcoholic smell. Vaguely sweet herb aroma."
+
+/datum/glass_style/drinking_glass/ms13/absinthe
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/absinthe
+	name = "glass of clear green liquid"
+	desc = "A clear green liquid with an intense alcoholic smell. Vaguely sweet herb aroma."
 
 /datum/reagent/consumable/ethanol/ms13/moonshine
 	name = "moonshine"
@@ -25,8 +31,11 @@
 	color = "#cecbc5"
 	boozepwr = 70
 	taste_description = "strong bland alcohol"
-	glass_name = "glass of clear liquid"
-	glass_desc = "A clear liquid with an intense alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/moonshine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/moonshine
+	name = "glass of clear liquid"
+	desc = "A clear liquid with an intense alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/whiskey
 	name = "whiskey"
@@ -35,8 +44,11 @@
 	color = "#a87820"
 	boozepwr = 50
 	taste_description = "spiced alcohol"
-	glass_name = "glass of clear pale orange liquid"
-	glass_desc = "A clear orange liquid with a moderate alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/whiskey
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/whiskey
+	name = "glass of clear pale orange liquid"
+	desc = "A clear orange liquid with a moderate alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/vodka
 	name = "vodka"
@@ -44,8 +56,11 @@
 	color = "#e7e5e1"
 	boozepwr = 75
 	taste_description = "strong alcohol with subtle flavors"
-	glass_name = "glass of clear liquid"
-	glass_desc = "A clear liquid with no smell. Nothing out of the ordinary." // ☻
+
+/datum/glass_style/drinking_glass/ms13/vodka
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/vodka
+	name = "glass of clear liquid"
+	desc = "A clear liquid with no smell. Nothing out of the ordinary." // ☻
 
 /datum/reagent/consumable/ethanol/ms13/tequila
 	name = "tequila"
@@ -53,8 +68,11 @@
 	color = "#c4c486"
 	boozepwr = 45 // Irradiated agave do be hittin harder tho
 	taste_description = "moderate agave alcohol"
-	glass_name = "glass of pale yellow-ish liquid"
-	glass_desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells decently alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/tequila
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/tequila
+	name = "glass of pale yellow-ish liquid"
+	desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells decently alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/wine
 	name = "wine"
@@ -62,8 +80,11 @@
 	color = "#af444a"
 	boozepwr = 15
 	taste_description = "subtle fruit and bittersweet alcohol"
-	glass_name = "glass of clear red liquid"
-	glass_desc = "A clear red liquid with a faint alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/wine
+	name = "glass of clear red liquid"
+	desc = "A clear red liquid with a faint alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/champagne
 	name = "champagne"
@@ -72,8 +93,11 @@
 	color = "#daae6c"
 	boozepwr = 25
 	taste_description = "sweet fruit and alcohol"
-	glass_name = "glass of clear pale yellow liquid"
-	glass_desc = "A clear pale yellow liquid with an occasional bubble found rising to the top. There is a light alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/champagne
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/champagne
+	name = "glass of clear pale yellow liquid"
+	desc = "A clear pale yellow liquid with an occasional bubble found rising to the top. There is a light alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/cognac
 	name = "cognac"
@@ -82,8 +106,11 @@
 	color = "#af444a"
 	boozepwr = 35
 	taste_description = "spicy fruit and bittersweet alcohol"
-	glass_name = "glass of clear orange-red liquid"
-	glass_desc = "A clear orange-red liquid with a moderate alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/cognac
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/cognac
+	name = "glass of clear orange-red liquid"
+	desc = "A clear orange-red liquid with a moderate alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/beer // The only beer variant other than waster beer. They all taste the same. Fight me.
 	name = "beer"
@@ -92,8 +119,11 @@
 	color = "#d0d8ac"
 	boozepwr = 25
 	taste_description = "beer"
-	glass_name = "glass of dark liquid"
-	glass_desc = "A dark liquid with a bland alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/beer
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/beer
+	name = "glass of dark liquid"
+	desc = "A dark liquid with a bland alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/gin
 	name = "gin"
@@ -102,8 +132,11 @@
 	color = "#d0d8ac"
 	boozepwr = 45
 	taste_description = "spicy fruit and bittersweet alcohol"
-	glass_name = "glass of clear off-white liquid"
-	glass_desc = "A clear off-white liquid with an alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/gin
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/gin
+	name = "glass of clear off-white liquid"
+	desc = "A clear off-white liquid with an alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/sake
 	name = "sake"
@@ -111,8 +144,11 @@
 	color = "#b9b9b9"
 	boozepwr = 45
 	taste_description = "moderate grain alcohol"
-	glass_name = "glass of clear liquid"
-	glass_desc = "A clear murky liquid that gives of a moderate alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/sake
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/sake
+	name = "glass of clear liquid"
+	desc = "A clear murky liquid that gives of a moderate alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/vermouth
 	name = "vermouth"
@@ -120,8 +156,11 @@
 	color = "#d67c7c"
 	boozepwr = 40
 	taste_description = "sweet and spicy wine"
-	glass_name = "glass of clear light red liquid"
-	glass_desc = "A clear light red liquid that gives of a moderate sweet and spiced alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/vermouth
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/vermouth
+	name = "glass of clear light red liquid"
+	desc = "A clear light red liquid that gives of a moderate sweet and spiced alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/triple_sec
 	name = "triple sec"
@@ -129,8 +168,11 @@
 	color = "#e49328"
 	boozepwr = 45
 	taste_description = "sweet fruit alcohol"
-	glass_name = "glass of clear orange liquid"
-	glass_desc = "A clear light orange that gives of a sweet fruity smell, followed by alcohol."
+
+/datum/glass_style/drinking_glass/ms13/triple_sec
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/triple_sec
+	name = "glass of clear orange liquid"
+	desc = "A clear light orange that gives of a sweet fruity smell, followed by alcohol."
 
 /datum/reagent/consumable/ethanol/ms13/kaluha
 	name = "kaluha"
@@ -139,8 +181,11 @@
 	color = "#dbab74"
 	boozepwr = 35
 	taste_description = "sugary alcohol"
-	glass_name = "glass of cream colored liquid"
-	glass_desc = "A cream colored liquid with an alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/kaluha
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/kaluha
+	name = "glass of cream colored liquid"
+	desc = "A cream colored liquid with an alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/rum
 	name = "rum"
@@ -148,8 +193,11 @@
 	color = "#6b3811"
 	boozepwr = 35
 	taste_description = "sugary alcohol"
-	glass_name = "glass of clear dark orange liquid"
-	glass_desc = "A clear orange liquid with an alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/rum
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/rum
+	name = "glass of clear dark orange liquid"
+	desc = "A clear orange liquid with an alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/nuka_dark
 	name = "Nuka-Dark"
@@ -157,8 +205,11 @@
 	color = "#3E1B00"
 	boozepwr = 25
 	taste_description = "alcoholic nuka-cola"
-	glass_name = "glass of dark liquid"
-	glass_desc = "A still and dark liquid with a moderate alcoholic smell, with a hint of sweet cola mixed in."
+
+/datum/glass_style/drinking_glass/ms13/nuka_dark
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/nuka_dark
+	name = "glass of dark liquid"
+	desc = "A still and dark liquid with a moderate alcoholic smell, with a hint of sweet cola mixed in."
 
 //// Mixed Drinks ////
 
@@ -169,8 +220,11 @@
 	color = "#381d08"
 	boozepwr = 45
 	taste_description = "alcoholic nuka cola"
-	glass_name = "glass of dark fizzing liquid"
-	glass_desc = "A dark fizzing liquid with a fair alcohlic smell to it."
+
+/datum/glass_style/drinking_glass/ms13/rum_nuka
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/rum_nuka
+	name = "glass of dark fizzing liquid"
+	desc = "A dark fizzing liquid with a fair alcohlic smell to it."
 
 /datum/reagent/consumable/ethanol/ms13/whiskey_nuka //Whiskey and Nuka
 	name = "whiskey and nuka"
@@ -179,8 +233,11 @@
 	quality = DRINK_GOOD
 	boozepwr = 60
 	taste_description = "strong alcoholic nuka cola with spice"
-	glass_name = "glass of dark fizzing liquid"
-	glass_desc = "A dark fizzing liquid with a hint of spice and a decent alcohlic smell to it."
+
+/datum/glass_style/drinking_glass/ms13/whiskey_nuka
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/whiskey_nuka
+	name = "glass of dark fizzing liquid"
+	desc = "A dark fizzing liquid with a hint of spice and a decent alcohlic smell to it."
 
 /datum/reagent/consumable/ethanol/ms13/commie_bomb // Vodka, Nuka Quartz
 	name = "commie bomb"
@@ -189,8 +246,11 @@
 	color = "#6e3e18"
 	boozepwr = 70
 	taste_description = "strong alcoholic nuka cola"
-	glass_name = "glass of brown fizzing liquid"
-	glass_desc = "A brown fizzing liquid with a sharp alcohlic smell to it."
+
+/datum/glass_style/drinking_glass/ms13/commie_bomb
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/commie_bomb
+	name = "glass of brown fizzing liquid"
+	desc = "A brown fizzing liquid with a sharp alcohlic smell to it."
 
 /datum/reagent/consumable/ethanol/ms13/mammoth_bait // Mutfruit wine / Champagne / Something mushroom
 	name = "Mammoth bait"
@@ -199,8 +259,11 @@
 	color = "#ce99c2"
 	boozepwr = 25
 	taste_description = "off-tasting bubbly alcohol"
-	glass_name = "glass of dull pink liquid"
-	glass_desc = "A dull pink bubbly liquid with a strange smell- Vaguely alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/mammoth_bait
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/mammoth_bait
+	name = "glass of dull pink liquid"
+	desc = "A dull pink bubbly liquid with a strange smell- Vaguely alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/atomic_cocktail // Mentat powder / Nuka Victory / Vodka
 	name = "Atomic Cocktail"
@@ -209,8 +272,11 @@
 	color = "#A6B199"
 	boozepwr = 60
 	taste_description = "ginger-y caffinated alcohol with chemicals"
-	glass_name = "glass of pale green liquid"
-	glass_desc = "A pale green liquid with a strange smell. Based on smell, definitely has alcohol."
+
+/datum/glass_style/drinking_glass/ms13/atomic_cocktail
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/atomic_cocktail
+	name = "glass of pale green liquid"
+	desc = "A pale green liquid with a strange smell. Based on smell, definitely has alcohol."
 
 /datum/reagent/consumable/ethanol/ms13/necromancer // Vodka / Rum / Ash Blossom powder
 	name = "Necromancer"
@@ -219,8 +285,11 @@
 	color = "#360705"
 	boozepwr = 75
 	taste_description = "intense alcoholic taste with nostril burning"
-	glass_name = "glass of dark red liquid"
-	glass_desc = "A dark red liquid with particles floating around in it. Intense alcoholic aroma."
+
+/datum/glass_style/drinking_glass/ms13/necromancer
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/necromancer
+	name = "glass of dark red liquid"
+	desc = "A dark red liquid with particles floating around in it. Intense alcoholic aroma."
 
 /*/datum/reagent/consumable/ethanol/ms13/necromancer/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	M.drowsyness = max(0,M.drowsyness-3)
@@ -234,8 +303,11 @@
 	color = "#703817"
 	boozepwr = 35
 	taste_description = "spiced fruit cola with alcohol"
-	glass_name = "glass of dull orange liquid"
-	glass_desc = "A dull orange liquid with a spiced fruity smell to it. Has alcohol in it, though the amount is uncertain."
+
+/datum/glass_style/drinking_glass/ms13/dirty_wastelander
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/dirty_wastelander
+	name = "glass of dull orange liquid"
+	desc = "A dull orange liquid with a spiced fruity smell to it. Has alcohol in it, though the amount is uncertain."
 
 /datum/reagent/consumable/ethanol/ms13/nawlins_sazerac // Cognac / Coyote tobacco powder / Absinthe
 	name = "Nawlins Sazerac"
@@ -244,8 +316,11 @@
 	color = "#c74f1c"
 	boozepwr = 50
 	taste_description = "bitter herb-y alcohol with a strange aftertaste"
-	glass_name = "glass of orange liquid"
-	glass_desc = "A orange liquid with small leaf bits floating around in it. Decent alcoholic smell."
+
+/datum/glass_style/drinking_glass/ms13/nawlins_sazerac
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/nawlins_sazerac
+	name = "glass of orange liquid"
+	desc = "A orange liquid with small leaf bits floating around in it. Decent alcoholic smell."
 
 /datum/reagent/consumable/ethanol/ms13/clogged_pump //nuka-cola / rad-ant lager
 	name = "Clogged pump"
@@ -254,8 +329,11 @@
 	color = "#552c2b"
 	boozepwr = 25
 	taste_description = "meat tinted soda with hint of alcohol"
-	glass_name = "glass of dark red liquid"
-	glass_desc = "A dark red liquid with a slight sweet meat-y smell. Strange. You can also pick up hints of alcohol in it."
+
+/datum/glass_style/drinking_glass/ms13/clogged_pump
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/clogged_pump
+	name = "glass of dark red liquid"
+	desc = "A dark red liquid with a slight sweet meat-y smell. Strange. You can also pick up hints of alcohol in it."
 
 ////B for Brewed - Home brewed fun ////
 
@@ -268,8 +346,11 @@
 	color = "#dbcb35"
 	boozepwr = 20
 	taste_description = "sour, barrel fruit alcohol"
-	glass_name = "glass of yellow liquid"
-	glass_desc = "A yellow liquid with a bland aroma. Smells vaguely alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/barrel_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/barrel_wine
+	name = "glass of yellow liquid"
+	desc = "A yellow liquid with a bland aroma. Smells vaguely alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/mutfruit_wine // Mutfruit / Crunchy Mutfruit
 	name = "mutfruit wine"
@@ -278,8 +359,11 @@
 	color = "#472d58"
 	boozepwr = 15
 	taste_description = "sweet mutfruit alcohol"
-	glass_name = "glass of dark purple liquid"
-	glass_desc = "A dark purple liquid with tiny black seeds drifting around it. Smells vaguely alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/mutfruit_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/mutfruit_wine
+	name = "glass of dark purple liquid"
+	desc = "A dark purple liquid with tiny black seeds drifting around it. Smells vaguely alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/apple_cider // Apple
 	name = "hard apple cider"
@@ -288,8 +372,11 @@
 	color = "#cdd465"
 	boozepwr = 10
 	taste_description = "sweet apple cider"
-	glass_name = "glass of murky yellow liquid"
-	glass_desc = "A murky yellow liquid. A sweet smell accompanied by an alcoholic follower."
+
+/datum/glass_style/drinking_glass/ms13/apple_cider
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/apple_cider
+	name = "glass of murky yellow liquid"
+	desc = "A murky yellow liquid. A sweet smell accompanied by an alcoholic follower."
 
 /datum/reagent/consumable/ethanol/ms13/pricklypear_wine // Prickly Pear
 	name = "prickly pear wine"
@@ -298,8 +385,11 @@
 	color = "#7725ad"
 	boozepwr = 35
 	taste_description = "bittersweet prickly pear and alcohol"
-	glass_name = "glass of bright purple liquid"
-	glass_desc = "A bright and murky purple liquid. Smells vaguely alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/pricklypear_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/pricklypear_wine
+	name = "glass of bright purple liquid"
+	desc = "A bright and murky purple liquid. Smells vaguely alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/punga_wine // Punga Fruit
 	name = "punga fruit wine"
@@ -308,8 +398,11 @@
 	color = "#3a8546"
 	boozepwr = 50
 	taste_description = "sour punga fruit and alcohol"
-	glass_name = "glass of green liquid"
-	glass_desc = "A green murky liquid. Heavy alcoholic aromas waft from it."
+
+/datum/glass_style/drinking_glass/ms13/punga_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/punga_wine
+	name = "glass of green liquid"
+	desc = "A green murky liquid. Heavy alcoholic aromas waft from it."
 
 /datum/reagent/consumable/ethanol/ms13/geigpunga_wine // Geigpunga Fruit
 	name = "geigpunga fruit wine"
@@ -318,8 +411,11 @@
 	color = "#33d64e"
 	boozepwr = 75
 	taste_description = "rancid punga fruit and alcohol"
-	glass_name = "glass of green liquid"
-	glass_desc = "A bright green murky liquid. Heavy alcoholic aromas waft from it."
+
+/datum/glass_style/drinking_glass/ms13/geigpunga_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/geigpunga_wine
+	name = "glass of green liquid"
+	desc = "A bright green murky liquid. Heavy alcoholic aromas waft from it."
 
 /datum/reagent/consumable/ethanol/ms13/snaptail_rum // Snaptail
 	name = "snaptail rum"
@@ -328,8 +424,11 @@
 	color = "#c9a9a9"
 	boozepwr = 45
 	taste_description = "subtly sweet and smooth alcohol"
-	glass_name = "glass of clear tinted liquid"
-	glass_desc = "A clear liquid with a subtle tint. Definitely smells of alcohol."
+
+/datum/glass_style/drinking_glass/ms13/snaptail_rum
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/snaptail_rum
+	name = "glass of clear tinted liquid"
+	desc = "A clear liquid with a subtle tint. Definitely smells of alcohol."
 
 /datum/reagent/consumable/ethanol/ms13/tarberry_wine // Tarberry
 	name = "tarberry wine"
@@ -338,8 +437,11 @@
 	color = "#aa0fa2"
 	boozepwr = 40
 	taste_description = "oily tarberry and alcohol"
-	glass_name = "glass of bright purple liquid"
-	glass_desc = "A bright purple liquid. Bitter smell, with an alcoholic afterburn."
+
+/datum/glass_style/drinking_glass/ms13/tarberry_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/tarberry_wine
+	name = "glass of bright purple liquid"
+	desc = "A bright purple liquid. Bitter smell, with an alcoholic afterburn."
 
 /datum/reagent/consumable/ethanol/ms13/blackberry_wine // Blackberry
 	name = "blackberry wine"
@@ -348,8 +450,11 @@
 	color = "#5f1946"
 	boozepwr = 45
 	taste_description = "sweet blackberries and alcohol"
-	glass_name = "glass of purple liquid"
-	glass_desc = "A purple liquid. Sweet smell, with an alcoholic afterburn."
+
+/datum/glass_style/drinking_glass/ms13/blackberry_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/blackberry_wine
+	name = "glass of purple liquid"
+	desc = "A purple liquid. Sweet smell, with an alcoholic afterburn."
 
 /datum/reagent/consumable/ethanol/ms13/radberry_wine // Radberry
 	name = "radberry wine"
@@ -358,8 +463,11 @@
 	color = "#0a9969"
 	boozepwr = 45
 	taste_description = "sweet berry with a hint of metal and alcohol"
-	glass_name = "glass of dull green liquid"
-	glass_desc = "A dull green liquid Sometimes, you can see a shimmer in it. Sweet smell, with an alcoholic afterburn."
+
+/datum/glass_style/drinking_glass/ms13/radberry_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/radberry_wine
+	name = "glass of dull green liquid"
+	desc = "A dull green liquid Sometimes, you can see a shimmer in it. Sweet smell, with an alcoholic afterburn."
 
 /datum/reagent/consumable/ethanol/ms13/yucca_wine // Yucca
 	name = "yucca wine"
@@ -368,8 +476,11 @@
 	color = "#acac87"
 	boozepwr = 25 // That thing is incredibly sugar-y. Tell me it aint so
 	taste_description = "sweet starch and strong alcohol"
-	glass_name = "glass of pale clear liquid"
-	glass_desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells pretty alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/yucca_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/yucca_wine
+	name = "glass of pale clear liquid"
+	desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells pretty alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/tato_liquor // Tato
 	name = "tato liquor"
@@ -378,8 +489,11 @@
 	color = "#a13f2e"
 	boozepwr = 65
 	taste_description = "bitter eggs and alcohol"
-	glass_name = "glass of red-orange liquid"
-	glass_desc = "A red-orange liquid, with pieces of plant still floating around in it. Gives off a sickening smell. Definitely alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/tato_liquor
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/tato_liquor
+	name = "glass of red-orange liquid"
+	desc = "A red-orange liquid, with pieces of plant still floating around in it. Gives off a sickening smell. Definitely alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/waster_vodka // Potato???
 	name = "wasteland vodka"
@@ -387,8 +501,11 @@
 	color = "#dfddd5"
 	boozepwr = 75
 	taste_description = "distant starch with strong alcohol"
-	glass_name = "glass of clear liquid"
-	glass_desc = "A clear liquid that gives of a strong alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/waster_vodka
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/waster_vodka
+	name = "glass of clear liquid"
+	desc = "A clear liquid that gives of a strong alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/tomato_wine // Tomato???
 	name = "tomato wine"
@@ -396,8 +513,11 @@
 	color = "#c57f73"
 	boozepwr = 35
 	taste_description = "subtle tomato and alcohol"
-	glass_name = "glass of faintly red liquid"
-	glass_desc = "A nearly clear red liquid. It gives of a moderate alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/tomato_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/tomato_wine
+	name = "glass of faintly red liquid"
+	desc = "A nearly clear red liquid. It gives of a moderate alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/waster_beer // Razorgrain
 	name = "wasteland beer"
@@ -405,8 +525,11 @@
 	color = "#442b1b"
 	boozepwr = 25
 	taste_description = "beer"
-	glass_name = "glass of dark brown liquid"
-	glass_desc = "A dark brown liquid that gives of a moderate alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/waster_beer
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/waster_beer
+	name = "glass of dark brown liquid"
+	desc = "A dark brown liquid that gives of a moderate alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/waster_sake // Baifan
 	name = "baifan brew"
@@ -414,8 +537,11 @@
 	color = "#ada9a6"
 	boozepwr = 55
 	taste_description = "strong grain alcohol"
-	glass_name = "glass of clear murky liquid"
-	glass_desc = "A clear murky liquid that gives of a strong alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/waster_sake
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/waster_sake
+	name = "glass of clear murky liquid"
+	desc = "A clear murky liquid that gives of a strong alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/waster_tequila // Agave
 	name = "wasteland tequila"
@@ -423,8 +549,11 @@
 	color = "#b6b687"
 	boozepwr = 65
 	taste_description = "rough agave alcohol"
-	glass_name = "glass of pale yellow-ish liquid"
-	glass_desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells pretty alcoholic."
+
+/datum/glass_style/drinking_glass/ms13/waster_tequila
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/waster_tequila
+	name = "glass of pale yellow-ish liquid"
+	desc = "A faint pale yellow liquid with a familiar distant agave smell to it. Smells pretty alcoholic."
 
 /datum/reagent/consumable/ethanol/ms13/waster_tequila/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	if(M.getToxLoss() && prob(20))
@@ -440,8 +569,11 @@
 	color = "#8f5b1f"
 	boozepwr = 45
 	taste_description = "sweet alcohol with a hint of maize"
-	glass_name = "glass of clear brown liquid"
-	glass_desc = "A clear brown liquid that gives of a strong alcoholic odor."
+
+/datum/glass_style/drinking_glass/ms13/waster_whiskey
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/waster_whiskey
+	name = "glass of clear brown liquid"
+	desc = "A clear brown liquid that gives of a strong alcoholic odor."
 
 /datum/reagent/consumable/ethanol/ms13/carrot_wine // Carrots
 	name = "carrot wine"
@@ -449,8 +581,11 @@
 	color = "#c99355"
 	boozepwr = 55
 	taste_description = "sweet alcoholic carrots"
-	glass_name = "glass of clear orange liquid"
-	glass_desc = "A clear orange liquid with a sweet subtle smell with some alcohol definitely present."
+
+/datum/glass_style/drinking_glass/ms13/carrot_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/carrot_wine
+	name = "glass of clear orange liquid"
+	desc = "A clear orange liquid with a sweet subtle smell with some alcohol definitely present."
 
 /datum/reagent/consumable/ethanol/ms13/brew_sludge // Anything random
 	name = "brew sludge"
@@ -458,8 +593,11 @@
 	color = "#462814"
 	boozepwr = 5
 	taste_description = "vile earthy sludge and subtle alcohol"
-	glass_name = "glass of murky brown liquid"
-	glass_desc = "A murky brown liquid with a gross smell to it. You can ALMOST pick up the faint smell of alcohol."
+
+/datum/glass_style/drinking_glass/ms13/brew_sludge
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/brew_sludge
+	name = "glass of murky brown liquid"
+	desc = "A murky brown liquid with a gross smell to it. You can ALMOST pick up the faint smell of alcohol."
 
 /datum/reagent/consumable/ethanol/ms13/brew_sludge/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	M.adjustOrganLoss(ORGAN_SLOT_STOMACH, rand(1,2))
@@ -474,8 +612,11 @@
 	color = "#5D0F0C"
 	boozepwr = 15
 	taste_description = "faint gunpowder and beer"
-	glass_name = "glass of dark liquid"
-	glass_desc = "A dark and liquid. It smells faintly of alcohol and gunpowder."
+
+/datum/glass_style/drinking_glass/ms13/ballistic_bock
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/ballistic_bock
+	name = "glass of dark liquid"
+	desc = "A dark and liquid. It smells faintly of alcohol and gunpowder."
 
 /datum/reagent/consumable/ethanol/ms13/rad_ant_lager // Rad ant pulp, Waster beer
 	name = "rad ant lager"
@@ -483,8 +624,11 @@
 	color = "#864b49"
 	boozepwr = 30
 	taste_description = "meat tinted alcohol"
-	glass_name = "glass of pale red liquid"
-	glass_desc = "A faint pale red liquid with a slight meat-y smell. Strange. You can also pick up hints of alcohol in it."
+
+/datum/glass_style/drinking_glass/ms13/rad_ant_lager
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/rad_ant_lager
+	name = "glass of pale red liquid"
+	desc = "A faint pale red liquid with a slight meat-y smell. Strange. You can also pick up hints of alcohol in it."
 
 /datum/reagent/consumable/ethanol/ms13/swift_recovery // Brain fungus and Tato
 	name = "swift recovery brew"
@@ -493,8 +637,11 @@
 	color = "#cead42"
 	boozepwr = 25
 	taste_description = "tato and fungus flavored alcohol"
-	glass_name = "glass of pale orange liquid"
-	glass_desc = "A pale orange liquid. It reeks of fungus and has hints of tato."
+
+/datum/glass_style/drinking_glass/ms13/swift_recovery
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/swift_recovery
+	name = "glass of pale orange liquid"
+	desc = "A pale orange liquid. It reeks of fungus and has hints of tato."
 
 /datum/reagent/consumable/ethanol/ms13/swift_recovery/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	M.adjustOrganLoss(ORGAN_SLOT_BRAIN, rand(-5,-1))
@@ -510,8 +657,11 @@
 	color = "#2b0b0a"
 	boozepwr = 35
 	taste_description = "rough spicy alcohol"
-	glass_name = "glass of deep red liquid"
-	glass_desc = "A deep red liquid with a spiced aroma. Smelling it brings a comforting aura."
+
+/datum/glass_style/drinking_glass/ms13/fire_wine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/fire_wine
+	name = "glass of deep red liquid"
+	desc = "A deep red liquid with a spiced aroma. Smelling it brings a comforting aura."
 
 /datum/reagent/consumable/ethanol/ms13/fire_wine/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	M.adjust_bodytemperature(25 * TEMPERATURE_DAMAGE_COEFFICIENT, 0, M.get_body_temp_normal())
@@ -525,8 +675,11 @@
 	description = "...Who thought this was a good idea?"
 	color = "#2accc7"
 	taste_description = "burning chemical taste and soda"
-	glass_name = "glass of pale blue fizzy liquid"
-	glass_desc = "A pale blue fizzy liquid with a slighty sweet smell."
+
+/datum/glass_style/drinking_glass/ms13/nuka_lixir
+	required_drink_type = /datum/reagent/consumable/ms13/nuka_lixir
+	name = "glass of pale blue fizzy liquid"
+	desc = "A pale blue fizzy liquid with a slighty sweet smell."
 
 /datum/reagent/consumable/ethanol/ms13/lead_champagne // lead powder / Champagne - What a cruel joke.
 	name = "lead champagne"
@@ -535,8 +688,11 @@
 	color = "#7c1f4d"
 	boozepwr = 35
 	taste_description = "sweet fruit and alcohol, with a metallic aftertaste"
-	glass_name = "glass of a reddish-purple liquid"
-	glass_desc = "A reddish-purple liquid with a distant fruit aroma to it, occasional black flakes can be seen floating around. Alcohol is present in it, albeit not too strong."
+
+/datum/glass_style/drinking_glass/ms13/lead_champagne
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/lead_champagne
+	name = "glass of a reddish-purple liquid"
+	desc = "A reddish-purple liquid with a distant fruit aroma to it, occasional black flakes can be seen floating around. Alcohol is present in it, albeit not too strong."
 
 /datum/reagent/consumable/ethanol/ms13/lead_champagne/on_mob_life(mob/living/carbon/M, delta_time, times_fired)
 	if(prob(20))
@@ -550,8 +706,11 @@
 	quality = null
 	boozepwr = 85
 	taste_description = "vile burning cola"
-	glass_name = "glass of bright blue fizzy liquid"
-	glass_desc = "A bright blue fizzy liquid with a overwealming alcoholic smell. You feel like you get a hangover from the fumes itself."
+
+/datum/glass_style/drinking_glass/ms13/nukashine
+	required_drink_type = /datum/reagent/consumable/ethanol/ms13/nukashine
+	name = "glass of bright blue fizzy liquid"
+	desc = "A bright blue fizzy liquid with a overwealming alcoholic smell. You feel like you get a hangover from the fumes itself."
 
 /datum/reagent/consumable/ethanol/ms13/nukashine/on_mob_metabolize(mob/living/L)
 	..()
@@ -567,7 +726,7 @@
 	M.AdjustStun(-20, FALSE)
 	M.AdjustKnockdown(-20, FALSE)
 	M.adjustStaminaLoss(-5, 0)
-	M.Jitter(2)
+	M.set_jitter_if_lower(2 SECONDS * seconds_per_tick)
 	if(prob(25))
 		M.adjustOrganLoss(ORGAN_SLOT_HEART, rand(1,3))
 	..()

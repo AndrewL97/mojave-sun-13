@@ -784,7 +784,7 @@ GLOBAL_VAR(FishPopNextCalc)
 						M.forceMove(src)
 						to_chat(user, "<span class='notice'>You lower yourself in the deep water.</span>")
 						//M.adjust_bodytemperature(coldness)
-						//M.Jitter(20)
+						//M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)
 				else
 					user.visible_message("<span class='notice'>[M] is being put in the deep water by [user].</span>", \
 									"<span class='notice'>You start lowering [M] in the deep water.")
@@ -794,7 +794,7 @@ GLOBAL_VAR(FishPopNextCalc)
 						M.forceMove(src)
 						to_chat(user, "<span class='notice'>You lower [M] in the deep water.</span>")
 						//M.adjust_bodytemperature(coldness)
-						//M.Jitter(20)
+						//M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)
 						return
 			else
 				return
@@ -869,16 +869,16 @@ GLOBAL_VAR(FishPopNextCalc)
 				if(3)
 					M.wash(CLEAN_WASH)
 					//M.adjust_bodytemperature(coldness)
-					//M.Jitter(20)
+					//M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)
 					M.adjustStaminaLoss(3)
 				if(2)
 					M.wash(CLEAN_WASH)
 					//M.adjust_bodytemperature(coldness)
-					//M.Jitter(20)
+					//M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)
 					M.adjustStaminaLoss(1)
 				/*else
 					M.adjust_bodytemperature(coldness)
-					M.Jitter(20)*/
+					M.set_jitter_if_lower(20 SECONDS * seconds_per_tick)*/
 			return
 
 /turf/open/ms13/water/proc/transfer_mob_layer(var/mob/living/carbon/M)

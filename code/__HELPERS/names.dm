@@ -59,8 +59,10 @@ GLOBAL_VAR(command_name)
 
 /proc/new_station_name()
 
-	if(TRUE) // GOMBLE - I did this to prevent conflicts because tg keeps changing how they generate names
-		return "Mojave Sun - Open Beta" // Hard coding for now until we change how station name is generated.
+	// GOMBLE - I did this to prevent conflicts because tg keeps changing how they generate names
+	return "Mojave Sun - Open Beta" // Hard coding for now until we change how station name is generated.
+
+	/*
 
 	var/random = rand(1,5)
 	var/name = ""
@@ -109,6 +111,8 @@ GLOBAL_VAR(command_name)
 		if(999999999)
 			new_station_name += convert_integer_to_words(rand(111111111,999999999), capitalise = TRUE)
 	return new_station_name
+
+	*/
 
 /proc/syndicate_name()
 	var/name = ""

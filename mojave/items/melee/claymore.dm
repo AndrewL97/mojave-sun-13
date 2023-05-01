@@ -194,7 +194,8 @@
 		force = 30
 		subtractible_armour_penetration = 25
 		edge_protection_penetration = 10
-		sharpness = SHARP_EDGED | SHARP_AXE
+		sharpness = SHARP_EDGED
+		tool_behaviour = TOOL_SAW
 		toolspeed = 0.75
 
 	else
@@ -206,6 +207,7 @@
 		subtractible_armour_penetration = 5
 		toolspeed = 1.5
 		sharpness = NONE
+		tool_behaviour = TOOL_KNIFE
 
 /obj/item/claymore/ms13/machete/ripper/advanced
 	name = "advanced ripper"
@@ -227,7 +229,8 @@
 		force = 35
 		subtractible_armour_penetration = 35
 		edge_protection_penetration = 10
-		sharpness = SHARP_EDGED | SHARP_AXE
+		sharpness = SHARP_EDGED
+		tool_behaviour = TOOL_SAW
 		toolspeed = 0.5
 
 	else
@@ -238,4 +241,5 @@
 		force = 10
 		subtractible_armour_penetration = 5
 		toolspeed = 1.5
+		tool_behaviour = TOOL_KNIFE
 		sharpness = NONE

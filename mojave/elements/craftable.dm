@@ -93,7 +93,7 @@
 		return
 	to_chat(user, "<span class='notice'>You start crudely working on [src].</span>")
 	playsound(I, current_crafting_option[CRAFTING_SOUND], 50, TRUE)
-	if(do_after_interactive(user, current_crafting_option[CRAFTING_TIME], thing, bonus_time = 1 SECONDS, focus_sound = current_crafting_option[CRAFTING_FOCUS_SOUND], type = /obj/effect/hallucination/simple/progress_focus/skillcheck))
+	if(do_after_interactive(user, current_crafting_option[CRAFTING_TIME], thing, bonus_time = 1 SECONDS, focus_sound = current_crafting_option[CRAFTING_FOCUS_SOUND], type = /obj/effect/client_image_holder/progress_focus/skillcheck))
 		var/atom/atom_to_create = current_crafting_option[CRAFTING_RESULT]
 		var/list/atom/created_atoms = list()
 		for(var/i = 1 to current_crafting_option[CRAFTING_AMOUNT])
@@ -112,7 +112,7 @@
 	if((locate(current_crafting_option[CRAFTING_SURFACE]) in thing_on_surface.loc))
 		to_chat(user, "<span class='notice'>You start working on [src].</span>")
 		playsound(I, current_crafting_option[CRAFTING_SOUND], 50, TRUE)
-		if(do_after_interactive(user, current_crafting_option[CRAFTING_TIME], thing_on_surface, bonus_time = 1 SECONDS, focus_sound = current_crafting_option[CRAFTING_FOCUS_SOUND], type = /obj/effect/hallucination/simple/progress_focus/skillcheck))
+		if(do_after_interactive(user, current_crafting_option[CRAFTING_TIME], thing_on_surface, bonus_time = 1 SECONDS, focus_sound = current_crafting_option[CRAFTING_FOCUS_SOUND], type = /obj/effect/client_image_holder/progress_focus/skillcheck))
 			var/atom/atom_to_create = current_crafting_option[CRAFTING_RESULT]
 			var/list/atom/created_atoms = list()
 			for(var/i = 1 to current_crafting_option[CRAFTING_AMOUNT])
